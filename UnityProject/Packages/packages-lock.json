@@ -5,14 +5,14 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "39c99640e49e7eab2437f33bde68b42ccc7056f0"
+      "hash": "795798f3916de973038eac3090959a60020dd80f"
     },
     "com.nagaohiroki.unityutility": {
       "version": "https://github.com/nagaohiroki/UnityUtility.git?path=UnityProject/Assets",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "96a1e89dd6f8251acd6dc80a0b1dfc8a32fd81d2"
+      "hash": "905cf9a0d678dcde6b5409c3b929f1d914dad626"
     },
     "com.unity.burst": {
       "version": "1.8.2",
