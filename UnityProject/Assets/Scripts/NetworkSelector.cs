@@ -29,8 +29,6 @@ public class NetworkSelector : MonoBehaviour
 	}
 	void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 	{
-		var go = NetworkManager.Singleton.NetworkConfig.PlayerPrefab;
-		var netobj = go.GetComponent<NetworkObject>();
 		var pass = Encoding.ASCII.GetString(request.Payload);
 		var reqPass = Encoding.ASCII.GetString(NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		response.Approved = pass == reqPass;
