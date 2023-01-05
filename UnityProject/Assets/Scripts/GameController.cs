@@ -1,28 +1,77 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using UnityUtility;
+using System.Collections.Generic;
 public class GameController : NetworkBehaviour
 {
-	public NetworkVariable<int> turnPlayer = new NetworkVariable<int>();
-	public override void OnNetworkSpawn()
-	{
-		turnPlayer.OnValueChanged += OnValueChanged;
-	}
-	public override void OnNetworkDespawn()
-	{
-		turnPlayer.OnValueChanged -= OnValueChanged;
-	}
-	void OnValueChanged(int inPre, int inCurrent)
-	{
-		Debug.Log($"turnPlayer:{inCurrent}");
-	}
+	NetworkVariable<int> turnPlayer = new NetworkVariable<int>();
+	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
+	RandomObject mTurn;
+	Player[] mPlayers;
+	public bool IsGameStart => mPlayers != null;
 	public void Turn()
+	{
+		TurnChangeServerRpc();
+	}
+	public override void OnNetworkSpawn()
 	{
 		if(IsServer)
 		{
-			Increment();
+			randomSeed.Value = RandomObject.GenerateSeed();
+		}
+	}
+	public void GameStart()
+	{
+		if(IsServer)
+		{
+			GameStartClientRpc();
+		}
+	}
+	public bool IsTurnPlayer(int inIndex)
+	{
+		return inIndex == turnPlayer.Value;
+	}
+	int IndexFromClientId(ulong inId, List<ulong> inIndex)
+	{
+		for(int i = 0; i < inIndex.Count; i++)
+		{
+			if(inIndex[i] == inId)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	[ClientRpc()]
+	void GameStartClientRpc()
+	{
+		if(mPlayers != null)
+		{
 			return;
 		}
-		TurnChangeServerRpc();
+		var players = FindObjectsOfType<Player>();
+		if(players.Length < 1)
+		{
+			return;
+		}
+		var turn = new List<ulong>();
+		foreach(var player in players)
+		{
+			turn.Add(player.OwnerClientId);
+		}
+		mTurn = new RandomObject(randomSeed.Value);
+		mTurn.Shuffle(turn);
+		foreach(var player in players)
+		{
+			player.turnIndex = IndexFromClientId(player.OwnerClientId, turn);
+		}
+		mPlayers = players;
+		var str = "GameStart\n";
+		foreach(var player in players)
+		{
+			str += $"player:{player.OwnerClientId}, turn:{player.turnIndex}\n";
+		}
+		Debug.Log(str);
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void TurnChangeServerRpc()
@@ -31,6 +80,15 @@ public class GameController : NetworkBehaviour
 	}
 	void Increment()
 	{
+		if(mPlayers == null)
+		{
+			return;
+		}
 		turnPlayer.Value += 1;
+		if(turnPlayer.Value >= mPlayers.Length)
+		{
+			turnPlayer.Value = 0;
+		}
+		Debug.Log($"Turn:{turnPlayer.Value}");
 	}
 }

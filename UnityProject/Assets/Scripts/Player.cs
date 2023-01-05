@@ -3,30 +3,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class Player : NetworkBehaviour
 {
+	public int turnIndex;
 	PlayerInput mInput;
 	GameController mGameController;
 	public override void OnNetworkSpawn()
 	{
-		Rename();
 		if(IsOwner)
 		{
 			mGameController = FindObjectOfType<GameController>();
 			mInput = FindObjectOfType<PlayerInput>();
 		}
-	}
-	void Rename()
-	{
-		var newName = $"Player{OwnerClientId}";
-		if(IsOwner)
-		{
-			newName += $"_Owner";
-		}
-		if(IsOwnedByServer)
-		{
-			newName += $"_Host";
-		}
-		name = newName;
-		Debug.Log($"login:{newName}");
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
@@ -61,13 +47,22 @@ public class Player : NetworkBehaviour
 	}
 	void Update()
 	{
-		if(IsOwner)
+		if(!IsOwner)
 		{
-			Move();
-			if(mInput.actions["Fire"].triggered)
+			return;
+		}
+		Move();
+		if(!mGameController.IsGameStart)
+		{
+			if(Input.GetKeyDown(KeyCode.Return))
 			{
-				mGameController.Turn();
+				mGameController.GameStart();
 			}
+			return;
+		}
+		if(mInput.actions["Fire"].triggered && mGameController.IsTurnPlayer(turnIndex))
+		{
+			mGameController.Turn();
 		}
 	}
 }
