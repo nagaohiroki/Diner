@@ -14,6 +14,13 @@
       "dependencies": {},
       "hash": "e1c5273e6b3f4e04fd3b976fb2af919aeefd4d84"
     },
+    "com.oss.leantween": {
+      "version": "https://github.com/JohannesDeml/LeanTween.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "71df5d87d2cc59aaa9313ecace09dc76e46a491b"
+    },
     "com.unity.burst": {
       "version": "1.8.2",
       "depth": 1,

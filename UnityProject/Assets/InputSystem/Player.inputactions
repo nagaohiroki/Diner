@@ -1,5 +1,5 @@
 {
-    "name": "UnityProject",
+    "name": "Player",
     "maps": [
         {
             "name": "Player",
@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Cursor",
+                    "type": "Value",
+                    "id": "60899b13-8f65-4122-a543-73e2199820bc",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -251,6 +260,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cafc306-549d-4b5f-a7b7-673663f71e8f",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Cursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

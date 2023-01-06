@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class Player : NetworkBehaviour
 {
-	public int turnIndex;
+	[SerializeField]
+	LayerMask mFocusLayerMask;
 	PlayerInput mInput;
 	GameController mGameController;
 	public override void OnNetworkSpawn()
@@ -25,6 +26,15 @@ public class Player : NetworkBehaviour
 		if(!IsServer)
 		{
 			transform.position = inPos;
+		}
+	}
+	void Pick()
+	{
+		var cursor = mInput.actions["Cursor"].ReadValue<Vector2>();
+		var ray = Camera.main.ScreenPointToRay(cursor);
+		if(Physics.Raycast(ray, out var hit, Mathf.Infinity, mFocusLayerMask))
+		{
+			Debug.Log($"{cursor}:{hit.collider.name}");
 		}
 	}
 	void Move()
@@ -51,18 +61,22 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		Move();
-		if(!mGameController.IsGameStart)
+		Pick();
+		if(Input.GetKeyDown(KeyCode.Return))
 		{
-			if(Input.GetKeyDown(KeyCode.Return))
+			if(!mGameController.gameInfo.IsStart)
 			{
 				mGameController.GameStart();
+				return;
 			}
-			return;
-		}
-		if(mInput.actions["Fire"].triggered && mGameController.IsTurnPlayer(turnIndex))
-		{
-			mGameController.Turn();
+			if(mGameController.gameInfo.IsTurn(OwnerClientId))
+			{
+				mGameController.Pick(0, 0);
+			}
+			else
+			{
+				Debug.Log("あなたのターンではない");
+			}
 		}
 	}
 }
