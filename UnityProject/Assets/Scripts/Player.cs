@@ -38,10 +38,8 @@ public class Player : NetworkBehaviour
 		}
 		if(!hit.collider.TryGetComponent<CardModel>(out var card))
 		{
-			Debug.Log("no card");
 			return;
 		}
-		Debug.Log("pick");
 		mGameController.Pick(card.deckIndex, card.cardIndex);
 	}
 	void Move()

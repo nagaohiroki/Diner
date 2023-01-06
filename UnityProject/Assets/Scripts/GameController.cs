@@ -6,9 +6,13 @@ public class GameController : NetworkBehaviour
 	[SerializeField]
 	Table mTable;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
-	public GameInfo gameInfo { get; set; } = new GameInfo();
+	public GameInfo gameInfo { get; private set; } = new GameInfo();
 	public void Pick(int inDeck, int inCard)
 	{
+		if(!gameInfo.CanPick(inDeck, inCard))
+		{
+			return;
+		}
 		PickServerRpc(inDeck, inCard);
 	}
 	public override void OnNetworkSpawn()

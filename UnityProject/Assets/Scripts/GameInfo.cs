@@ -66,17 +66,9 @@ public class GameInfo
 		}
 		return mTurnPlayer[turn % mTurnPlayer.Count];
 	}
-	int GetPickTurn(int inDeck, int inCard)
+	public bool CanPick(int inDeck, int inCard)
 	{
-		for(int i = 0; i < mPickInfo.Count; i++)
-		{
-			var pick = mPickInfo[i];
-			if(pick.deck == inDeck && pick.card == inCard)
-			{
-				return i;
-			}
-		}
-		return -1;
+		return GetPickTurn(inDeck, inCard) == -1;
 	}
 	public List<Card> GetCardList(int inDeck)
 	{
@@ -141,5 +133,17 @@ public class GameInfo
 			var pos = inCenter + rot * new Vector3(0.0f, 0.0f, -inRadius);
 			mTurnPlayer[ownerBaseIndex].transform.position = pos;
 		}
+	}
+	int GetPickTurn(int inDeck, int inCard)
+	{
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			var pick = mPickInfo[i];
+			if(pick.deck == inDeck && pick.card == inCard)
+			{
+				return i;
+			}
+		}
+		return -1;
 	}
 }
