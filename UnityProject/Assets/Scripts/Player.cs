@@ -32,10 +32,17 @@ public class Player : NetworkBehaviour
 	{
 		var cursor = mInput.actions["Cursor"].ReadValue<Vector2>();
 		var ray = Camera.main.ScreenPointToRay(cursor);
-		if(Physics.Raycast(ray, out var hit, Mathf.Infinity, mFocusLayerMask))
+		if(!Physics.Raycast(ray, out var hit, Mathf.Infinity, mFocusLayerMask))
 		{
-			Debug.Log($"{cursor}:{hit.collider.name}");
+			return;
 		}
+		if(!hit.collider.TryGetComponent<CardModel>(out var card))
+		{
+			Debug.Log("no card");
+			return;
+		}
+		Debug.Log("pick");
+		mGameController.Pick(card.deckIndex, card.cardIndex);
 	}
 	void Move()
 	{
@@ -61,21 +68,20 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		Pick();
-		if(Input.GetKeyDown(KeyCode.Return))
+		if(!mGameController.gameInfo.IsStart)
 		{
-			if(!mGameController.gameInfo.IsStart)
+			Move();
+			if(Input.GetKeyDown(KeyCode.Return))
 			{
 				mGameController.GameStart();
-				return;
 			}
-			if(mGameController.gameInfo.IsTurn(OwnerClientId))
+			return;
+		}
+		if(mGameController.gameInfo.IsTurn(this))
+		{
+			if(mInput.actions["Fire"].triggered)
 			{
-				mGameController.Pick(0, 0);
-			}
-			else
-			{
-				Debug.Log("あなたのターンではない");
+				Pick();
 			}
 		}
 	}

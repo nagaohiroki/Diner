@@ -18,6 +18,10 @@ public class PickInfo
 public class Card
 {
 	public int id { get; set; }
+	public override string ToString()
+	{
+		return $"card:{id}";
+	}
 }
 public class Deck
 {
@@ -39,43 +43,68 @@ public class Deck
 }
 public class GameInfo
 {
-	List<ulong> mTurnPlayer;
+	List<Player> mTurnPlayer;
 	List<Deck> mDeck;
 	List<PickInfo> mPickInfo;
 	public bool IsStart => mTurnPlayer != null;
 	public override string ToString()
 	{
-		var str = $"pickcount:{mPickInfo.Count}\n";
-		foreach(var id in mTurnPlayer)
+		var str = $"pick:{mPickInfo.Count}\n";
+		foreach(var player in mTurnPlayer)
 		{
-			var isTurn = IsTurn(id) ? ">" : " ";
-			str += $"{isTurn}Player{id}\n";
+			var isTurn = IsTurn(player) ? ">" : " ";
+			str += $"{isTurn}Player{player.OwnerClientId}\n";
 		}
 		return str;
 	}
-	public void GameStart(int inSeed, Player[] inPlayers)
+	public Player GetPickPlayer(int inDeck, int inCard)
 	{
-		if(inPlayers == null || inPlayers.Length < 2)
+		int turn = GetPickTurn(inDeck, inCard);
+		if(turn == -1)
 		{
-			Debug.Log("プレイヤーが足りない");
+			return null;
+		}
+		return mTurnPlayer[turn % mTurnPlayer.Count];
+	}
+	int GetPickTurn(int inDeck, int inCard)
+	{
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			var pick = mPickInfo[i];
+			if(pick.deck == inDeck && pick.card == inCard)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	public List<Card> GetCardList(int inDeck)
+	{
+		return mDeck[inDeck].GetCardList;
+	}
+	public void GameStart(int inSeed, int inDeck, Player[] inPlayers, Vector3 inCenter, float inRadius)
+	{
+		if(inPlayers == null)
+		{
 			return;
 		}
-		mTurnPlayer = new List<ulong>();
+		mTurnPlayer = new List<Player>();
 		foreach(var player in inPlayers)
 		{
-			mTurnPlayer.Add(player.OwnerClientId);
+			mTurnPlayer.Add(player);
 		}
 		var rand = new RandomObject(inSeed);
 		rand.Shuffle(mTurnPlayer);
-		mDeck = new List<Deck>
+		mDeck = new List<Deck>();
+		for(int i = 0; i < inDeck; i++)
 		{
-			new Deck(rand),
-			new Deck(rand)
-		};
+			mDeck.Add(new Deck(rand));
+		}
 		mPickInfo = new List<PickInfo>();
+		SetPlayerPos(inCenter, inRadius);
 		Debug.Log($"GameStart\n {ToString()}");
 	}
-	public void Pick(int inCard, int inDeck)
+	public void Pick(int inDeck, int inCard)
 	{
 		if(mPickInfo == null)
 		{
@@ -85,12 +114,32 @@ public class GameInfo
 		Debug.Log($"Pick {pick}\n {ToString()}");
 		mPickInfo.Add(pick);
 	}
-	public bool IsTurn(ulong inOwnerId)
+	public bool IsTurn(Player inPlayer)
 	{
 		if(mTurnPlayer == null || mPickInfo == null)
 		{
 			return false;
 		}
-		return mTurnPlayer.IndexOf(inOwnerId) == mPickInfo.Count % mTurnPlayer.Count;
+		return mTurnPlayer.IndexOf(inPlayer) == mPickInfo.Count % mTurnPlayer.Count;
+	}
+	void SetPlayerPos(Vector3 inCenter, float inRadius)
+	{
+		int start = -1;
+		int count = mTurnPlayer.Count;
+		for(int i = 0; i < count; i++)
+		{
+			if(mTurnPlayer[i].IsOwner)
+			{
+				start = i;
+			}
+		}
+		var baseRot = 1.0f / (float)count * 360.0f;
+		for(int i = 0; i < count; i++)
+		{
+			int ownerBaseIndex = (start + i) % count;
+			var rot = Quaternion.Euler(0.0f, baseRot * i, 0.0f);
+			var pos = inCenter + rot * new Vector3(0.0f, 0.0f, -inRadius);
+			mTurnPlayer[ownerBaseIndex].transform.position = pos;
+		}
 	}
 }

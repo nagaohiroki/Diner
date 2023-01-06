@@ -29,17 +29,25 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
-		gameInfo.GameStart(randomSeed.Value, FindObjectsOfType<Player>());
-		mTable.Apply(gameInfo);
+		var players = FindObjectsOfType<Player>();
+		gameInfo.GameStart(randomSeed.Value, mTable.DeckNum, players, Vector3.zero, 4.0f);
+		if(gameInfo.IsStart)
+		{
+			mTable.Apply(gameInfo);
+		}
 	}
 	[ServerRpc(RequireOwnership = false)]
-	void PickServerRpc(int inCard, int inDeck)
+	void PickServerRpc(int inDeck, int inCard)
 	{
-		PickClientRpc(inCard, inDeck);
+		PickClientRpc(inDeck, inCard);
 	}
 	[ClientRpc]
-	void PickClientRpc(int inCard, int inDeck)
+	void PickClientRpc(int inDeck, int inCard)
 	{
-		gameInfo.Pick(inCard, inDeck);
+		if(gameInfo.IsStart)
+		{
+			gameInfo.Pick(inDeck, inCard);
+			mTable.Apply(gameInfo);
+		}
 	}
 }

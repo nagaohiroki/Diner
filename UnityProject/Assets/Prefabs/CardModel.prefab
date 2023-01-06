@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6907293168715458169}
   - component: {fileID: 6541825464623641790}
   - component: {fileID: 1959658377374482520}
-  - component: {fileID: 5404509917266225720}
   m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
@@ -28,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 146109833353435551}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 0.1}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5171665185365602118}
@@ -84,19 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5404509917266225720
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 146109833353435551}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3650101188929987479
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6440644494812380320}
   - component: {fileID: 2518866154619904136}
+  - component: {fileID: 8648264128358703944}
   m_Layer: 6
   m_Name: CardModel
   m_TagString: Untagged
@@ -143,6 +130,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mText: {fileID: 2636392818853936949}
+--- !u!65 &8648264128358703944
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3650101188929987479}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5, y: 0.1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4432452499826796587
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,8 +252,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 public class DeckModel : MonoBehaviour
 {
 	[SerializeField]
@@ -9,18 +10,53 @@ public class DeckModel : MonoBehaviour
 	GameObject mRoot;
 	[SerializeField]
 	GameObject mDeck;
-	public void Draw(int inId, int inIndex,int inAnchor)
+	List<CardModel> mCardModels = new List<CardModel>();
+	public void Apply(int inDeck, GameInfo inInfo)
+	{
+		var cardList = inInfo.GetCardList(inDeck);
+		int anchorIndex = 0;
+		for(int card = 0; card < cardList.Count; ++card)
+		{
+			var pickPlayer = inInfo.GetPickPlayer(inDeck, card);
+			var cardModel = GetCreatedCard(card);
+			if(pickPlayer != null && cardModel != null)
+			{
+				if(cardModel.player != pickPlayer)
+				{
+					cardModel.player = pickPlayer;
+					cardModel.Move(pickPlayer.transform);
+				}
+				continue;
+			}
+			// 作成
+			if(cardModel == null)
+			{
+				cardModel = CreateCardModel(inInfo, inDeck, card);
+				mCardModels.Add(cardModel);
+			}
+			// 移動
+			if(cardModel.ancherIndex != anchorIndex)
+			{
+				cardModel.ancherIndex = anchorIndex;
+				var child = mAnchor.transform.GetChild(cardModel.ancherIndex);
+				cardModel.Move(child);
+			}
+			++anchorIndex;
+			if(anchorIndex >= mAnchor.transform.childCount)
+			{
+				return;
+			}
+		}
+	}
+	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)
 	{
 		var pos = transform.position;
 		var cardPos = new Vector3(pos.x, mRoot.transform.position.y, pos.z);
-		var card = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f));
-		card.Create(inId, inIndex);
-		var targetPos = mAnchor.transform.GetChild(inAnchor).transform;
-		LeanTween.move(card.gameObject, targetPos, 0.5f)
-			.setOnComplete(()=>LeanTween.rotateZ(card.gameObject, 0.0f, 1.0f));
-		
+		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f));
+		cardModel.Create(inInfo, inDeck, inCard);
+		return cardModel;
 	}
-	public void SetNum(float inBaseScale, int inNum)
+	void SetNum(float inBaseScale, int inNum)
 	{
 		if(inNum == 0)
 		{
@@ -34,5 +70,16 @@ public class DeckModel : MonoBehaviour
 		var pos = mRoot.transform.position;
 		pos.y = deckScale * 0.5f;
 		mRoot.transform.position = pos;
+	}
+	CardModel GetCreatedCard(int inCardIndex)
+	{
+		foreach(var cardModel in mCardModels)
+		{
+			if(cardModel.cardIndex == inCardIndex)
+			{
+				return cardModel;
+			}
+		}
+		return null;
 	}
 }
