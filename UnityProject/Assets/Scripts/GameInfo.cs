@@ -74,6 +74,24 @@ public class GameInfo
 	{
 		return mDeck[inDeck].GetCardList;
 	}
+	public (int index, int max) GetHand(int inDeck, int inCard, Player inPlayer)
+	{
+		var cards = GetCardList(inDeck);
+		int handIndex = 0;
+		int handMax = 0;
+		for(int i = 0; i < cards.Count; i++)
+		{
+			if(GetPickPlayer(inDeck, i) == inPlayer)
+			{
+				if(inCard == i)
+				{
+					handIndex = handMax;
+				}
+				++handMax;
+			}
+		}
+		return (handIndex, handMax);
+	}
 	public void GameStart(int inSeed, int inDeck, Player[] inPlayers, Vector3 inCenter, float inRadius)
 	{
 		if(inPlayers == null)
@@ -114,6 +132,18 @@ public class GameInfo
 		}
 		return mTurnPlayer.IndexOf(inPlayer) == mPickInfo.Count % mTurnPlayer.Count;
 	}
+	int GetPickTurn(int inDeck, int inCard)
+	{
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			var pick = mPickInfo[i];
+			if(pick.deck == inDeck && pick.card == inCard)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
 	void SetPlayerPos(Vector3 inCenter, float inRadius)
 	{
 		int start = -1;
@@ -133,17 +163,5 @@ public class GameInfo
 			var pos = inCenter + rot * new Vector3(0.0f, 0.0f, -inRadius);
 			mTurnPlayer[ownerBaseIndex].transform.position = pos;
 		}
-	}
-	int GetPickTurn(int inDeck, int inCard)
-	{
-		for(int i = 0; i < mPickInfo.Count; i++)
-		{
-			var pick = mPickInfo[i];
-			if(pick.deck == inDeck && pick.card == inCard)
-			{
-				return i;
-			}
-		}
-		return -1;
 	}
 }

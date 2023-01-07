@@ -21,25 +21,24 @@ public class DeckModel : MonoBehaviour
 			var cardModel = GetCreatedCard(card);
 			if(pickPlayer != null && cardModel != null)
 			{
-				if(cardModel.player != pickPlayer)
-				{
-					cardModel.player = pickPlayer;
-					cardModel.Move(pickPlayer.transform);
-				}
+				var pos = pickPlayer.transform.position;
+				float offset = 0.5f;
+				(int handIndex, int handMax) = inInfo.GetHand(inDeck, card, pickPlayer);
+				pos.x += -offset * handMax * 0.5f + offset * handIndex;
+				LeanTween.move(cardModel.gameObject, pos, 0.3f);
 				continue;
 			}
-			// 作成
 			if(cardModel == null)
 			{
 				cardModel = CreateCardModel(inInfo, inDeck, card);
 				mCardModels.Add(cardModel);
 			}
-			// 移動
 			if(cardModel.ancherIndex != anchorIndex)
 			{
 				cardModel.ancherIndex = anchorIndex;
 				var child = mAnchor.transform.GetChild(cardModel.ancherIndex);
-				cardModel.Move(child);
+				LeanTween.move(cardModel.gameObject, child.position, 0.3f)
+					.setOnComplete(() => LeanTween.rotateZ(cardModel.gameObject, 0.0f, 0.5f));
 			}
 			++anchorIndex;
 			if(anchorIndex >= mAnchor.transform.childCount)
