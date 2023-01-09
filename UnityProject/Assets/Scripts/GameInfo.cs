@@ -1,78 +1,81 @@
 ﻿using System.Collections.Generic;
 using UnityUtility;
 using UnityEngine;
-public class PickInfo
-{
-	public int deck { get; set; }
-	public int card { get; set; }
-	public override string ToString()
-	{
-		return $"Pick deck:{deck}, card{card}";
-	}
-	public PickInfo(int inDeck, int inCard)
-	{
-		deck = inDeck;
-		card = inCard;
-	}
-}
-public class Card
-{
-	public int id { get; set; }
-	public override string ToString()
-	{
-		return $"card:{id}";
-	}
-}
-public class Deck
-{
-	List<Card> mCardList;
-	public List<Card> GetCardList => mCardList;
-	public Deck(RandomObject inRand)
-	{
-		Generate(inRand);
-	}
-	void Generate(RandomObject inRand, int inCount = 50)
-	{
-		mCardList = new List<Card>(inCount);
-		for(int i = 0; i < inCount; ++i)
-		{
-			mCardList.Add(new Card { id = i });
-		}
-		inRand.Shuffle(mCardList);
-	}
-}
 public class GameInfo
 {
 	List<Player> mTurnPlayer;
 	List<Deck> mDeck;
 	List<PickInfo> mPickInfo;
 	public bool IsStart => mTurnPlayer != null;
+	public Player GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
 	public override string ToString()
 	{
 		var str = $"pick:{mPickInfo.Count}\n";
 		foreach(var player in mTurnPlayer)
 		{
-			var isTurn = IsTurn(player) ? ">" : " ";
-			str += $"{isTurn}Player{player.OwnerClientId}\n";
+			var arrow = GetCurrentTurnPlayer == player ? ">" : " ";
+			str += $"{arrow}Player{player.OwnerClientId}\n";
 		}
 		return str;
 	}
+	public void GameStart(GameData inGameData, int inSeed, int inDeck, Player[] inPlayers, Vector3 inCenter, float inRadius)
+	{
+		if(inPlayers == null)
+		{
+			return;
+		}
+		mTurnPlayer = new List<Player>();
+		foreach(var player in inPlayers)
+		{
+			mTurnPlayer.Add(player);
+		}
+		var rand = new RandomObject(inSeed);
+		rand.Shuffle(mTurnPlayer);
+		mDeck = new List<Deck>
+		{
+			new Deck(rand, inGameData, new List<CostData.CostType>
+			{
+				CostData.CostType.Meat,
+				CostData.CostType.Noodles,
+				CostData.CostType.Sea,
+				CostData.CostType.Vegetable,
+				CostData.CostType.Milk,
+				CostData.CostType.Sause,
+				CostData.CostType.Soup,
+				CostData.CostType.Potato,
+			}),
+			new Deck(rand, inGameData, new List<CostData.CostType> { CostData.CostType.Cooking }),
+		};
+		mPickInfo = new List<PickInfo>();
+		SetPlayerPos(inCenter, inRadius);
+		Debug.Log($"GameStart\n {ToString()}");
+	}
+	public void Pick(int inDeck, int inCard)
+	{
+		var pick = new PickInfo(inDeck, inCard);
+		Debug.Log($"{pick}\n {ToString()}");
+		mPickInfo.Add(pick);
+	}
 	public Player GetPickPlayer(int inDeck, int inCard)
 	{
-		int turn = GetPickTurn(inDeck, inCard);
-		if(turn == -1)
-		{
-			return null;
-		}
-		return mTurnPlayer[turn % mTurnPlayer.Count];
+		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{
-		return GetPickTurn(inDeck, inCard) == -1;
+		var player = GetPickPlayer(inDeck, inCard);
+		if(player != null)
+		{
+			return false;
+		}
+		return HasCost(GetCurrentTurnPlayer, inDeck, inCard);
 	}
-	public List<Card> GetCardList(int inDeck)
+	public List<CardData> GetCardList(int inDeck)
 	{
 		return mDeck[inDeck].GetCardList;
+	}
+	public CardData GetCard(int inDeck, int inCard)
+	{
+		return GetCardList(inDeck)[inCard];
 	}
 	public (int index, int max) GetHand(int inDeck, int inCard, Player inPlayer)
 	{
@@ -92,45 +95,13 @@ public class GameInfo
 		}
 		return (handIndex, handMax);
 	}
-	public void GameStart(int inSeed, int inDeck, Player[] inPlayers, Vector3 inCenter, float inRadius)
+	Player GetTurnPlayer(int inTurn)
 	{
-		if(inPlayers == null)
+		if(inTurn < 0)
 		{
-			return;
+			return null;
 		}
-		mTurnPlayer = new List<Player>();
-		foreach(var player in inPlayers)
-		{
-			mTurnPlayer.Add(player);
-		}
-		var rand = new RandomObject(inSeed);
-		rand.Shuffle(mTurnPlayer);
-		mDeck = new List<Deck>();
-		for(int i = 0; i < inDeck; i++)
-		{
-			mDeck.Add(new Deck(rand));
-		}
-		mPickInfo = new List<PickInfo>();
-		SetPlayerPos(inCenter, inRadius);
-		Debug.Log($"GameStart\n {ToString()}");
-	}
-	public void Pick(int inDeck, int inCard)
-	{
-		if(mPickInfo == null)
-		{
-			return;
-		}
-		var pick = new PickInfo(inDeck, inCard);
-		Debug.Log($"Pick {pick}\n {ToString()}");
-		mPickInfo.Add(pick);
-	}
-	public bool IsTurn(Player inPlayer)
-	{
-		if(mTurnPlayer == null || mPickInfo == null)
-		{
-			return false;
-		}
-		return mTurnPlayer.IndexOf(inPlayer) == mPickInfo.Count % mTurnPlayer.Count;
+		return mTurnPlayer[inTurn % mTurnPlayer.Count];
 	}
 	int GetPickTurn(int inDeck, int inCard)
 	{
@@ -163,5 +134,59 @@ public class GameInfo
 			var pos = inCenter + rot * new Vector3(0.0f, 0.0f, -inRadius);
 			mTurnPlayer[ownerBaseIndex].transform.position = pos;
 		}
+	}
+	bool HasCost(Player inPlayer, int inDeck, int inCard)
+	{
+		var card = GetCard(inDeck, inCard);
+		if(card.GetCost == null)
+		{
+			return true;
+		}
+		foreach(var cost in card.GetCost)
+		{
+			int handCost = GetPicked(inPlayer, cost.GetCostType) - GetPaid(inPlayer, cost.GetCostType);
+			if(cost.GetNum > handCost)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	bool IsPaidCard(Player inPlayer, int inDeck, int inCard)
+	{
+		var cardData = GetCard(inDeck, inCard);
+		int paid = GetPaid(inPlayer, cardData.GetCostType);
+		return true;
+	}
+	int GetPaid(Player inPlayer, CostData.CostType inCostType)
+	{
+		int num = 0;
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			if(GetTurnPlayer(i) == inPlayer)
+			{
+				var pick = mPickInfo[i];
+				var data = GetCard(pick.deck, pick.card);
+				num += data.GetCostNum(inCostType);
+			}
+		}
+		return num;
+	}
+	int GetPicked(Player inPlayer, CostData.CostType inCostType)
+	{
+		int num = 0;
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			if(GetTurnPlayer(i) == inPlayer)
+			{
+				var pick = mPickInfo[i];
+				var data = GetCard(pick.deck, pick.card);
+				if(data.GetCostType == inCostType)
+				{
+					++num;
+				}
+			}
+		}
+		return num;
 	}
 }

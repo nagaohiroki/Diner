@@ -5,6 +5,8 @@ public class GameController : NetworkBehaviour
 {
 	[SerializeField]
 	Table mTable;
+	[SerializeField]
+	GameData mGameData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	public GameInfo gameInfo { get; private set; } = new GameInfo();
 	public void Pick(int inDeck, int inCard)
@@ -34,7 +36,7 @@ public class GameController : NetworkBehaviour
 	void GameStartClientRpc()
 	{
 		var players = FindObjectsOfType<Player>();
-		gameInfo.GameStart(randomSeed.Value, mTable.DeckNum, players, Vector3.zero, 4.0f);
+		gameInfo.GameStart(mGameData, randomSeed.Value, mTable.DeckNum, players, Vector3.zero, 4.0f);
 		if(gameInfo.IsStart)
 		{
 			mTable.Apply(gameInfo);

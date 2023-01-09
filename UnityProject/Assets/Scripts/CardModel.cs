@@ -11,8 +11,8 @@ public class CardModel : MonoBehaviour
 	{
 		cardIndex = inCard;
 		deckIndex = inDeck;
-		var id = inInfo.GetCardList(inDeck)[inCard];
-		mText.text = id.ToString();
+		var card = inInfo.GetCard(inDeck, inCard);
+		mText.text = card.ToString();
 		ancherIndex = -1;
 	}
 }

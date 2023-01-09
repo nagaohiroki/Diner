@@ -75,7 +75,7 @@ public class Player : NetworkBehaviour
 			}
 			return;
 		}
-		if(mGameController.gameInfo.IsTurn(this))
+		if(mGameController.gameInfo.GetCurrentTurnPlayer == this)
 		{
 			if(mInput.actions["Fire"].triggered)
 			{

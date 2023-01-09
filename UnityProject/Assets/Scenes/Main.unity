@@ -245,7 +245,7 @@ Transform:
   m_GameObject: {fileID: 69939190}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 16, y: 1, z: 9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1305174256}
@@ -1069,6 +1069,451 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2005052746}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &547985291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 547985293}
+  - component: {fileID: 547985292}
+  m_Layer: 0
+  m_Name: GameData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &547985292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547985291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aad96695da59a5743afea6cee3cfccd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardList:
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Sukiyaki
+    costType: 0
+    cost:
+    - mCostType: 1
+      mNum: 2
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+  - id: Meat
+    costType: 1
+    cost: []
+--- !u!4 &547985293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547985291}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &677282788
 GameObject:
@@ -2376,7 +2821,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989061249}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3037,6 +3482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTable: {fileID: 1305174255}
+  mGameData: {fileID: 547985292}
 --- !u!4 &1173965648
 Transform:
   m_ObjectHideFlags: 0
@@ -3463,7 +3909,7 @@ Transform:
   - {fileID: 1260595454}
   - {fileID: 1304763481}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1522378368
 GameObject:
@@ -3553,7 +3999,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1571998577}
   m_Layer: 0
-  m_Name: CaemraHandle
+  m_Name: CameraHandle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3573,7 +4019,7 @@ Transform:
   m_Children:
   - {fileID: 989061252}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 85, y: 0, z: 0}
 --- !u!1 &1577881280
 GameObject:
@@ -5002,7 +5448,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2095745942 stripped
 MonoBehaviour:
