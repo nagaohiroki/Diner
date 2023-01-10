@@ -8,7 +8,7 @@ public class GameController : NetworkBehaviour
 	[SerializeField]
 	GameData mGameData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
-	public GameInfo gameInfo { get; private set; } = new GameInfo();
+	public GameInfo gameInfo { get; private set; }
 	public void Pick(int inDeck, int inCard)
 	{
 		if(!gameInfo.CanPick(inDeck, inCard))
@@ -32,14 +32,17 @@ public class GameController : NetworkBehaviour
 			GameStartClientRpc();
 		}
 	}
+	public void Clear()
+	{
+		gameInfo = null;
+		mTable.Clear();
+	}
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
+		gameInfo = new GameInfo();
 		gameInfo.GameStart(mGameData, randomSeed.Value, FindObjectsOfType<Player>(), Vector3.zero, 4.0f);
-		if(gameInfo.IsStart)
-		{
-			mTable.Apply(gameInfo);
-		}
+		mTable.Apply(gameInfo);
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
@@ -49,7 +52,7 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void PickClientRpc(int inDeck, int inCard)
 	{
-		if(gameInfo.IsStart)
+		if(gameInfo != null && gameInfo.IsStart)
 		{
 			gameInfo.Pick(inDeck, inCard);
 			mTable.Apply(gameInfo);

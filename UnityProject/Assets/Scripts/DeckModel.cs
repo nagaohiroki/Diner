@@ -36,6 +36,14 @@ public class DeckModel : MonoBehaviour
 			}
 		}
 	}
+	public void Clear()
+	{
+		foreach (var card in mCardModels)
+		{
+			Destroy(card.gameObject);
+		}
+		mCardModels.Clear();
+	}
 	bool Hand(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel)
 	{
 		var pickPlayer = inInfo.GetPickPlayer(inDeck, inCard);

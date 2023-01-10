@@ -8,6 +8,7 @@ public class GameInfo
 	List<PickInfo> mPickInfo;
 	public bool IsStart => mTurnPlayer != null;
 	public Player GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
+	int mWinPoint;
 	public override string ToString()
 	{
 		var str = $"pick:{mPickInfo.Count}\n";
@@ -24,6 +25,7 @@ public class GameInfo
 		{
 			return;
 		}
+		mWinPoint = inGameData.GetWinPoint;
 		mTurnPlayer = new List<Player>();
 		foreach(var player in inPlayers)
 		{
@@ -52,6 +54,10 @@ public class GameInfo
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{
+		if(GetWinner() != null)
+		{
+			return false;
+		}
 		var player = GetPickPlayer(inDeck, inCard);
 		if(player != null)
 		{
@@ -91,17 +97,28 @@ public class GameInfo
 		var player = GetPickPlayer(inDeck, inCard);
 		return GetTotalCost(player, card.GetCostType) >= GetResourcePos(player, inDeck, inCard);
 	}
-	int GetPeople(Player inPlayer)
+	public Player GetWinner()
 	{
-		int people = 0;
+		foreach(var player in mTurnPlayer)
+		{
+			if(GetPoint(player) >= mWinPoint)
+			{
+				return player;
+			}
+		}
+		return null;
+	}
+	int GetPoint(Player inPlayer)
+	{
+		int point = 0;
 		for(int i = 0; i < mPickInfo.Count; ++i)
 		{
 			if(GetTurnPlayer(i) == inPlayer)
 			{
-				people += GetPickCard(i).GetPeople;
+				point += GetPickCard(i).GetPoint;
 			}
 		}
-		return people;
+		return point;
 	}
 	int GetResourcePos(Player inPlayer, int inDeck, int inCard)
 	{

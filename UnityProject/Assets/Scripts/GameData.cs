@@ -45,7 +45,7 @@ public class CostData
 public class CardData
 {
 	[SerializeField]
-	int people;
+	int point;
 	[SerializeField]
 	string id;
 	[SerializeField]
@@ -53,7 +53,7 @@ public class CardData
 	[SerializeField]
 	List<CostData> cost;
 	public string GetId => id;
-	public int GetPeople => people;
+	public int GetPoint => point;
 	public List<CostData> GetCost => cost;
 	public CostData.CostType GetCostType => costType;
 	public override string ToString()
@@ -85,7 +85,7 @@ public class CardData
 		{
 			id = "Sukiyaki",
 			costType = CostData.CostType.Cooking,
-			people = 1,
+			point = 1,
 			cost = new List<CostData> { CostData.Dummy() },
 		};
 	}
@@ -98,11 +98,14 @@ public class DeckData
 public class GameData : MonoBehaviour
 {
 	[SerializeField]
+	int winPoint;
+	[SerializeField]
 	List<DeckData> deckList;
 	[SerializeField]
 	List<CardData> cardList;
 	public List<CardData> GetCardList => cardList;
 	public List<DeckData> GetDeckList => deckList;
+	public int GetWinPoint => winPoint;
 	public CardData GetCardData(string inId)
 	{
 		foreach(var card in cardList)

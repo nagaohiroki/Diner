@@ -66,7 +66,7 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		if(!mGameController.gameInfo.IsStart)
+		if(mGameController.gameInfo == null)
 		{
 			Move();
 			if(Input.GetKeyDown(KeyCode.Return))
