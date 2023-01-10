@@ -44,7 +44,10 @@ public class GameInfo
 				CostData.CostType.Soup,
 				CostData.CostType.Potato,
 			}),
-			new Deck(rand, inGameData, new List<CostData.CostType> { CostData.CostType.Cooking }),
+			new Deck(rand, inGameData, new List<CostData.CostType>
+			{
+				CostData.CostType.Cooking
+			}),
 		};
 		mPickInfo = new List<PickInfo>();
 		SetPlayerPos(inCenter, inRadius);
@@ -95,6 +98,31 @@ public class GameInfo
 		}
 		return (handIndex, handMax);
 	}
+	public bool IsDiscard(int inDeck, int inCard)
+	{
+		var card = GetCard(inDeck, inCard);
+		var player = GetPickPlayer(inDeck, inCard);
+		return GetTotalCost(player, card.GetCostType) >= GetResourcePos(player, inDeck, inCard);
+	}
+	int GetResourcePos(Player inPlayer, int inDeck, int inCard)
+	{
+		var targetCost = GetCard(inDeck, inCard).GetCostType;
+		int num = 0;
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			if(GetTurnPlayer(i) != inPlayer)
+			{
+				continue;
+			}
+			var pick = mPickInfo[i];
+			num += targetCost == GetCard(pick.deck, pick.card).GetCostType ? 1 : 0;
+			if(pick.deck == inDeck && pick.card == inCard)
+			{
+				return num;
+			}
+		}
+		return num;
+	}
 	Player GetTurnPlayer(int inTurn)
 	{
 		if(inTurn < 0)
@@ -142,23 +170,18 @@ public class GameInfo
 		{
 			return true;
 		}
-		foreach(var cost in card.GetCost)
+		foreach(var newCost in card.GetCost)
 		{
-			int handCost = GetPicked(inPlayer, cost.GetCostType) - GetPaid(inPlayer, cost.GetCostType);
-			if(cost.GetNum > handCost)
+			int resource = GetTotalResource(inPlayer, newCost.GetCostType);
+			int cost = newCost.GetNum + GetTotalCost(inPlayer, newCost.GetCostType);
+			if(cost > resource)
 			{
 				return false;
 			}
 		}
 		return true;
 	}
-	bool IsPaidCard(Player inPlayer, int inDeck, int inCard)
-	{
-		var cardData = GetCard(inDeck, inCard);
-		int paid = GetPaid(inPlayer, cardData.GetCostType);
-		return true;
-	}
-	int GetPaid(Player inPlayer, CostData.CostType inCostType)
+	int GetTotalCost(Player inPlayer, CostData.CostType inCostType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
@@ -172,7 +195,7 @@ public class GameInfo
 		}
 		return num;
 	}
-	int GetPicked(Player inPlayer, CostData.CostType inCostType)
+	int GetTotalResource(Player inPlayer, CostData.CostType inCostType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)

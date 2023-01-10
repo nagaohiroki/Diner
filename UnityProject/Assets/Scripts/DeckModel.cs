@@ -17,21 +17,10 @@ public class DeckModel : MonoBehaviour
 		int anchorIndex = 0;
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			var pickPlayer = inInfo.GetPickPlayer(inDeck, card);
-			var cardModel = GetCreatedCard(card);
-			if(pickPlayer != null && cardModel != null)
+			var cardModel = CreateCardModel(inInfo, inDeck, card);
+			if(IsPicked(inInfo, inDeck, card, cardModel))
 			{
-				var pos = pickPlayer.transform.position;
-				float offset = 0.5f;
-				(int handIndex, int handMax) = inInfo.GetHand(inDeck, card, pickPlayer);
-				pos.x += -offset * handMax * 0.5f + offset * handIndex;
-				LeanTween.move(cardModel.gameObject, pos, 0.3f);
 				continue;
-			}
-			if(cardModel == null)
-			{
-				cardModel = CreateCardModel(inInfo, inDeck, card);
-				mCardModels.Add(cardModel);
 			}
 			if(cardModel.ancherIndex != anchorIndex)
 			{
@@ -47,12 +36,39 @@ public class DeckModel : MonoBehaviour
 			}
 		}
 	}
+	bool IsPicked(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel)
+	{
+		var pickPlayer = inInfo.GetPickPlayer(inDeck, inCard);
+		if(pickPlayer == null)
+		{
+			return false;
+		}
+		if(inInfo.IsDiscard(inDeck, inCard))
+		{
+			inCardModel.gameObject.SetActive(false);
+			return true;
+		}
+		var pos = pickPlayer.transform.position;
+		float offset = 0.5f;
+		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickPlayer);
+		pos.x += -offset * handMax * 0.5f + offset * handIndex;
+		LeanTween.move(inCardModel.gameObject, pos, 0.3f);
+		return true;
+	}
 	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)
 	{
+		foreach(var card in mCardModels)
+		{
+			if(card.cardIndex == inCard)
+			{
+				return card;
+			}
+		}
 		var pos = transform.position;
 		var cardPos = new Vector3(pos.x, mRoot.transform.position.y, pos.z);
 		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f));
 		cardModel.Create(inInfo, inDeck, inCard);
+		mCardModels.Add(cardModel);
 		return cardModel;
 	}
 	void SetNum(float inBaseScale, int inNum)
@@ -69,16 +85,5 @@ public class DeckModel : MonoBehaviour
 		var pos = mRoot.transform.position;
 		pos.y = deckScale * 0.5f;
 		mRoot.transform.position = pos;
-	}
-	CardModel GetCreatedCard(int inCardIndex)
-	{
-		foreach(var cardModel in mCardModels)
-		{
-			if(cardModel.cardIndex == inCardIndex)
-			{
-				return cardModel;
-			}
-		}
-		return null;
 	}
 }
