@@ -18,7 +18,7 @@ public class DeckModel : MonoBehaviour
 		for(int card = 0; card < cardList.Count; ++card)
 		{
 			var cardModel = CreateCardModel(inInfo, inDeck, card);
-			if(IsPicked(inInfo, inDeck, card, cardModel))
+			if(Hand(inInfo, inDeck, card, cardModel))
 			{
 				continue;
 			}
@@ -36,7 +36,7 @@ public class DeckModel : MonoBehaviour
 			}
 		}
 	}
-	bool IsPicked(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel)
+	bool Hand(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel)
 	{
 		var pickPlayer = inInfo.GetPickPlayer(inDeck, inCard);
 		if(pickPlayer == null)

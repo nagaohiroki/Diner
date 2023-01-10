@@ -18,12 +18,12 @@ public class Deck
 {
 	List<CardData> mCardList;
 	public List<CardData> GetCardList => mCardList;
-	public Deck(RandomObject inRand, GameData inData, List<CostData.CostType> inType)
+	public Deck(RandomObject inRand, GameData inData, DeckData inDeckData)
 	{
 		mCardList = new List<CardData>();
 		foreach(var card in inData.GetCardList)
 		{
-			if(inType.Contains(card.GetCostType))
+			if(inDeckData.costType.Contains(card.GetCostType))
 			{
 				mCardList.Add(card);
 			}

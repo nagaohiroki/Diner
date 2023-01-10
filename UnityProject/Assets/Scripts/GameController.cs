@@ -35,8 +35,7 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
-		var players = FindObjectsOfType<Player>();
-		gameInfo.GameStart(mGameData, randomSeed.Value, mTable.DeckNum, players, Vector3.zero, 4.0f);
+		gameInfo.GameStart(mGameData, randomSeed.Value, FindObjectsOfType<Player>(), Vector3.zero, 4.0f);
 		if(gameInfo.IsStart)
 		{
 			mTable.Apply(gameInfo);

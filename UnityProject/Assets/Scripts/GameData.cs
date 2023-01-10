@@ -45,12 +45,15 @@ public class CostData
 public class CardData
 {
 	[SerializeField]
+	int people;
+	[SerializeField]
 	string id;
 	[SerializeField]
 	CostData.CostType costType;
 	[SerializeField]
 	List<CostData> cost;
 	public string GetId => id;
+	public int GetPeople => people;
 	public List<CostData> GetCost => cost;
 	public CostData.CostType GetCostType => costType;
 	public override string ToString()
@@ -82,15 +85,24 @@ public class CardData
 		{
 			id = "Sukiyaki",
 			costType = CostData.CostType.Cooking,
-			cost = new List<CostData> { CostData.Dummy() }
+			people = 1,
+			cost = new List<CostData> { CostData.Dummy() },
 		};
 	}
+}
+[System.Serializable]
+public class DeckData
+{
+	public List<CostData.CostType> costType;
 }
 public class GameData : MonoBehaviour
 {
 	[SerializeField]
+	List<DeckData> deckList;
+	[SerializeField]
 	List<CardData> cardList;
 	public List<CardData> GetCardList => cardList;
+	public List<DeckData> GetDeckList => deckList;
 	public CardData GetCardData(string inId)
 	{
 		foreach(var card in cardList)
@@ -114,5 +126,27 @@ public class GameData : MonoBehaviour
 		{
 			cardList.Add(CardData.FoodDummy());
 		}
+		deckList.Clear();
+		deckList.Add(new DeckData
+		{
+			costType = new List<CostData.CostType>
+			{
+				CostData.CostType.Meat,
+				CostData.CostType.Noodles,
+				CostData.CostType.Sea,
+				CostData.CostType.Vegetable,
+				CostData.CostType.Milk,
+				CostData.CostType.Sause,
+				CostData.CostType.Soup,
+				CostData.CostType.Potato,
+			}
+		});
+		deckList.Add(new DeckData
+		{
+			costType = new List<CostData.CostType>
+			{
+				CostData.CostType.Cooking,
+			}
+		});
 	}
 }
