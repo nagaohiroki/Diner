@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.cysharp.memorypack": {
+      "version": "https://github.com/Cysharp/MemoryPack.git?path=src/MemoryPack.Unity/Assets/Plugins/MemoryPack",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4a62556c10bdbd0e4206b07586c42e2a224c613c"
+    },
     "com.github.nagaohiroki.unity_nvim": {
       "version": "https://github.com/nagaohiroki/unity_nvim.git?path=unity_nvim/Assets",
       "depth": 0,

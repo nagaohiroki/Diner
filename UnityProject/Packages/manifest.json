@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.cysharp.memorypack": "https://github.com/Cysharp/MemoryPack.git?path=src/MemoryPack.Unity/Assets/Plugins/MemoryPack",
     "com.github.nagaohiroki.unity_nvim": "https://github.com/nagaohiroki/unity_nvim.git?path=unity_nvim/Assets",
     "com.nagaohiroki.unityutility": "https://github.com/nagaohiroki/UnityUtility.git?path=UnityProject/Assets",
     "com.oss.leantween": "https://github.com/JohannesDeml/LeanTween.git",

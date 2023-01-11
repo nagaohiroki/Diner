@@ -23,7 +23,6 @@ public class GameController : NetworkBehaviour
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
 		}
-		Debug.Log($"seed:{randomSeed.Value}");
 	}
 	public void GameStart()
 	{
@@ -36,6 +35,10 @@ public class GameController : NetworkBehaviour
 	{
 		gameInfo = null;
 		mTable.Clear();
+		if(IsServer)
+		{
+			randomSeed.Value = RandomObject.GenerateSeed();
+		}
 	}
 	[ClientRpc]
 	void GameStartClientRpc()
@@ -43,6 +46,7 @@ public class GameController : NetworkBehaviour
 		gameInfo = new GameInfo();
 		gameInfo.GameStart(mGameData, randomSeed.Value, FindObjectsOfType<Player>(), Vector3.zero, 4.0f);
 		mTable.Apply(gameInfo);
+		Debug.Log($"seed:{randomSeed.Value}");
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)

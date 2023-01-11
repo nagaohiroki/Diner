@@ -1,19 +1,23 @@
 ﻿using UnityEngine;
 using TMPro;
 using Unity.Netcode;
-using System.Text;
+using MemoryPack;
 public class NetworkSelector : MonoBehaviour
 {
 	public void StartHost(TextMeshProUGUI inPassword)
 	{
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(inPassword.text);
+		var data = new ConnectionData { password = inPassword.text };
+		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
 		Debug.Log($"StartHost:{inPassword.text}");
 	}
 	public void StartClient(TMP_InputField inPassword)
 	{
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(inPassword.text);
+		var data = new ConnectionData { password = inPassword.text };
+		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
 		NetworkManager.Singleton.StartClient();
 		Debug.Log($"StartClient:{inPassword.text}");
 	}
@@ -29,15 +33,15 @@ public class NetworkSelector : MonoBehaviour
 	}
 	void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 	{
-		var pass = Encoding.ASCII.GetString(request.Payload);
-		var reqPass = Encoding.ASCII.GetString(NetworkManager.Singleton.NetworkConfig.ConnectionData);
-		response.Approved = pass == reqPass;
+		var payload = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
+		var myData = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
+		response.Approved = payload.password == myData.password;
 		response.CreatePlayerObject = true;
 		response.PlayerPrefabHash = null;
 		response.Position = Vector3.zero;
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
-		Debug.Log($"request:{request.ClientNetworkId} Payload:{pass} isApproved:{response.Approved}");
+		Debug.Log($"request:{request.ClientNetworkId} Payload:{payload} isApproved:{response.Approved}");
 	}
 	void Awake()
 	{
