@@ -1,7 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using MemoryPack;
 public class Player : NetworkBehaviour
 {
 	[SerializeField]
@@ -15,21 +14,6 @@ public class Player : NetworkBehaviour
 			mGameController = FindObjectOfType<GameController>();
 			mInput = FindObjectOfType<PlayerInput>();
 		}
-	}
-	[ServerRpc(RequireOwnership = false)]
-	void PlayerSyncServerRpc(byte[] inBytes)
-	{
-		PlayerSyncClientRpc(inBytes);
-		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inBytes);
-		Debug.Log($"server:{OwnerClientId}:{data.save.name}");
-	}
-	[ClientRpc]
-	void PlayerSyncClientRpc(byte[] inBytes)
-	{
-		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inBytes);
-		var log = $"client:{OwnerClientId}:{data.save.name}";
-		Debug.Log(log);
-		name = log;
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)

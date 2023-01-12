@@ -8,23 +8,24 @@ public class MenuBoot : MonoBehaviour
 	[SerializeField]
 	Image mImage;
 	int imageColorCode;
+	public UserData userData { get; private set; }
 	public void ChangeColor()
 	{
 		imageColorCode = UserData.GenerateRandomColor();
 		mImage.color = UserData.IntToColor(imageColorCode);
 	}
-	public void Save(UserData inSaveData)
+	public void Save()
 	{
-		if(IsChange(inSaveData))
+		if(IsChange(userData))
 		{
-			inSaveData.name = mUserName.text;
-			inSaveData.imageColorCode = imageColorCode;
-			UserData.Save(inSaveData);
+			userData.name = mUserName.text;
+			userData.imageColorCode = imageColorCode;
+			UserData.Save(userData);
 		}
 	}
-	public UserData Load()
+	public void Load()
 	{
-		var userData = UserData.Load();
+		userData = UserData.Load();
 		if(userData == null)
 		{
 			userData = UserData.NewSaveData();
@@ -32,7 +33,6 @@ public class MenuBoot : MonoBehaviour
 		mUserName.text = userData.name;
 		imageColorCode = userData.imageColorCode;
 		mImage.color = UserData.IntToColor(imageColorCode);
-		return userData;
 	}
 	bool IsChange(UserData inSaveData)
 	{

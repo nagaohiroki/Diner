@@ -4,20 +4,19 @@ using MemoryPack;
 using System.Collections.Generic;
 public class UserList
 {
-	public Dictionary<string, UserData> userList { get; set; } = new Dictionary<string, UserData>();
+	public List<UserData> userList { get; set; } = new List<UserData>();
 	public Dictionary<ulong, string> idList { get; set; } = new Dictionary<ulong, string>();
 }
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuBoot mMenuBoot;
-	UserData saveData;
 	UserList userList = new UserList();
 	public void StartHost(MenuCreate inCreate)
 	{
-		mMenuBoot.Save(saveData);
+		mMenuBoot.Save();
 		var data = inCreate.CreateConnectData();
-		data.save = saveData;
+		data.save = mMenuBoot.userData;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
@@ -25,9 +24,9 @@ public class NetworkSelector : MonoBehaviour
 	}
 	public void StartClient(MenuJoin inJoin)
 	{
-		mMenuBoot.Save(saveData);
+		mMenuBoot.Save();
 		var data = inJoin.CreateConnectData();
-		data.save = saveData;
+		data.save = mMenuBoot.userData;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.StartClient();
 		Debug.Log($"StartClient:{data}");
@@ -59,7 +58,7 @@ public class NetworkSelector : MonoBehaviour
 #if UNITY_SERVER
 		StartServer();
 #else
-		saveData = mMenuBoot.Load();
+		mMenuBoot.Load();
 #endif
 	}
 }
