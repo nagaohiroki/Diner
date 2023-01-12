@@ -1,25 +1,31 @@
 ﻿using UnityEngine;
-using TMPro;
 using Unity.Netcode;
 using MemoryPack;
 public class NetworkSelector : MonoBehaviour
 {
-	public void StartHost(TextMeshProUGUI inPassword)
+	[SerializeField]
+	MenuBoot mMenuBoot;
+	SaveData saveData;
+	public void StartHost(MenuCreate inCreate)
 	{
-		var data = new ConnectionData { password = inPassword.text };
+		mMenuBoot.Save(saveData);
+		var data = inCreate.CreateConnectData();
+		data.save = saveData;
 		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
-		Debug.Log($"StartHost:{inPassword.text}");
+		Debug.Log($"StartHost:{data}");
 	}
-	public void StartClient(TMP_InputField inPassword)
+	public void StartClient(MenuJoin inJoin)
 	{
-		var data = new ConnectionData { password = inPassword.text };
+		mMenuBoot.Save(saveData);
+		var data = inJoin.CreateConnectData();
+		data.save = saveData;
 		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
 		NetworkManager.Singleton.StartClient();
-		Debug.Log($"StartClient:{inPassword.text}");
+		Debug.Log($"StartClient:{data}");
 	}
 	public void StartServer()
 	{
@@ -41,12 +47,14 @@ public class NetworkSelector : MonoBehaviour
 		response.Position = Vector3.zero;
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
-		Debug.Log($"request:{request.ClientNetworkId} Payload:{payload} isApproved:{response.Approved}");
+		Debug.Log($"request:{request.ClientNetworkId}\nPayload:{payload}\nisApproved:{response.Approved}");
 	}
 	void Awake()
 	{
 #if UNITY_SERVER
 		StartServer();
+#else
+		saveData = mMenuBoot.Load();
 #endif
 	}
 }
