@@ -1,18 +1,24 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using MemoryPack;
+using System.Collections.Generic;
+public class UserList
+{
+	public Dictionary<string, UserData> userList { get; set; } = new Dictionary<string, UserData>();
+	public Dictionary<ulong, string> idList { get; set; } = new Dictionary<ulong, string>();
+}
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuBoot mMenuBoot;
-	SaveData saveData;
+	UserData saveData;
+	UserList userList = new UserList();
 	public void StartHost(MenuCreate inCreate)
 	{
 		mMenuBoot.Save(saveData);
 		var data = inCreate.CreateConnectData();
 		data.save = saveData;
-		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
 		Debug.Log($"StartHost:{data}");
@@ -22,8 +28,7 @@ public class NetworkSelector : MonoBehaviour
 		mMenuBoot.Save(saveData);
 		var data = inJoin.CreateConnectData();
 		data.save = saveData;
-		var bytes = MemoryPackSerializer.Serialize<ConnectionData>(data);
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = bytes;
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		NetworkManager.Singleton.StartClient();
 		Debug.Log($"StartClient:{data}");
 	}

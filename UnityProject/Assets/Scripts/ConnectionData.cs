@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 using UnityUtility;
 [MemoryPackable]
-public partial class SaveData
+public partial class UserData
 {
 	public string name { get; set; }
 	public string id { get; set; }
@@ -26,16 +26,16 @@ public partial class SaveData
 		}
 		return Color.white;
 	}
-	public static SaveData NewSaveData()
+	public static UserData NewSaveData()
 	{
-		return new SaveData
+		return new UserData
 		{
 			name = $"user#{RandomObject.GetGlobal.Range(0, 10000).ToString("D4")}",
 			id = System.Guid.NewGuid().ToString(),
 			imageColorCode = GenerateRandomColor()
 		};
 	}
-	public static SaveData Load()
+	public static UserData Load()
 	{
 		if(!File.Exists(userPath))
 		{
@@ -45,12 +45,12 @@ public partial class SaveData
 		{
 			var bytes = new byte[stream.Length];
 			stream.Read(bytes, 0, bytes.Length);
-			return MemoryPackSerializer.Deserialize<SaveData>(bytes);
+			return MemoryPackSerializer.Deserialize<UserData>(bytes);
 		}
 	}
-	public static void Save(SaveData inUserData)
+	public static void Save(UserData inUserData)
 	{
-		var bytes = MemoryPackSerializer.Serialize<SaveData>(inUserData);
+		var bytes = MemoryPackSerializer.Serialize<UserData>(inUserData);
 		using(var stream = new FileStream(userPath, FileMode.OpenOrCreate, FileAccess.Write))
 		{
 			stream.Write(bytes, 0, bytes.Length);
@@ -60,10 +60,10 @@ public partial class SaveData
 [MemoryPackable]
 public partial class ConnectionData
 {
-	public SaveData save { get; set; }
+	public UserData save { get; set; }
 	public string password { get; set; }
 	public override string ToString()
 	{
-		return $"{save}, password:{password}";
+		return $"password:{password}, {save}";
 	}
 }

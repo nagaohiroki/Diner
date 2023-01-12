@@ -10,30 +10,31 @@ public class MenuBoot : MonoBehaviour
 	int imageColorCode;
 	public void ChangeColor()
 	{
-		imageColorCode = SaveData.GenerateRandomColor();
-		mImage.color = SaveData.IntToColor(imageColorCode);
+		imageColorCode = UserData.GenerateRandomColor();
+		mImage.color = UserData.IntToColor(imageColorCode);
 	}
-	public void Save(SaveData inSaveData)
+	public void Save(UserData inSaveData)
 	{
 		if(IsChange(inSaveData))
 		{
 			inSaveData.name = mUserName.text;
 			inSaveData.imageColorCode = imageColorCode;
-			SaveData.Save(inSaveData);
+			UserData.Save(inSaveData);
 		}
 	}
-	public SaveData Load()
+	public UserData Load()
 	{
-		var saveData = SaveData.Load();
-		if(saveData == null)
+		var userData = UserData.Load();
+		if(userData == null)
 		{
-			saveData = SaveData.NewSaveData();
+			userData = UserData.NewSaveData();
 		}
-		mUserName.text = saveData.name;
-		imageColorCode = saveData.imageColorCode;
-		return saveData;
+		mUserName.text = userData.name;
+		imageColorCode = userData.imageColorCode;
+		mImage.color = UserData.IntToColor(imageColorCode);
+		return userData;
 	}
-	bool IsChange(SaveData inSaveData)
+	bool IsChange(UserData inSaveData)
 	{
 		return mUserName.text != inSaveData.name || imageColorCode != inSaveData.imageColorCode;
 	}
