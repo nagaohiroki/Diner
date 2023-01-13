@@ -29,7 +29,7 @@ public class NetworkSelector : MonoBehaviour
 	void SetupUser(ConnectionData inData)
 	{
 		mMenuBoot.Save();
-		inData.save = mMenuBoot.userData;
+		inData.user = mMenuBoot.userData;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(inData);
 		Debug.Log($"SetupUser:{inData}");
 	}

@@ -4817,7 +4817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mMenuBoot: {fileID: 163792233}
-  mController: {fileID: 1173965647}
+  mGameController: {fileID: 1173965647}
 --- !u!1 &1249655403
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,12 @@ public class Player : NetworkBehaviour
 			mInput = FindObjectOfType<PlayerInput>();
 		}
 	}
+	public void Apply(UserData inUserData)
+	{
+		name = inUserData.name;
+		var render = GetComponentInChildren<Renderer>();
+		render.material.color = inUserData.imageColor;
+	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
 	{

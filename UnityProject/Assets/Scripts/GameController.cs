@@ -1,6 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using UnityUtility;
+using MemoryPack;
 public class GameController : NetworkBehaviour
 {
 	[SerializeField]
@@ -9,6 +10,7 @@ public class GameController : NetworkBehaviour
 	GameData mGameData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	GameInfo gameInfo { get; set; }
+	UserList mUserList;
 	public bool isStart => gameInfo != null;
 	public Player turnPlayer => gameInfo.GetCurrentTurnPlayer;
 	public void Pick(int inDeck, int inCard)
@@ -25,6 +27,9 @@ public class GameController : NetworkBehaviour
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
 		}
+		mUserList = new UserList();
+		var cd = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
+		AddUserServerRpc(NetworkManager.LocalClientId, MemoryPackSerializer.Serialize(cd.user));
 	}
 	public void GameStart()
 	{
@@ -40,6 +45,29 @@ public class GameController : NetworkBehaviour
 		if(IsServer)
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
+		}
+	}
+	[ServerRpc(RequireOwnership = false)]
+	void AddUserServerRpc(ulong inId, byte[] inUserData)
+	{
+		var data = MemoryPack.MemoryPackSerializer.Deserialize<UserData>(inUserData);
+		ApplyPlayer(inId, data);
+		mUserList.Add(inId, data);
+		foreach(var user in mUserList.userList)
+		{
+			AddUserClientRpc(user.Key, MemoryPackSerializer.Serialize(user.Value));
+		}
+
+		Debug.Log(mUserList);
+	}
+	[ClientRpc]
+	void AddUserClientRpc(ulong inId, byte[] inUserData)
+	{
+		if(!IsServer)
+		{
+			var data = MemoryPack.MemoryPackSerializer.Deserialize<UserData>(inUserData);
+			mUserList.Add(inId, data);
+			ApplyPlayer(inId, data);
 		}
 	}
 	[ServerRpc(RequireOwnership = false)]
@@ -59,9 +87,21 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
+		var players = FindObjectsOfType<Player>();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mGameData, randomSeed.Value, FindObjectsOfType<Player>(), Vector3.zero, 4.0f);
+		gameInfo.GameStart(mGameData, randomSeed.Value, players, Vector3.zero, 4.0f);
 		mTable.Apply(gameInfo);
 		Debug.Log($"seed:{randomSeed.Value}");
+	}
+	void ApplyPlayer(ulong inId, UserData inUserData)
+	{
+		var players = FindObjectsOfType<Player>();
+		foreach(var player in players)
+		{
+			if(player.OwnerClientId == inId)
+			{
+				player.Apply(inUserData);
+			}
+		}
 	}
 }

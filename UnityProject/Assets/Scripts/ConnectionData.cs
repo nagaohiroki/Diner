@@ -60,10 +60,10 @@ public partial class UserData
 [MemoryPackable]
 public partial class ConnectionData
 {
-	public UserData save { get; set; }
+	public UserData user { get; set; }
 	public string password { get; set; }
 	public override string ToString()
 	{
-		return $"password:{password}, {save}";
+		return $"password:{password}, {user}";
 	}
 }

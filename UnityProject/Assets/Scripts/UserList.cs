@@ -2,7 +2,7 @@
 using UnityEngine;
 public class UserList
 {
-	Dictionary<ulong, UserData> userList { get; set; } = new Dictionary<ulong, UserData>();
+	public Dictionary<ulong, UserData> userList { get; set; } = new Dictionary<ulong, UserData>();
 	public override string ToString()
 	{
 		var log = "user\n";
@@ -20,5 +20,22 @@ public class UserList
 	{
 		userList.Remove(inId);
 		Debug.Log($"ClientDisconnect{inId}");
+	}
+	public void Clear()
+	{
+		userList.Clear();
+	}
+	bool TryFindUser(UserData inUser, out ulong val)
+	{
+		foreach(var user in userList)
+		{
+			if(user.Value.id == inUser.id)
+			{
+				val = user.Key;
+				return true;
+			}
+		}
+		val = 0;
+		return false;
 	}
 }
