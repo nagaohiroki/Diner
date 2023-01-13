@@ -30,12 +30,21 @@ public class MenuBoot : MonoBehaviour
 		{
 			userData = UserData.NewSaveData();
 		}
-		mUserName.text = userData.name;
-		imageColorCode = userData.imageColorCode;
-		mImage.color = UserData.IntToColor(imageColorCode);
+		Apply();
+	}
+	public void Reseve()
+	{
+		userData = UserData.NewSaveData();
+		Apply();
 	}
 	bool IsChange(UserData inSaveData)
 	{
 		return mUserName.text != inSaveData.name || imageColorCode != inSaveData.imageColorCode;
+	}
+	void Apply()
+	{
+		mUserName.text = userData.name;
+		imageColorCode = userData.imageColorCode;
+		mImage.color = UserData.IntToColor(imageColorCode);
 	}
 }

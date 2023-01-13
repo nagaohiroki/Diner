@@ -1,35 +1,20 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using MemoryPack;
-using System.Collections.Generic;
-public class UserList
-{
-	public List<UserData> userList { get; set; } = new List<UserData>();
-	public Dictionary<ulong, string> idList { get; set; } = new Dictionary<ulong, string>();
-}
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuBoot mMenuBoot;
-	UserList userList = new UserList();
 	public void StartHost(MenuCreate inCreate)
 	{
-		mMenuBoot.Save();
-		var data = inCreate.CreateConnectData();
-		data.save = mMenuBoot.userData;
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
+		SetupUser(inCreate.CreateConnectData());
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
-		Debug.Log($"StartHost:{data}");
 	}
 	public void StartClient(MenuJoin inJoin)
 	{
-		mMenuBoot.Save();
-		var data = inJoin.CreateConnectData();
-		data.save = mMenuBoot.userData;
-		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
+		SetupUser(inJoin.CreateConnectData());
 		NetworkManager.Singleton.StartClient();
-		Debug.Log($"StartClient:{data}");
 	}
 	public void StartServer()
 	{
@@ -41,6 +26,13 @@ public class NetworkSelector : MonoBehaviour
 		NetworkManager.Singleton.Shutdown();
 		Debug.Log("Logout");
 	}
+	void SetupUser(ConnectionData inData)
+	{
+		mMenuBoot.Save();
+		inData.save = mMenuBoot.userData;
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(inData);
+		Debug.Log($"SetupUser:{inData}");
+	}
 	void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 	{
 		var payload = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
@@ -51,7 +43,6 @@ public class NetworkSelector : MonoBehaviour
 		response.Position = Vector3.zero;
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
-		Debug.Log($"request:{request.ClientNetworkId}\nPayload:{payload}\nisApproved:{response.Approved}");
 	}
 	void Awake()
 	{

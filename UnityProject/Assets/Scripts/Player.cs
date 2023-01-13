@@ -66,7 +66,7 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		if(mGameController.gameInfo == null)
+		if(!mGameController.isStart)
 		{
 			Move();
 			if(Input.GetKeyDown(KeyCode.Return))
@@ -75,7 +75,7 @@ public class Player : NetworkBehaviour
 			}
 			return;
 		}
-		if(mGameController.gameInfo.GetCurrentTurnPlayer == this)
+		if(mGameController.turnPlayer == this)
 		{
 			if(mInput.actions["Fire"].triggered)
 			{
