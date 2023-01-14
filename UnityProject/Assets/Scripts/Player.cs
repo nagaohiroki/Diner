@@ -75,10 +75,6 @@ public class Player : NetworkBehaviour
 		if(!mGameController.isStart)
 		{
 			Move();
-			if(Input.GetKeyDown(KeyCode.Return))
-			{
-				mGameController.GameStart();
-			}
 			return;
 		}
 		if(mGameController.turnPlayer == this)

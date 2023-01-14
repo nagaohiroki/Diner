@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using MemoryPack;
+using UnityUtility;
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuBoot mMenuBoot;
-	public void StartHost(MenuCreate inCreate)
+	public void StartHost()
 	{
-		SetupUser(inCreate.CreateConnectData());
+		var data =  new ConnectionData { password = RandomObject.GetGlobal.Range(0, 10000).ToString("D4") };
+		SetupUser(data);
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
 	}

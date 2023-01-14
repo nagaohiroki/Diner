@@ -33,7 +33,7 @@ public class GameController : NetworkBehaviour
 	}
 	public void GameStart()
 	{
-		if(IsServer)
+		if(IsServer && !isStart)
 		{
 			GameStartClientRpc();
 		}
