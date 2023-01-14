@@ -15,7 +15,7 @@ public class GameInfo
 		foreach(var player in mTurnPlayer)
 		{
 			var arrow = GetCurrentTurnPlayer == player ? ">" : " ";
-			str += $"{arrow}Player{player.OwnerClientId}\n";
+			str += $"{arrow}Player{player.name}:{GetPoint(player)}\n";
 		}
 		return str;
 	}
