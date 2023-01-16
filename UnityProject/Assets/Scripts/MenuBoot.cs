@@ -32,11 +32,6 @@ public class MenuBoot : MonoBehaviour
 		}
 		Apply();
 	}
-	public void Reseve()
-	{
-		userData = UserData.NewSaveData();
-		Apply();
-	}
 	bool IsChange(UserData inSaveData)
 	{
 		return mUserName.text != inSaveData.name || imageColorCode != inSaveData.imageColorCode;

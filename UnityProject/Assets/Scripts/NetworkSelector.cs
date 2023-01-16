@@ -8,7 +8,7 @@ public class NetworkSelector : MonoBehaviour
 	MenuBoot mMenuBoot;
 	public void StartHost()
 	{
-		var data =  new ConnectionData { password = RandomObject.GetGlobal.Range(0, 10000).ToString("D4") };
+		var data = new ConnectionData { password = RandomObject.GetGlobal.Range(0, 10000).ToString("D4") };
 		SetupUser(data);
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
@@ -18,15 +18,26 @@ public class NetworkSelector : MonoBehaviour
 		SetupUser(inJoin.CreateConnectData());
 		NetworkManager.Singleton.StartClient();
 	}
+	public void StartDebugClient()
+	{
+		SetupDebugUser();
+		NetworkManager.Singleton.StartClient();
+	}
 	public void StartServer()
 	{
 		NetworkManager.Singleton.StartServer();
-		Debug.Log("StartServer");
 	}
 	public void Logout()
 	{
 		NetworkManager.Singleton.Shutdown();
 		Debug.Log("Logout");
+	}
+	void SetupDebugUser()
+	{
+		var data = new ConnectionData { password = "admin" };
+		data.user = UserData.NewSaveData();
+		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
+		Debug.Log($"SetupUser:{data}");
 	}
 	void SetupUser(ConnectionData inData)
 	{
@@ -45,6 +56,10 @@ public class NetworkSelector : MonoBehaviour
 		response.Position = Vector3.zero;
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
+		if(payload.password == "admin")
+		{
+			response.Approved = true;
+		}
 	}
 	void Awake()
 	{
