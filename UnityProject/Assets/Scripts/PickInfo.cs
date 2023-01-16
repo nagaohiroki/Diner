@@ -18,16 +18,9 @@ public class Deck
 {
 	List<CardData> mCardList;
 	public List<CardData> GetCardList => mCardList;
-	public Deck(RandomObject inRand, GameData inData, DeckData inDeckData)
+	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData)
 	{
-		mCardList = new List<CardData>();
-		foreach(var card in inData.GetCardList)
-		{
-			if(inDeckData.costType.Contains(card.GetCostType))
-			{
-				mCardList.Add(card);
-			}
-		}
+		mCardList = inDeckData.GenerateCardList();
 		inRand.Shuffle(mCardList);
 	}
 }

@@ -1,16 +1,5 @@
-﻿/*
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-[System.Serializable]
-public class CostData
-{
-	[SerializeField]
-	CardData.CardType mCostType;
-	[SerializeField]
-	int mNum;
-	public CardData.CardType GetCostType => mCostType;
-	public int GetNum => mNum;
-}
 [System.Serializable]
 public class CardDataCounter
 {
@@ -39,7 +28,8 @@ public class DeckData
 		return list;
 	}
 }
-public class GameData : MonoBehaviour
+[CreateAssetMenu]
+public class BattleData : ScriptableObject
 {
 	[SerializeField]
 	int winPoint;
@@ -48,4 +38,3 @@ public class GameData : MonoBehaviour
 	public List<DeckData> GetDeckList => deckList;
 	public int GetWinPoint => winPoint;
 }
-*/

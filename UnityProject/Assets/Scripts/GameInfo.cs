@@ -19,13 +19,13 @@ public class GameInfo
 		}
 		return str;
 	}
-	public void GameStart(GameData inGameData, int inSeed, Player[] inPlayers, Vector3 inCenter, float inRadius)
+	public void GameStart(BattleData inData, int inSeed, Player[] inPlayers, Vector3 inCenter, float inRadius)
 	{
 		if(inPlayers == null)
 		{
 			return;
 		}
-		mWinPoint = inGameData.GetWinPoint;
+		mWinPoint = inData.GetWinPoint;
 		mTurnPlayer = new List<Player>();
 		foreach(var player in inPlayers)
 		{
@@ -34,9 +34,9 @@ public class GameInfo
 		var rand = new RandomObject(inSeed);
 		rand.Shuffle(mTurnPlayer);
 		mDeck = new List<Deck>();
-		foreach(var deckData in inGameData.GetDeckList)
+		foreach(var deckData in inData.GetDeckList)
 		{
-			mDeck.Add(new Deck(rand, inGameData, deckData));
+			mDeck.Add(new Deck(rand, inData, deckData));
 		}
 		mPickInfo = new List<PickInfo>();
 		SetPlayerPos(inCenter, inRadius);
@@ -95,7 +95,7 @@ public class GameInfo
 	{
 		var card = GetCard(inDeck, inCard);
 		var player = GetPickPlayer(inDeck, inCard);
-		return GetTotalCost(player, card.GetCostType) >= GetResourcePos(player, inDeck, inCard);
+		return GetTotalCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
 	}
 	public Player GetWinner()
 	{
@@ -122,7 +122,7 @@ public class GameInfo
 	}
 	int GetResourcePos(Player inPlayer, int inDeck, int inCard)
 	{
-		var targetCost = GetCard(inDeck, inCard).GetCostType;
+		var targetCost = GetCard(inDeck, inCard).GetCardType;
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
 		{
@@ -131,7 +131,7 @@ public class GameInfo
 				continue;
 			}
 			var pick = mPickInfo[i];
-			num += targetCost == GetCard(pick.deck, pick.card).GetCostType ? 1 : 0;
+			num += targetCost == GetCard(pick.deck, pick.card).GetCardType ? 1 : 0;
 			if(pick.deck == inDeck && pick.card == inCard)
 			{
 				return num;
@@ -155,6 +155,7 @@ public class GameInfo
 		}
 		return -1;
 	}
+
 	CardData GetPickCard(int inPickTurn)
 	{
 		var pick = mPickInfo[inPickTurn];
@@ -198,26 +199,26 @@ public class GameInfo
 		}
 		return true;
 	}
-	int GetTotalCost(Player inPlayer, CostData.CostType inCostType)
+	int GetTotalCost(Player inPlayer, CardData.CardType inCardType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
 		{
 			if(GetTurnPlayer(i) == inPlayer)
 			{
-				num += GetPickCard(i).GetCostNum(inCostType);
+				num += GetPickCard(i).GetCostNum(inCardType);
 			}
 		}
 		return num;
 	}
-	int GetTotalResource(Player inPlayer, CostData.CostType inCostType)
+	int GetTotalResource(Player inPlayer, CardData.CardType inCardType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
 		{
 			if(GetTurnPlayer(i) == inPlayer)
 			{
-				if(GetPickCard(i).GetCostType == inCostType)
+				if(GetPickCard(i).GetCardType == inCardType)
 				{
 					++num;
 				}

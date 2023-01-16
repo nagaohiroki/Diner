@@ -7,7 +7,7 @@ public class GameController : NetworkBehaviour
 	[SerializeField]
 	Table mTable;
 	[SerializeField]
-	GameData mGameData;
+	BattleData mData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	GameInfo gameInfo { get; set; }
 	UserList mUserList;
@@ -89,7 +89,7 @@ public class GameController : NetworkBehaviour
 	{
 		var players = FindObjectsOfType<Player>();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mGameData, randomSeed.Value, players, Vector3.zero, 4.0f);
+		gameInfo.GameStart(mData, randomSeed.Value, players, Vector3.zero, 4.0f);
 		mTable.Apply(gameInfo);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}
