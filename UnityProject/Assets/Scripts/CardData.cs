@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
-public class CostData
+public class Cost
 {
 	[SerializeField]
 	CardData.CardType mCostType;
@@ -9,42 +9,51 @@ public class CostData
 	int mNum;
 	public CardData.CardType GetCostType => mCostType;
 	public int GetNum => mNum;
+	public override string ToString()
+	{
+		return $"{mCostType}x{mNum}";
+	}
 }
 [CreateAssetMenu]
 public class CardData : ScriptableObject
 {
 	public enum CardType
 	{
-		// 料理
 		Cooking,
-		// 肉
 		Meat,
-		// 海鮮
-		Sea,
-		// 野菜
+		SeaFood,
 		Vegetable,
-		// 乳製品
 		Milk,
-		// スパイス
-		Spices,
-		// 合計
-		Num
+		Spices
 	}
 	[SerializeField]
 	string id;
 	[SerializeField]
 	CardType cardType;
 	[SerializeField]
+	int num;
+	[SerializeField]
 	int point;
 	[SerializeField]
-	List<CostData> cost;
+	List<Cost> cost;
 	public string GetId => id;
+	public int GetNum => num;
 	public int GetPoint => point;
-	public List<CostData> GetCost => cost;
+	public List<Cost> GetCost => cost;
 	public CardType GetCardType => cardType;
 	public override string ToString()
 	{
-		return id;
+		var text = $"{id}x{num}";
+		if(cost.Count != 0)
+		{
+			var costLog = string.Empty;
+			foreach (var c in cost)
+			{
+			    costLog += $"{c}, ";
+			}
+			text += $" (point:{point} cost:{costLog})";
+		}
+		return text;
 	}
 	public int GetCostNum(CardType inCostType)
 	{

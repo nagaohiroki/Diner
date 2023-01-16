@@ -10,14 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
-  m_Name: CardCookSukiyaki
+  m_Name: CardFoodMeat
   m_EditorClassIdentifier: 
-  id: sukiyaki
-  cardType: 0
-  num: 50
-  point: 2
-  cost:
-  - mCostType: 1
-    mNum: 2
-  - mCostType: 3
-    mNum: 1
+  id: Meat
+  cardType: 1
+  num: 10
+  point: 0
+  cost: []
