@@ -3,6 +3,8 @@ using System.Collections.Generic;
 public class DeckModel : MonoBehaviour
 {
 	[SerializeField]
+	string mId;
+	[SerializeField]
 	GameObject mAnchor;
 	[SerializeField]
 	CardModel mCardModelPrefab;
@@ -11,26 +13,28 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	GameObject mDeck;
 	List<CardModel> mCardModels = new List<CardModel>();
-	public void Apply(int inDeck, GameInfo inInfo)
+	public void Apply(GameInfo inInfo)
 	{
-		var cardList = inInfo.GetCardList(inDeck);
-		int anchorIndex = 0;
+		var deck = inInfo.GetDeck(mId);
+		var cardList = deck.GetCardList;
+		int deckIndex = inInfo.GetDeckIndex(mId);
+		int supply = 0;
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			var cardModel = CreateCardModel(inInfo, inDeck, card);
-			if(Hand(inInfo, inDeck, card, cardModel))
+			var cardModel = CreateCardModel(inInfo, deckIndex, card);
+			if(Hand(inInfo, deckIndex, card, cardModel))
 			{
 				continue;
 			}
-			if(cardModel.ancherIndex != anchorIndex)
+			if(cardModel.supplyIndex != supply)
 			{
-				cardModel.ancherIndex = anchorIndex;
-				var child = mAnchor.transform.GetChild(cardModel.ancherIndex);
+				cardModel.supplyIndex = supply;
+				var child = mAnchor.transform.GetChild(cardModel.supplyIndex);
 				LeanTween.move(cardModel.gameObject, child.position, 0.3f)
 					.setOnComplete(() => LeanTween.rotateZ(cardModel.gameObject, 0.0f, 0.5f));
 			}
-			++anchorIndex;
-			if(anchorIndex >= mAnchor.transform.childCount)
+			++supply;
+			if(supply >= deck.deckData.GetSupply)
 			{
 				return;
 			}
@@ -38,7 +42,7 @@ public class DeckModel : MonoBehaviour
 	}
 	public void Clear()
 	{
-		foreach (var card in mCardModels)
+		foreach(var card in mCardModels)
 		{
 			Destroy(card.gameObject);
 		}

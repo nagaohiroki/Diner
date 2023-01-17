@@ -65,6 +65,28 @@ public class GameInfo
 		}
 		return HasCost(GetCurrentTurnPlayer, inDeck, inCard);
 	}
+	public int GetDeckIndex(string inId)
+	{
+		for(int i = 0; i < mDeck.Count; ++i)
+		{
+			if(mDeck[i].deckData.GetId == inId)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+	public Deck GetDeck(string inId)
+	{
+		foreach(var deck in mDeck)
+		{
+			if(deck.deckData.GetId == inId)
+			{
+				return deck;
+			}
+		}
+		return null;
+	}
 	public List<CardData> GetCardList(int inDeck)
 	{
 		return mDeck[inDeck].GetCardList;
@@ -155,7 +177,6 @@ public class GameInfo
 		}
 		return -1;
 	}
-
 	CardData GetPickCard(int inPickTurn)
 	{
 		var pick = mPickInfo[inPickTurn];

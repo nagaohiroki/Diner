@@ -8,9 +8,9 @@ public class Table : MonoBehaviour
 	List<DeckModel> mDeckModels;
 	public void Apply(GameInfo inGameInfo)
 	{
-		for(int i = 0; i < mDeckModels.Count; ++i)
+		foreach(var deck in mDeckModels)
 		{
-			mDeckModels[i].Apply(i, inGameInfo);
+			deck.Apply(inGameInfo);
 		}
 		var winner = inGameInfo.GetWinner();
 		if(winner != null)

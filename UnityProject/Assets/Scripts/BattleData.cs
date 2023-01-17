@@ -9,7 +9,11 @@ public class DeckData
 	[SerializeField]
 	string id;
 	[SerializeField]
+	int supply;
+	[SerializeField]
 	List<CardData> mCardData;
+	public string GetId => id;
+	public int GetSupply => supply;
 	public List<CardData> GenerateCardList()
 	{
 		var list = new List<CardData>();
@@ -66,9 +70,9 @@ public class BattleData : ScriptableObject
 	public override string ToString()
 	{
 		var log = string.Empty;
-		foreach (var deck in deckList)
+		foreach(var deck in deckList)
 		{
-		    log += $"{deck}\n";
+			log += $"{deck}\n";
 		}
 		return log;
 	}
