@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: SeaFood
   cardType: 2
-  num: 10
+  num: 0
   point: 0
   cost: []

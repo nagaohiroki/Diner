@@ -19,10 +19,13 @@ public class MenuQuit : MonoBehaviour
 		}
 		inText.text = mDefaultText;
 	}
+	public void SetActiveHostButton(bool inActive)
+	{
+		mGameStart.SetActive(inActive);
+		mPassword.SetActive(inActive);
+	}
 	void OnEnable()
 	{
-		bool isServer = NetworkManager.Singleton.IsServer;
-		mGameStart.SetActive(isServer);
-		mPassword.SetActive(isServer);
+		SetActiveHostButton(NetworkManager.Singleton.IsServer);
 	}
 }

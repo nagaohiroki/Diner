@@ -102,14 +102,15 @@ public class GameInfo
 		int handMax = 0;
 		for(int i = 0; i < cards.Count; i++)
 		{
-			if(GetPickPlayer(inDeck, i) == inPlayer)
+			if(GetPickPlayer(inDeck, i) != inPlayer || IsDiscard(inDeck, i))
 			{
-				if(inCard == i)
-				{
-					handIndex = handMax;
-				}
-				++handMax;
+				continue;
 			}
+			if(inCard == i)
+			{
+				handIndex = handMax;
+			}
+			++handMax;
 		}
 		return (handIndex, handMax);
 	}

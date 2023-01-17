@@ -1,10 +1,13 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 public class Player : NetworkBehaviour
 {
 	[SerializeField]
 	LayerMask mFocusLayerMask;
+	[SerializeField]
+	TextMeshPro mName;
 	PlayerInput mInput;
 	GameController mGameController;
 	public override void OnNetworkSpawn()
@@ -20,6 +23,8 @@ public class Player : NetworkBehaviour
 		name = inUserData.name;
 		var render = GetComponentInChildren<Renderer>();
 		render.material.color = inUserData.imageColor;
+		mName.text = name;
+		mName.color = inUserData.imageColor;
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
@@ -50,7 +55,7 @@ public class Player : NetworkBehaviour
 	}
 	void Move()
 	{
-		var v = mInput.actions["Move"].ReadValue<Vector2>() * Time.deltaTime * 10.0f;
+		var v = mInput.actions["Move"].ReadValue<Vector2>() * Time.deltaTime * 5.0f;
 		if(v == Vector2.zero)
 		{
 			return;

@@ -13,6 +13,7 @@ public class CardModel : MonoBehaviour
 		deckIndex = inDeck;
 		var card = inInfo.GetCard(inDeck, inCard);
 		mText.text = card.GetId;
+		name = card.GetId;
 		supplyIndex = -1;
 	}
 }
