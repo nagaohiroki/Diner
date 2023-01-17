@@ -61,7 +61,7 @@ public class DeckModel : MonoBehaviour
 			return true;
 		}
 		var pos = pickPlayer.transform.position;
-		float offset = 0.5f;
+		float offset = 0.75f;
 		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickPlayer);
 		pos.x += -offset * handMax * 0.5f + offset * handIndex;
 		LeanTween.move(inCardModel.gameObject, pos, 0.3f);

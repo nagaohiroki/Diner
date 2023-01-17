@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 475188330851335806}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 1, z: 0.3}
+  m_LocalScale: {x: 1, y: 1.618, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 544247860933771756}
@@ -174,6 +174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5946b17d22f9d1448b28b4cd8f22bf85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mId: 
   mAnchor: {fileID: 0}
   mCardModelPrefab: {fileID: 2518866154619904136, guid: 8ee90d707823f204b97ba6938f545267, type: 3}
   mRoot: {fileID: 1507238531635530774}
