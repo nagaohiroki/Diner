@@ -12,7 +12,10 @@ public class GameController : NetworkBehaviour
 	GameInfo gameInfo { get; set; }
 	UserList mUserList;
 	public bool isStart => gameInfo != null;
-	public Player turnPlayer => gameInfo.GetCurrentTurnPlayer;
+	public bool IsTurnPlayer(Player inPlayer)
+	{
+		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer;
+	}
 	public void Pick(int inDeck, int inCard)
 	{
 		if(!gameInfo.CanPick(inDeck, inCard))

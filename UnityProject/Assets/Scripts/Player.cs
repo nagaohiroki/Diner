@@ -41,6 +41,14 @@ public class Player : NetworkBehaviour
 	}
 	void Pick()
 	{
+		if(!mGameController.IsTurnPlayer(this))
+		{
+			return;
+		}
+		if(!mInput.actions["Fire"].triggered)
+		{
+			return;
+		}
 		var cursor = mInput.actions["Cursor"].ReadValue<Vector2>();
 		var ray = Camera.main.ScreenPointToRay(cursor);
 		if(!Physics.Raycast(ray, out var hit, Mathf.Infinity, mFocusLayerMask))
@@ -55,13 +63,16 @@ public class Player : NetworkBehaviour
 	}
 	void Move()
 	{
-		var v = mInput.actions["Move"].ReadValue<Vector2>() * Time.deltaTime * 5.0f;
+		if(mGameController.isStart)
+		{
+			return;
+		}
+		var v = mInput.actions["Move"].ReadValue<Vector2>();
 		if(v == Vector2.zero)
 		{
 			return;
 		}
-		var move = new Vector3(v.x, 0.0f, v.y);
-		transform.position += move;
+		transform.position += new Vector3(v.x, 0.0f, v.y) * Time.deltaTime * 5.0f;
 		if(!IsServer)
 		{
 			MoveServerRpc(transform.position);
@@ -73,21 +84,10 @@ public class Player : NetworkBehaviour
 	}
 	void Update()
 	{
-		if(!IsOwner)
-		{
-			return;
-		}
-		if(!mGameController.isStart)
+		if(IsOwner)
 		{
 			Move();
-			return;
-		}
-		if(mGameController.turnPlayer == this)
-		{
-			if(mInput.actions["Fire"].triggered)
-			{
-				Pick();
-			}
+			Pick();
 		}
 	}
 }
