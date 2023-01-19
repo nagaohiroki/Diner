@@ -55,9 +55,10 @@ public class DeckModel : MonoBehaviour
 		{
 			return false;
 		}
+		var go = inCardModel.gameObject;
 		if(inInfo.IsDiscard(inDeck, inCard))
 		{
-			inCardModel.gameObject.SetActive(false);
+			go.SetActive(false);
 			return true;
 		}
 		float handScale = 0.5f;
@@ -66,9 +67,9 @@ public class DeckModel : MonoBehaviour
 		var pickPlayer = inGameController.GetPlayer(pickId);
 		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickId);
 		var cardPos = new Vector3(-cardOffset.x * handMax * 0.5f + cardOffset.x * handIndex, 0.0f, cardOffset.z * inDeck + deckOffest);
-		LeanTween.move(inCardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
-		LeanTween.rotateY(inCardModel.gameObject, pickPlayer.transform.eulerAngles.y, 0.3f);
-		LeanTween.scale(inCardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
+		LeanTween.move(go, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
+		LeanTween.rotateY(go, pickPlayer.rot, 0.3f);
+		LeanTween.scale(go, new Vector3(handScale, 1.0f, handScale), 0.3f);
 		return true;
 	}
 	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)
