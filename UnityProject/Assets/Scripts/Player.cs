@@ -10,6 +10,7 @@ public class Player : NetworkBehaviour
 	TextMeshPro mName;
 	PlayerInput mInput;
 	GameController mGameController;
+	public string id { get; set; }
 	public override void OnNetworkSpawn()
 	{
 		if(IsOwner)

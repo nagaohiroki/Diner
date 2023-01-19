@@ -13,7 +13,7 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	GameObject mDeck;
 	List<CardModel> mCardModels = new List<CardModel>();
-	public void Apply(GameInfo inInfo)
+	public void Apply(GameInfo inInfo, GameController inGameController)
 	{
 		var deck = inInfo.GetDeck(mId);
 		var cardList = deck.GetCardList;
@@ -22,7 +22,7 @@ public class DeckModel : MonoBehaviour
 		for(int card = 0; card < cardList.Count; ++card)
 		{
 			var cardModel = CreateCardModel(inInfo, deckIndex, card);
-			if(Hand(inInfo, deckIndex, card, cardModel))
+			if(Hand(inInfo, deckIndex, card, cardModel, inGameController))
 			{
 				continue;
 			}
@@ -48,10 +48,10 @@ public class DeckModel : MonoBehaviour
 		}
 		mCardModels.Clear();
 	}
-	bool Hand(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel)
+	bool Hand(GameInfo inInfo, int inDeck, int inCard, CardModel inCardModel, GameController inGameController)
 	{
-		var pickPlayer = inInfo.GetPickPlayer(inDeck, inCard);
-		if(pickPlayer == null)
+		var pickId = inInfo.GetPickPlayer(inDeck, inCard);
+		if(pickId == null)
 		{
 			return false;
 		}
@@ -60,12 +60,15 @@ public class DeckModel : MonoBehaviour
 			inCardModel.gameObject.SetActive(false);
 			return true;
 		}
-		var offset =  new Vector3(1.0f, 0.0f, 1.0f);
-		var pos = pickPlayer.transform.position;
-		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickPlayer);
-		pos.x += -offset.x * handMax * 0.5f + offset.x * handIndex;
-		pos.z += offset.z * inDeck;
-		LeanTween.move(inCardModel.gameObject, pos, 0.3f);
+		float handScale = 0.5f;
+		var cardOffset = new Vector3(0.6f, 0.0f, 0.8f);
+		var deckOffest = 0.5f;
+		var pickPlayer = inGameController.GetPlayer(pickId);
+		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickId);
+		var cardPos = new Vector3(-cardOffset.x * handMax * 0.5f + cardOffset.x * handIndex, 0.0f, cardOffset.z * inDeck + deckOffest);
+		LeanTween.move(inCardModel.gameObject, pickPlayer.transform.position + pickPlayer.transform.rotation * cardPos, 0.3f);
+		LeanTween.rotateY(inCardModel.gameObject, pickPlayer.transform.eulerAngles.y, 0.3f);
+		LeanTween.scale(inCardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
 		return true;
 	}
 	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)

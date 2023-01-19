@@ -3,43 +3,37 @@ using UnityUtility;
 using UnityEngine;
 public class GameInfo
 {
-	List<Player> mTurnPlayer;
+	List<string> mTurnPlayers;
 	List<Deck> mDeck;
 	List<PickInfo> mPickInfo;
-	public bool IsStart => mTurnPlayer != null;
-	public Player GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
+	public bool IsStart => mTurnPlayers != null;
+	public string GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
 	int mWinPoint;
 	public override string ToString()
 	{
-		var str = $"pick:{mPickInfo.Count}\n";
-		foreach(var player in mTurnPlayer)
-		{
-			var arrow = GetCurrentTurnPlayer == player ? ">" : " ";
-			str += $"{arrow}Player{player.name}:{GetPoint(player)}\n";
-		}
-		return str;
+		return $"pick:{mPickInfo.Count}";
 	}
-	public void GameStart(BattleData inData, int inSeed, Player[] inPlayers, Vector3 inCenter, float inRadius)
+	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, PlayerChairs inPlayerChairs)
 	{
 		if(inPlayers == null)
 		{
 			return;
 		}
 		mWinPoint = inData.GetWinPoint;
-		mTurnPlayer = new List<Player>();
+		mTurnPlayers = new List<string>();
 		foreach(var player in inPlayers)
 		{
-			mTurnPlayer.Add(player);
+			mTurnPlayers.Add(player.Key);
 		}
 		var rand = new RandomObject(inSeed);
-		rand.Shuffle(mTurnPlayer);
+		rand.Shuffle(mTurnPlayers);
 		mDeck = new List<Deck>();
 		foreach(var deckData in inData.GetDeckList)
 		{
 			mDeck.Add(new Deck(rand, inData, deckData));
 		}
 		mPickInfo = new List<PickInfo>();
-		SetPlayerPos(inCenter, inRadius);
+		inPlayerChairs.Sitdown(mTurnPlayers, inPlayers);
 		Debug.Log($"GameStart\n {ToString()}");
 	}
 	public void Pick(int inDeck, int inCard)
@@ -48,7 +42,7 @@ public class GameInfo
 		Debug.Log($"{pick}\n {ToString()}");
 		mPickInfo.Add(pick);
 	}
-	public Player GetPickPlayer(int inDeck, int inCard)
+	public string GetPickPlayer(int inDeck, int inCard)
 	{
 		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
 	}
@@ -95,7 +89,7 @@ public class GameInfo
 	{
 		return GetCardList(inDeck)[inCard];
 	}
-	public (int index, int max) GetHand(int inDeck, int inCard, Player inPlayer)
+	public (int index, int max) GetHand(int inDeck, int inCard, string inPlayer)
 	{
 		var cards = GetCardList(inDeck);
 		int handIndex = 0;
@@ -120,9 +114,9 @@ public class GameInfo
 		var player = GetPickPlayer(inDeck, inCard);
 		return GetTotalCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
 	}
-	public Player GetWinner()
+	public string GetWinner()
 	{
-		foreach(var player in mTurnPlayer)
+		foreach(var player in mTurnPlayers)
 		{
 			if(GetPoint(player) >= mWinPoint)
 			{
@@ -131,19 +125,19 @@ public class GameInfo
 		}
 		return null;
 	}
-	int GetPoint(Player inPlayer)
+	int GetPoint(string inId)
 	{
 		int point = 0;
 		for(int i = 0; i < mPickInfo.Count; ++i)
 		{
-			if(GetTurnPlayer(i) == inPlayer)
+			if(GetTurnPlayer(i) == inId)
 			{
 				point += GetPickCard(i).GetPoint;
 			}
 		}
 		return point;
 	}
-	int GetResourcePos(Player inPlayer, int inDeck, int inCard)
+	int GetResourcePos(string inPlayer, int inDeck, int inCard)
 	{
 		var targetCost = GetCard(inDeck, inCard).GetCardType;
 		int num = 0;
@@ -162,9 +156,9 @@ public class GameInfo
 		}
 		return num;
 	}
-	Player GetTurnPlayer(int inTurn)
+	string GetTurnPlayer(int inTurn)
 	{
-		return inTurn < 0 ? null : mTurnPlayer[inTurn % mTurnPlayer.Count];
+		return inTurn < 0 ? null : mTurnPlayers[inTurn % mTurnPlayers.Count];
 	}
 	int GetPickTurn(int inDeck, int inCard)
 	{
@@ -183,27 +177,7 @@ public class GameInfo
 		var pick = mPickInfo[inPickTurn];
 		return GetCard(pick.deck, pick.card);
 	}
-	void SetPlayerPos(Vector3 inCenter, float inRadius)
-	{
-		int start = -1;
-		int count = mTurnPlayer.Count;
-		for(int i = 0; i < count; i++)
-		{
-			if(mTurnPlayer[i].IsOwner)
-			{
-				start = i;
-			}
-		}
-		var baseRot = 1.0f / (float)count * 360.0f;
-		for(int i = 0; i < count; i++)
-		{
-			int ownerBaseIndex = (start + i) % count;
-			var rot = Quaternion.Euler(0.0f, baseRot * i, 0.0f);
-			var pos = inCenter + rot * new Vector3(0.0f, 0.0f, -inRadius);
-			mTurnPlayer[ownerBaseIndex].transform.position = pos;
-		}
-	}
-	bool HasCost(Player inPlayer, int inDeck, int inCard)
+	bool HasCost(string inPlayer, int inDeck, int inCard)
 	{
 		var card = GetCard(inDeck, inCard);
 		if(card.GetCost == null)
@@ -221,7 +195,7 @@ public class GameInfo
 		}
 		return true;
 	}
-	int GetTotalCost(Player inPlayer, CardData.CardType inCardType)
+	int GetTotalCost(string inPlayer, CardData.CardType inCardType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
@@ -233,7 +207,7 @@ public class GameInfo
 		}
 		return num;
 	}
-	int GetTotalResource(Player inPlayer, CardData.CardType inCardType)
+	int GetTotalResource(string inPlayer, CardData.CardType inCardType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)

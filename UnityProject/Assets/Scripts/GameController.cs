@@ -2,19 +2,23 @@
 using UnityEngine;
 using UnityUtility;
 using MemoryPack;
+using System.Collections.Generic;
 public class GameController : NetworkBehaviour
 {
 	[SerializeField]
 	Table mTable;
 	[SerializeField]
+	PlayerChairs mPlayerChairs;
+	[SerializeField]
 	BattleData mData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	GameInfo gameInfo { get; set; }
 	UserList mUserList;
+	Dictionary<string, Player> mPlayers;
 	public bool isStart => gameInfo != null;
 	public bool IsTurnPlayer(Player inPlayer)
 	{
-		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer;
+		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
 	}
 	public void Pick(int inDeck, int inCard)
 	{
@@ -50,6 +54,10 @@ public class GameController : NetworkBehaviour
 			randomSeed.Value = RandomObject.GenerateSeed();
 		}
 	}
+	public Player GetPlayer(string inId)
+	{
+		return mPlayers[inId];
+	}
 	[ServerRpc(RequireOwnership = false)]
 	void AddUserServerRpc(ulong inId, byte[] inUserData)
 	{
@@ -84,16 +92,22 @@ public class GameController : NetworkBehaviour
 		if(gameInfo != null && gameInfo.IsStart)
 		{
 			gameInfo.Pick(inDeck, inCard);
-			mTable.Apply(gameInfo);
+			mTable.Apply(gameInfo, this);
 		}
 	}
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
 		var players = FindObjectsOfType<Player>();
+		mPlayers = new Dictionary<string, Player>();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mData, randomSeed.Value, players, Vector3.zero, 4.0f);
-		mTable.Apply(gameInfo);
+		foreach(var player in players)
+		{
+			player.id = mUserList.userList[player.OwnerClientId].id;
+			mPlayers.Add(player.id, player);
+		}
+		gameInfo.GameStart(mData, randomSeed.Value, mPlayers, mPlayerChairs);
+		mTable.Apply(gameInfo, this);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}
 	void ApplyPlayer(ulong inId, UserData inUserData)

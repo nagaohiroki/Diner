@@ -6,16 +6,16 @@ public class Table : MonoBehaviour
 	MenuRoot mMenuRoot;
 	[SerializeField]
 	List<DeckModel> mDeckModels;
-	public void Apply(GameInfo inGameInfo)
+	public void Apply(GameInfo inGameInfo, GameController inGameController)
 	{
 		foreach(var deck in mDeckModels)
 		{
-			deck.Apply(inGameInfo);
+			deck.Apply(inGameInfo, inGameController);
 		}
 		var winner = inGameInfo.GetWinner();
 		if(winner != null)
 		{
-			mMenuRoot.Result(winner);
+			mMenuRoot.Result(inGameController.GetPlayer(winner));
 		}
 	}
 	public void Clear()
