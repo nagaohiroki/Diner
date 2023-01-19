@@ -61,12 +61,12 @@ public class DeckModel : MonoBehaviour
 			return true;
 		}
 		float handScale = 0.5f;
-		var cardOffset = new Vector3(0.6f, 0.0f, 0.8f);
+		var cardOffset = new Vector3(0.6f, 0.0f, 1.0f);
 		var deckOffest = 0.5f;
 		var pickPlayer = inGameController.GetPlayer(pickId);
 		(int handIndex, int handMax) = inInfo.GetHand(inDeck, inCard, pickId);
 		var cardPos = new Vector3(-cardOffset.x * handMax * 0.5f + cardOffset.x * handIndex, 0.0f, cardOffset.z * inDeck + deckOffest);
-		LeanTween.move(inCardModel.gameObject, pickPlayer.transform.position + pickPlayer.transform.rotation * cardPos, 0.3f);
+		LeanTween.move(inCardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
 		LeanTween.rotateY(inCardModel.gameObject, pickPlayer.transform.eulerAngles.y, 0.3f);
 		LeanTween.scale(inCardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
 		return true;

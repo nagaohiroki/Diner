@@ -11,6 +11,7 @@ public class Player : NetworkBehaviour
 	PlayerInput mInput;
 	GameController mGameController;
 	public string id { get; set; }
+	public float rot { get; set; }
 	public override void OnNetworkSpawn()
 	{
 		if(IsOwner)

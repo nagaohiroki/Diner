@@ -45,7 +45,7 @@ public class PlayerChairs : MonoBehaviour
 			int ownerBaseIndex = (ownerIndex + i) % inTurn.Count;
 			var player = inPlayers[inTurn[ownerBaseIndex]];
 			player.transform.position = Vector3.Scale(mOffsets[dir], mOffset); ;
-			player.transform.rotation = Quaternion.Euler(0, baseAngle * (int)dir, 0);
+			player.rot = baseAngle * (int)dir;
 		}
 	}
 	List<Dir> GetDirections(int inNum)
