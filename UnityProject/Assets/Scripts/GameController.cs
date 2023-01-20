@@ -12,6 +12,7 @@ public class GameController : NetworkBehaviour
 	[SerializeField]
 	BattleData mData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
+	public BattleData GetData => mData;
 	GameInfo gameInfo { get; set; }
 	UserList mUserList;
 	Dictionary<string, Player> mPlayers;

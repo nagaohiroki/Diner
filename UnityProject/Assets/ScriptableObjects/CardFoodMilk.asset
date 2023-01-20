@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Milk
   cardType: 4
-  num: 0
+  num: 10
   point: 0
   cost: []

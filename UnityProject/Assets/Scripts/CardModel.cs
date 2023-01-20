@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
-using TMPro;
 public class CardModel : MonoBehaviour
 {
 	[SerializeField]
-	TextMeshPro mText;
+	Icon mIconPrefab;
+	[SerializeField]
+	Transform mPointAnchor;
+	[SerializeField]
+	Transform mFoodAnchor;
+	[SerializeField]
+	Transform mCostAnchor;
 	[SerializeField]
 	MeshRenderer mBackfaceMesh;
 	public int supplyIndex { set; get; }
@@ -15,11 +20,39 @@ public class CardModel : MonoBehaviour
 		cardIndex = inCard;
 		deckIndex = inDeck;
 		var card = inInfo.GetCard(inDeck, inCard);
-		mText.text = card.GetId;
 		name = card.GetId;
 		supplyIndex = -1;
 		mBackfaceMesh.material = inMaterial;
 		mCache = mBackfaceMesh.material;
+		ApplyCardData(card);
+	}
+	void ApplyCardData(CardData inCardData)
+	{
+		if(inCardData.GetCardType != CardData.CardType.Cooking)
+		{
+			var icon = Instantiate(mIconPrefab);
+			icon.SetIcon(inCardData.GetCardType);
+			icon.transform.SetParent(mFoodAnchor, false);
+			return;
+		}
+		for(int i = 0; i < inCardData.GetPoint; i++)
+		{
+			var icon = Instantiate(mIconPrefab);
+			icon.SetIcon(CardData.CardType.Cooking);
+			icon.transform.SetParent(mPointAnchor, false);
+			icon.transform.localPosition = Vector3.right * i;
+		}
+		for(int costType = 0; costType < inCardData.GetCost.Count; ++costType)
+		{
+			var cost = inCardData.GetCost[costType];
+			for(int i = 0; i < cost.GetNum; i++)
+			{
+				var icon = Instantiate(mIconPrefab);
+				icon.SetIcon(cost.GetCostType);
+				icon.transform.SetParent(mCostAnchor, false);
+				icon.transform.localPosition = new Vector3(i, 0.0f, -costType);
+			}
+		}
 	}
 	void OnDestroy()
 	{
