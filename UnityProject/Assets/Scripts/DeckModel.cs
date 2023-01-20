@@ -33,10 +33,16 @@ public class DeckModel : MonoBehaviour
 			}
 			if(cardModel.supplyIndex != supply)
 			{
+				var child = mAnchor.transform.GetChild(supply);
+				var go = cardModel.gameObject;
+				var lt = LeanTween.move(go, child.position, 0.3f);
+				if(cardModel.supplyIndex == -1)
+				{
+					lt.setOnComplete(() => LeanTween.moveY(go, 0.5f, 0.1f)
+					.setOnComplete(() => LeanTween.rotateZ(go, 0.0f, 0.3f)
+					.setOnComplete(() => LeanTween.moveY(go, 0.0f, 0.1f))));
+				}
 				cardModel.supplyIndex = supply;
-				var child = mAnchor.transform.GetChild(cardModel.supplyIndex);
-				LeanTween.move(cardModel.gameObject, child.position, 0.3f)
-					.setOnComplete(() => LeanTween.rotateZ(cardModel.gameObject, 0.0f, 0.5f));
 			}
 			++supply;
 			if(supply >= deck.deckData.GetSupply)
