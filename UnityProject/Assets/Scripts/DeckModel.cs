@@ -3,6 +3,8 @@ using System.Collections.Generic;
 public class DeckModel : MonoBehaviour
 {
 	[SerializeField]
+	Material mBackface;
+	[SerializeField]
 	string mId;
 	[SerializeField]
 	GameObject mAnchor;
@@ -12,6 +14,9 @@ public class DeckModel : MonoBehaviour
 	GameObject mRoot;
 	[SerializeField]
 	GameObject mDeck;
+	[SerializeField]
+	MeshRenderer mBackfaceMesh;
+	Material mCache;
 	List<CardModel> mCardModels = new List<CardModel>();
 	public void Apply(GameInfo inInfo, GameController inGameController)
 	{
@@ -84,7 +89,7 @@ public class DeckModel : MonoBehaviour
 		var pos = transform.position;
 		var cardPos = new Vector3(pos.x, mRoot.transform.position.y, pos.z);
 		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f));
-		cardModel.Create(inInfo, inDeck, inCard);
+		cardModel.Create(inInfo, inDeck, inCard, mBackface);
 		mCardModels.Add(cardModel);
 		return cardModel;
 	}
@@ -102,5 +107,17 @@ public class DeckModel : MonoBehaviour
 		var pos = mRoot.transform.position;
 		pos.y = deckScale * 0.5f;
 		mRoot.transform.position = pos;
+	}
+	void Start()
+	{
+		mBackfaceMesh.material = mBackface;
+		mCache = mBackfaceMesh.material;
+	}
+	void OnDestroy()
+	{
+		if(mCache != null)
+		{
+			Destroy(mCache);
+		}
 	}
 }

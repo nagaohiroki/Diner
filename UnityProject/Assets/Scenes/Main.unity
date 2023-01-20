@@ -426,6 +426,10 @@ PrefabInstance:
       propertyPath: mAnchor
       value: 
       objectReference: {fileID: 2005052745}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mBackface
+      value: 
+      objectReference: {fileID: 2100000, guid: 15ec3e45cb918c04193781b065829950, type: 2}
     - target: {fileID: 8899439725273877728, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -5192,6 +5196,10 @@ PrefabInstance:
       propertyPath: mAnchor
       value: 
       objectReference: {fileID: 71954518}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mBackface
+      value: 
+      objectReference: {fileID: 2100000, guid: fac2af74e8e9b1b468fae374a02ed02b, type: 2}
     - target: {fileID: 8899439725273877728, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: m_RootOrder
       value: 4
