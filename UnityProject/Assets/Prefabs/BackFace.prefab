@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4249465304396153095}
   - component: {fileID: 1724079102572758476}
   m_Layer: 6
-  m_Name: BackFace
+  m_Name: Backface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: fac2af74e8e9b1b468fae374a02ed02b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
