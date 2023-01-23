@@ -3,6 +3,8 @@ public class MenuRoot : MonoBehaviour
 {
 	[SerializeField]
 	MenuResult mMenuResult;
+	[SerializeField]
+	MenuBoot mMenuBoot;
 	public void Switch(GameObject inActive)
 	{
 		int count = transform.childCount;
@@ -16,5 +18,9 @@ public class MenuRoot : MonoBehaviour
 	{
 		mMenuResult.SetText($"{inWinner.name} is Win!!");
 		Switch(mMenuResult.gameObject);
+	}
+	public void Boot()
+	{
+		Switch(mMenuBoot.gameObject);
 	}
 }

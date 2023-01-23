@@ -11,6 +11,8 @@ public class GameController : NetworkBehaviour
 	PlayerChairs mPlayerChairs;
 	[SerializeField]
 	BattleData mData;
+	[SerializeField]
+	MenuRoot mMenuRoot;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	public BattleData GetData => mData;
 	public GameInfo gameInfo { get; set; }
@@ -40,6 +42,10 @@ public class GameController : NetworkBehaviour
 		var cd = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		AddUserServerRpc(NetworkManager.LocalClientId, MemoryPackSerializer.Serialize(cd.user));
 	}
+	public override void OnNetworkDespawn()
+	{
+		Clear();
+	}
 	public void GameStart()
 	{
 		if(IsServer && !isStart)
@@ -49,6 +55,8 @@ public class GameController : NetworkBehaviour
 	}
 	public void Clear()
 	{
+		NetworkManager.Singleton.Shutdown();
+		mMenuRoot.Boot();
 		gameInfo = null;
 		mTable.Clear();
 		if(IsServer)
