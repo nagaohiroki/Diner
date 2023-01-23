@@ -31,19 +31,16 @@ public class CardData : ScriptableObject
 	[SerializeField]
 	CardType cardType;
 	[SerializeField]
-	int num;
-	[SerializeField]
 	int point;
 	[SerializeField]
 	List<Cost> cost;
 	public string GetId => id;
-	public int GetNum => num;
 	public int GetPoint => point;
 	public List<Cost> GetCost => cost;
 	public CardType GetCardType => cardType;
 	public override string ToString()
 	{
-		var text = $"{id}x{num}";
+		var text = $"{id}";
 		if(cost.Count != 0)
 		{
 			var costLog = string.Empty;

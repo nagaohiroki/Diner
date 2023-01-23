@@ -26,6 +26,44 @@ public class CardModel : MonoBehaviour
 		mCache = mBackfaceMesh.material;
 		ApplyCardData(card);
 	}
+	public void ToSupply(Vector3 inPos, int inSupply)
+	{
+		if(inSupply == supplyIndex)
+		{
+			return;
+		}
+		var lt = LeanTween.move(gameObject, inPos, 0.3f);
+		if(supplyIndex == -1)
+		{
+			lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
+			.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
+			.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));
+		}
+		supplyIndex = inSupply;
+	}
+	public bool Hand(int inDeck, int inCard, GameController inGameController)
+	{
+		var pickId = inGameController.gameInfo.GetPickPlayer(inDeck, inCard);
+		if(pickId == null)
+		{
+			return false;
+		}
+		if(inGameController.gameInfo.IsDiscard(inDeck, inCard))
+		{
+			gameObject.SetActive(false);
+			return true;
+		}
+		float handScale = 0.5f;
+		var cardOffset = new Vector3(0.6f, 0.0f, 1.0f);
+		var deckOffest = 0.5f;
+		var pickPlayer = inGameController.GetPlayer(pickId);
+		(int handIndex, int handMax) = inGameController.gameInfo.GetHand(inDeck, inCard, pickId);
+		var cardPos = new Vector3(-cardOffset.x * handMax * 0.5f + cardOffset.x * handIndex, 0.0f, cardOffset.z * inDeck + deckOffest);
+		LeanTween.move(gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
+		LeanTween.rotateY(gameObject, pickPlayer.rot, 0.3f);
+		LeanTween.scale(gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
+		return true;
+	}
 	void ApplyCardData(CardData inCardData)
 	{
 		if(inCardData.GetCardType != CardData.CardType.Cooking)

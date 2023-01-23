@@ -16,27 +16,39 @@ MonoBehaviour:
   deckList:
   - id: CardFood
     supply: 6
-    mCardData:
-    - {fileID: 11400000, guid: 95f19590651d29b4387d45249197f454, type: 2}
-    - {fileID: 11400000, guid: 76d5b6edf1eadbe46b20aed545337f85, type: 2}
-    - {fileID: 11400000, guid: 4a38ed016a514614eb40b235ceb847cf, type: 2}
-    - {fileID: 11400000, guid: 0bb29988605ad794791074f47c1aac8d, type: 2}
-    - {fileID: 11400000, guid: ecf6888d4720ddf40a36a4eb06a2c9a0, type: 2}
+    mCardCounter:
+    - id: Meat
+      mCard: {fileID: 11400000, guid: 0bb29988605ad794791074f47c1aac8d, type: 2}
+      mNum: 10
+    - id: Milk
+      mCard: {fileID: 11400000, guid: 76d5b6edf1eadbe46b20aed545337f85, type: 2}
+      mNum: 10
+    - id: SeaFood
+      mCard: {fileID: 11400000, guid: 95f19590651d29b4387d45249197f454, type: 2}
+      mNum: 10
+    - id: Spices
+      mCard: {fileID: 11400000, guid: ecf6888d4720ddf40a36a4eb06a2c9a0, type: 2}
+      mNum: 10
+    - id: Vegetable
+      mCard: {fileID: 11400000, guid: 4a38ed016a514614eb40b235ceb847cf, type: 2}
+      mNum: 10
   - id: CardCook
     supply: 4
-    mCardData:
-    - {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
+    mCardCounter:
+    - id: sukiyaki (point:2 cost:Meatx2, Vegetablex2, )
+      mCard: {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
+      mNum: 50
   Info: 'CardFood:
-
-    SeaFoodx10
-
-    Milkx10
-
-    Vegetablex10
 
     Meatx10
 
+    Milkx10
+
+    SeaFoodx10
+
     Spicesx10
+
+    Vegetablex10
 
     ---
 
@@ -45,8 +57,8 @@ MonoBehaviour:
 
     CardCook:
 
-    sukiyakix50
-    (point:2 cost:Meatx2, Vegetablex1, )
+    sukiyaki
+    (point:2 cost:Meatx2, Vegetablex2, )x50
 
     ---
 

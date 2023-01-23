@@ -14,10 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: sukiyaki
   cardType: 0
-  num: 50
   point: 2
   cost:
   - mCostType: 1
     mNum: 2
   - mCostType: 3
-    mNum: 0
+    mNum: 2

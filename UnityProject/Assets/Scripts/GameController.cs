@@ -13,10 +13,11 @@ public class GameController : NetworkBehaviour
 	BattleData mData;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	public BattleData GetData => mData;
-	GameInfo gameInfo { get; set; }
+	public GameInfo gameInfo { get; set; }
 	UserList mUserList;
 	Dictionary<string, Player> mPlayers;
 	public bool isStart => gameInfo != null;
+	public Player GetCurrentTurnPlayer => mPlayers[gameInfo.GetCurrentTurnPlayer];
 	public bool IsTurnPlayer(Player inPlayer)
 	{
 		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
@@ -93,7 +94,7 @@ public class GameController : NetworkBehaviour
 		if(gameInfo != null && gameInfo.IsStart)
 		{
 			gameInfo.Pick(inDeck, inCard);
-			mTable.Apply(gameInfo, this);
+			mTable.Apply(this);
 		}
 	}
 	[ClientRpc]
@@ -108,7 +109,7 @@ public class GameController : NetworkBehaviour
 			mPlayers.Add(player.id, player);
 		}
 		gameInfo.GameStart(mData, randomSeed.Value, mPlayers, mPlayerChairs);
-		mTable.Apply(gameInfo, this);
+		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}
 	void ApplyPlayer(ulong inId, UserData inUserData)

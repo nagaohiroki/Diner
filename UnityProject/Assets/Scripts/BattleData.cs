@@ -1,8 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+[System.Serializable]
+public class CardCounter
+{
 #if UNITY_EDITOR
-using UnityEditor;
+	[SerializeField]
+	string id;
 #endif
+	[SerializeField]
+	CardData mCard;
+	[SerializeField]
+	int mNum;
+	public CardData GetCard => mCard;
+	public int GetNum => mNum;
+	public override string ToString()
+	{
+		return $"{mCard} x{mNum}";
+	}
+#if UNITY_EDITOR
+	public void OnValidate()
+	{
+		id = ToString();
+	}
+#endif
+}
 [System.Serializable]
 public class DeckData
 {
@@ -11,17 +32,17 @@ public class DeckData
 	[SerializeField]
 	int supply;
 	[SerializeField]
-	List<CardData> mCardData;
+	List<CardCounter> mCard;
 	public string GetId => id;
 	public int GetSupply => supply;
 	public List<CardData> GenerateCardList()
 	{
 		var list = new List<CardData>();
-		foreach(var card in mCardData)
+		foreach(var card in mCard)
 		{
 			for(int i = 0; i < card.GetNum; i++)
 			{
-				list.Add(card);
+				list.Add(card.GetCard);
 			}
 		}
 		return list;
@@ -30,7 +51,7 @@ public class DeckData
 	{
 		var log = $"{id}:\n";
 		int total = 0;
-		foreach(var card in mCardData)
+		foreach(var card in mCard)
 		{
 			log += $"{card}\n";
 			total += card.GetNum;
@@ -41,19 +62,9 @@ public class DeckData
 #if UNITY_EDITOR
 	public void OnValidate()
 	{
-		mCardData.Clear();
-		var paths = AssetDatabase.GetAllAssetPaths();
-		foreach(var path in paths)
+		foreach(var card in mCard)
 		{
-			if(!path.Contains($"{id}"))
-			{
-				continue;
-			}
-			var cardData = AssetDatabase.LoadAssetAtPath<CardData>(path);
-			if(cardData != null)
-			{
-				mCardData.Add(cardData);
-			}
+			card.OnValidate();
 		}
 	}
 #endif
@@ -77,11 +88,8 @@ public class BattleData : ScriptableObject
 		return log;
 	}
 #if UNITY_EDITOR
-	[Multiline(30)]
-	public string Info;
 	public void OnValidate()
 	{
-		Info = ToString();
 		foreach(var deck in deckList)
 		{
 			deck.OnValidate();
