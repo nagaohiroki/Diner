@@ -8,10 +8,24 @@ public class Player : NetworkBehaviour
 	LayerMask mFocusLayerMask;
 	[SerializeField]
 	TextMeshPro mName;
+	[SerializeField]
+	GameObject mModel;
 	PlayerInput mInput;
 	GameController mGameController;
+	Vector3 mPos;
+	Material mCache;
 	public string id { get; set; }
-	public float rot { get; set; }
+	public float rot
+	{
+		get
+		{
+			return mModel.transform.eulerAngles.y;
+		}
+		set
+		{
+			mModel.transform.rotation = Quaternion.Euler(0.0f, value, 0.0f);
+		}
+	}
 	public override void OnNetworkSpawn()
 	{
 		if(IsOwner)
@@ -23,23 +37,21 @@ public class Player : NetworkBehaviour
 	public void Apply(UserData inUserData)
 	{
 		name = inUserData.name;
-		var render = GetComponentInChildren<Renderer>();
+		var render = mModel.GetComponent<Renderer>();
 		render.material.color = inUserData.imageColor;
+		mCache = render.material;
 		mName.text = name;
 		mName.color = inUserData.imageColor;
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
 	{
-		transform.position = inPos;
+		MoveClientRpc(inPos);
 	}
 	[ClientRpc]
 	void MoveClientRpc(Vector3 inPos)
 	{
-		if(!IsServer)
-		{
-			transform.position = inPos;
-		}
+		transform.position = inPos;
 	}
 	void Pick()
 	{
@@ -74,15 +86,8 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		transform.position += new Vector3(v.x, 0.0f, v.y) * Time.deltaTime * 5.0f;
-		if(!IsServer)
-		{
-			MoveServerRpc(transform.position);
-		}
-		else
-		{
-			MoveClientRpc(transform.position);
-		}
+		mPos += new Vector3(v.x, 0.0f, v.y) * Time.deltaTime * 5.0f;
+		MoveServerRpc(mPos);
 	}
 	void Update()
 	{
@@ -91,5 +96,13 @@ public class Player : NetworkBehaviour
 			Move();
 			Pick();
 		}
+	}
+	public override void OnDestroy()
+	{
+		if(mCache != null)
+		{
+			Destroy(mCache);
+		}
+		base.OnDestroy();
 	}
 }

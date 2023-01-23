@@ -19,7 +19,7 @@ public class PlayerChairs : MonoBehaviour
 	{
 		new List<Dir>{Dir.Down},
 		new List<Dir>{Dir.Down, Dir.Up},
-		new List<Dir>{Dir.Down, Dir.UpLeft, Dir.UpRight},
+		new List<Dir>{Dir.Down, Dir.Left, Dir.Right},
 		new List<Dir>{Dir.Down, Dir.Left, Dir.Up, Dir.Right},
 		new List<Dir>{Dir.Down, Dir.Left, Dir.UpLeft, Dir.UpRight, Dir.Right},
 	};
