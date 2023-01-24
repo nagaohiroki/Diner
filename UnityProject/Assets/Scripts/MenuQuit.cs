@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using TMPro;
-using MemoryPack;
 public class MenuQuit : MonoBehaviour
 {
 	[SerializeField]
@@ -9,12 +8,12 @@ public class MenuQuit : MonoBehaviour
 	[SerializeField]
 	GameObject mPassword;
 	const string mDefaultText = "Password";
+	public string password{private get;set;}
 	public void TogglePassword(TextMeshProUGUI inText)
 	{
 		if(inText.text == mDefaultText)
 		{
-			var connectionData = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
-			inText.text = connectionData.password;
+			inText.text = password;
 			return;
 		}
 		inText.text = mDefaultText;

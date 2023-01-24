@@ -1,10 +1,6 @@
 ﻿using UnityEngine;
 public class MenuRoot : MonoBehaviour
 {
-	[SerializeField]
-	MenuResult mMenuResult;
-	[SerializeField]
-	MenuBoot mMenuBoot;
 	public void Switch(GameObject inActive)
 	{
 		int count = transform.childCount;
@@ -14,13 +10,11 @@ public class MenuRoot : MonoBehaviour
 			child.gameObject.SetActive(child.gameObject == inActive);
 		}
 	}
-	public void Result(Player inWinner)
+	public T SwitchMenu<T>() where T : MonoBehaviour
 	{
-		mMenuResult.SetText($"{inWinner.name} is Win!!");
-		Switch(mMenuResult.gameObject);
+		var menu = GetComponentInChildren<T>(true);
+		Switch(menu.gameObject);
+		return menu;
 	}
-	public void Boot()
-	{
-		Switch(mMenuBoot.gameObject);
-	}
+
 }

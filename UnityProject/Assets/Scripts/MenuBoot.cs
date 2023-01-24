@@ -23,6 +23,11 @@ public class MenuBoot : MonoBehaviour
 			UserData.Save(userData);
 		}
 	}
+	public void ResetUser()
+	{
+		userData = UserData.NewSaveData();
+		Apply();
+	}
 	public void Load()
 	{
 		userData = UserData.Load();

@@ -56,7 +56,7 @@ public class GameController : NetworkBehaviour
 	public void Clear()
 	{
 		NetworkManager.Singleton.Shutdown();
-		mMenuRoot.Boot();
+		mMenuRoot.SwitchMenu<MenuBoot>();
 		gameInfo = null;
 		mTable.Clear();
 		if(IsServer)

@@ -17,7 +17,9 @@ public class Table : MonoBehaviour
 		var winner = inGameController.gameInfo.GetWinner();
 		if(winner != null)
 		{
-			mMenuRoot.Result(inGameController.GetPlayer(winner));
+			var result = mMenuRoot.SwitchMenu<MenuResult>();
+			var player = inGameController.GetPlayer(winner);
+			result.SetText($"{player.name} is Win!!");
 			return;
 		}
 		LeanTween.delayedCall(1.0f, () =>

@@ -61,9 +61,8 @@ public partial class UserData
 public partial class ConnectionData
 {
 	public UserData user { get; set; }
-	public string password { get; set; }
 	public override string ToString()
 	{
-		return $"password:{password}, {user}";
+		return $"{user}";
 	}
 }
