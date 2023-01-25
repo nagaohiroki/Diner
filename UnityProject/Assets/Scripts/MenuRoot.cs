@@ -29,4 +29,8 @@ public class MenuRoot : MonoBehaviour
 		Switch(menu.gameObject);
 		return menu;
 	}
+	public void QuitApplication()
+	{
+		Application.Quit();
+	}
 }

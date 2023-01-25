@@ -19,7 +19,7 @@ public class GameController : NetworkBehaviour
 	UserList mUserList;
 	Dictionary<string, Player> mPlayers;
 	public bool isStart => gameInfo != null;
-	public Player GetCurrentTurnPlayer => mPlayers[gameInfo.GetCurrentTurnPlayer];
+	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
 	public bool IsTurnPlayer(Player inPlayer)
 	{
 		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
@@ -66,7 +66,11 @@ public class GameController : NetworkBehaviour
 	}
 	public Player GetPlayer(string inId)
 	{
-		return mPlayers[inId];
+		if(mPlayers.TryGetValue(inId, out var player))
+		{
+			return player;
+		}
+		return null;
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void AddUserServerRpc(ulong inId, byte[] inUserData)

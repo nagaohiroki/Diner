@@ -12,15 +12,12 @@ public class NetworkSelector : MonoBehaviour
 		mMenuRoot.SwitchMenu<MenuLoading>();
 		StartCoroutine(RelaySetting.StartHost(5, (result, code) =>
 		{
-			if(result)
+			if(result && NetworkManager.Singleton.StartHost())
 			{
-				NetworkManager.Singleton.StartHost();
 				mMenuRoot.SwitchMenu<MenuQuit>().password = code;
+				return;
 			}
-			else
-			{
-				mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuCreate>()).AddText("Error!!");
-			}
+			mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuCreate>()).AddText("Error!!");
 		}));
 	}
 	public void StartClient(MenuJoin inJoin)
@@ -30,15 +27,12 @@ public class NetworkSelector : MonoBehaviour
 		mMenuRoot.SwitchMenu<MenuLoading>();
 		StartCoroutine(RelaySetting.StartClient(menu.GetPassword, result =>
 		{
-			if(result)
+			if(result && NetworkManager.Singleton.StartClient())
 			{
-				NetworkManager.Singleton.StartClient();
 				mMenuRoot.SwitchMenu<MenuQuit>();
+				return;
 			}
-			else
-			{
-				mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuJoin>()).AddText("Error!!");
-			}
+			mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuJoin>()).AddText("Error!!");
 		}));
 	}
 	public void StartServer()
