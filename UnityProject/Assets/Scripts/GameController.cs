@@ -82,7 +82,6 @@ public class GameController : NetworkBehaviour
 		{
 			AddUserClientRpc(user.Key, MemoryPackSerializer.Serialize(user.Value));
 		}
-
 		Debug.Log(mUserList);
 	}
 	[ClientRpc]

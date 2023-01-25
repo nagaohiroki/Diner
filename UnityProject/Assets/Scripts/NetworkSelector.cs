@@ -5,6 +5,19 @@ public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuRoot mMenuRoot;
+	public void StartLocalHost()
+	{
+		SetupUser();
+		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+		NetworkManager.Singleton.StartHost();
+		mMenuRoot.SwitchMenu<MenuQuit>();
+	}
+	public void StartLocalClient()
+	{
+		SetupUser();
+		NetworkManager.Singleton.StartClient();
+		mMenuRoot.SwitchMenu<MenuQuit>();
+	}
 	public void StartHost()
 	{
 		SetupUser();
