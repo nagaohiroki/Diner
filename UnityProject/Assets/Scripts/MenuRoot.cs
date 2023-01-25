@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 public class MenuRoot : MonoBehaviour
 {
+	[SerializeField]
+	MenuDialog mMenuDialogPrefab;
 	public void Switch(GameObject inActive)
 	{
 		int count = transform.childCount;
@@ -16,5 +19,14 @@ public class MenuRoot : MonoBehaviour
 		Switch(menu.gameObject);
 		return menu;
 	}
-
+	public MenuDialog CreateDialog(float inTime = -1.0f, UnityAction inOnEndTimer = null)
+	{
+		var menu = Instantiate(mMenuDialogPrefab);
+		menu.SetTimer(inTime, inOnEndTimer);
+		var rect = menu.GetComponent<RectTransform>();
+		var parent = GetComponent<RectTransform>();
+		rect.SetParent(parent, false);
+		Switch(menu.gameObject);
+		return menu;
+	}
 }

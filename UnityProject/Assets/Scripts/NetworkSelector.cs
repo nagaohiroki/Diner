@@ -19,7 +19,7 @@ public class NetworkSelector : MonoBehaviour
 			}
 			else
 			{
-				mMenuRoot.SwitchMenu<MenuBoot>();
+				mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuCreate>()).AddText("Error!!");
 			}
 		}));
 	}
@@ -37,7 +37,7 @@ public class NetworkSelector : MonoBehaviour
 			}
 			else
 			{
-				mMenuRoot.SwitchMenu<MenuBoot>();
+				mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuJoin>()).AddText("Error!!");
 			}
 		}));
 	}

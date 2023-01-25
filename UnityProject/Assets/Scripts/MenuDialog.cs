@@ -10,6 +10,13 @@ public class MenuDialog : MonoBehaviour
 	Button mButtonPrefab;
 	[SerializeField]
 	RectTransform mRoot;
+	float mTimer;
+	UnityAction mOnEndTimer;
+	public void SetTimer(float inTimer, UnityAction inOnEndTimer)
+	{
+		mTimer = inTimer;
+		mOnEndTimer = inOnEndTimer;
+	}
 	public TextMeshProUGUI AddText(string inText)
 	{
 		var text = Instantiate(mTextPrefab, mRoot);
@@ -28,5 +35,27 @@ public class MenuDialog : MonoBehaviour
 		var button = AddButton(inText, inAction);
 		button.onClick.AddListener(() => Destroy(gameObject));
 		return button;
+	}
+	void DestroyTimer()
+	{
+		if(mTimer < 0.0f)
+		{
+			return;
+		}
+		mTimer -= Time.unscaledDeltaTime;
+		if(mTimer > 0.0f)
+		{
+			return;
+		}
+		mTimer = 0.0f;
+		if(mOnEndTimer != null)
+		{
+			mOnEndTimer();
+		}
+		Destroy(gameObject);
+	}
+	void Update()
+	{
+		DestroyTimer();
 	}
 }
