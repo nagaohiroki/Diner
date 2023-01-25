@@ -10,10 +10,17 @@ public class NetworkSelector : MonoBehaviour
 		SetupUser();
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		mMenuRoot.SwitchMenu<MenuLoading>();
-		StartCoroutine(RelaySetting.StartHost(5, code =>
+		StartCoroutine(RelaySetting.StartHost(5, (result, code) =>
 		{
-			NetworkManager.Singleton.StartHost();
-			mMenuRoot.SwitchMenu<MenuQuit>().password = code;
+			if(result)
+			{
+				NetworkManager.Singleton.StartHost();
+				mMenuRoot.SwitchMenu<MenuQuit>().password = code;
+			}
+			else
+			{
+				mMenuRoot.SwitchMenu<MenuBoot>();
+			}
 		}));
 	}
 	public void StartClient(MenuJoin inJoin)
@@ -21,10 +28,17 @@ public class NetworkSelector : MonoBehaviour
 		SetupUser();
 		var menu = mMenuRoot.GetComponentInChildren<MenuJoin>(true);
 		mMenuRoot.SwitchMenu<MenuLoading>();
-		StartCoroutine(RelaySetting.StartClient(menu.GetPassword, () =>
+		StartCoroutine(RelaySetting.StartClient(menu.GetPassword, result =>
 		{
-			NetworkManager.Singleton.StartClient();
-			mMenuRoot.SwitchMenu<MenuQuit>();
+			if(result)
+			{
+				NetworkManager.Singleton.StartClient();
+				mMenuRoot.SwitchMenu<MenuQuit>();
+			}
+			else
+			{
+				mMenuRoot.SwitchMenu<MenuBoot>();
+			}
 		}));
 	}
 	public void StartServer()
