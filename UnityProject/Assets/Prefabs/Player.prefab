@@ -316,6 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1417e130ef9244bb07e771e8807302, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mPlayerPrefab: {fileID: -5002211802294613516}
   mFocusLayerMask:
     serializedVersion: 2
     m_Bits: 64

@@ -4689,6 +4689,7 @@ MonoBehaviour:
   mPlayerChairs: {fileID: 1304763482}
   mData: {fileID: 11400000, guid: a3808732a0137cb4ba5a84edbff3db3d, type: 2}
   mMenuRoot: {fileID: 357220069}
+  mInput: {fileID: 2080498853}
 --- !u!4 &1173965648
 Transform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,5 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 public class Player : NetworkBehaviour
 {
@@ -10,11 +9,11 @@ public class Player : NetworkBehaviour
 	TextMeshPro mName;
 	[SerializeField]
 	GameObject mModel;
-	PlayerInput mInput;
 	GameController mGameController;
 	Vector3 mPos;
 	Material mCache;
-	public string id { get; set; }
+	public string id { get; private set; }
+	public bool isNPC { get; set; }
 	public float rot
 	{
 		get
@@ -28,15 +27,15 @@ public class Player : NetworkBehaviour
 	}
 	public override void OnNetworkSpawn()
 	{
-		if(IsOwner)
+		base.OnNetworkSpawn();
+		if(IsOwner && !isNPC)
 		{
 			mGameController = FindObjectOfType<GameController>();
-			mInput = FindObjectOfType<PlayerInput>();
 		}
-		base.OnNetworkSpawn();
 	}
 	public void Apply(UserData inUserData)
 	{
+		id = inUserData.id;
 		name = inUserData.name;
 		var render = mModel.GetComponent<Renderer>();
 		render.material.color = inUserData.imageColor;
@@ -60,11 +59,12 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		if(!mInput.actions["Fire"].triggered)
+		var input = mGameController.GetInput;
+		if(!input.actions["Fire"].triggered)
 		{
 			return;
 		}
-		var cursor = mInput.actions["Cursor"].ReadValue<Vector2>();
+		var cursor = input.actions["Cursor"].ReadValue<Vector2>();
 		var ray = Camera.main.ScreenPointToRay(cursor);
 		if(!Physics.Raycast(ray, out var hit, Mathf.Infinity, mFocusLayerMask))
 		{
@@ -82,7 +82,7 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		var v = mInput.actions["Move"].ReadValue<Vector2>();
+		var v = mGameController.GetInput.actions["Move"].ReadValue<Vector2>();
 		if(v == Vector2.zero)
 		{
 			return;
@@ -92,10 +92,24 @@ public class Player : NetworkBehaviour
 	}
 	void Update()
 	{
-		if(IsOwner)
+		if(IsOwner && !isNPC)
 		{
 			Move();
 			Pick();
+			if(Input.GetKeyDown(KeyCode.Return))
+			{
+				EntryNpc();
+			}
+		}
+	}
+	void EntryNpc()
+	{
+		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab);
+		if(go.TryGetComponent<Player>(out var player))
+		{
+			player.NetworkObject.Spawn();
+			player.isNPC = true;
+			player.Apply(UserData.NewSaveData());
 		}
 	}
 	public override void OnDestroy()

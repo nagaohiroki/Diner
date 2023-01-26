@@ -64,7 +64,7 @@ public class PlayerChairs : MonoBehaviour
 		for(int i = 0; i < inTurn.Count; ++i)
 		{
 			var player = inPlayers[inTurn[i]];
-			if(player != null && player.IsOwner)
+			if(player != null && player.IsOwner && !player.isNPC)
 			{
 				return i;
 			}

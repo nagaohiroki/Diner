@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using MemoryPack;
+using System.Collections.Generic;
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuRoot mMenuRoot;
+	public Dictionary<ulong, byte[]> connections { get; private set; } = new Dictionary<ulong, byte[]>();
 	public void StartLocalHost()
 	{
 		SetupUser();
@@ -59,6 +61,7 @@ public class NetworkSelector : MonoBehaviour
 	}
 	void SetupUser()
 	{
+		connections.Clear();
 		var data = new ConnectionData();
 		var menuBoot = mMenuRoot.GetComponentInChildren<MenuBoot>(true);
 		menuBoot.Save();

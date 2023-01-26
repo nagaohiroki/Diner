@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityUtility;
 using MemoryPack;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 public class GameController : NetworkBehaviour
 {
@@ -13,13 +14,15 @@ public class GameController : NetworkBehaviour
 	BattleData mData;
 	[SerializeField]
 	MenuRoot mMenuRoot;
+	[SerializeField]
+	PlayerInput mInput;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
+	Dictionary<string, Player> mEntryPlayers;
 	public BattleData GetData => mData;
 	public GameInfo gameInfo { get; set; }
-	UserList mUserList;
-	Dictionary<string, Player> mPlayers;
 	public bool isStart => gameInfo != null;
 	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
+	public PlayerInput GetInput => mInput;
 	public bool IsTurnPlayer(Player inPlayer)
 	{
 		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
@@ -38,9 +41,7 @@ public class GameController : NetworkBehaviour
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
 		}
-		mUserList = new UserList();
-		var cd = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
-		AddUserServerRpc(NetworkManager.LocalClientId, MemoryPackSerializer.Serialize(cd.user));
+		AddUserServerRpc(NetworkManager.LocalClientId, NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		base.OnNetworkSpawn();
 	}
 	public override void OnNetworkDespawn()
@@ -68,33 +69,32 @@ public class GameController : NetworkBehaviour
 	}
 	public Player GetPlayer(string inId)
 	{
-		if(mPlayers.TryGetValue(inId, out var player))
+		if(mEntryPlayers.TryGetValue(inId, out var player))
 		{
 			return player;
 		}
 		return null;
 	}
 	[ServerRpc(RequireOwnership = false)]
-	void AddUserServerRpc(ulong inId, byte[] inUserData)
+	void AddUserServerRpc(ulong inId, byte[] inData)
 	{
-		var data = MemoryPack.MemoryPackSerializer.Deserialize<UserData>(inUserData);
-		ApplyPlayer(inId, data);
-		mUserList.Add(inId, data);
-		foreach(var user in mUserList.userList)
+		var selector = NetworkManager.Singleton.GetComponent<NetworkSelector>();
+		selector.connections.Add(inId, inData);
+		foreach(var data in selector.connections)
 		{
-			AddUserClientRpc(user.Key, MemoryPackSerializer.Serialize(user.Value));
+			AddUserClientRpc(data.Key, data.Value);
 		}
-		Debug.Log(mUserList);
 	}
 	[ClientRpc]
-	void AddUserClientRpc(ulong inId, byte[] inUserData)
+	void AddUserClientRpc(ulong inId, byte[] inData)
 	{
+		var selector = NetworkManager.Singleton.GetComponent<NetworkSelector>();
 		if(!IsServer)
 		{
-			var data = MemoryPack.MemoryPackSerializer.Deserialize<UserData>(inUserData);
-			mUserList.Add(inId, data);
-			ApplyPlayer(inId, data);
+			selector.connections.Add(inId, inData);
 		}
+		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
+		ApplyPlayer(inId, data.user);
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
@@ -114,14 +114,13 @@ public class GameController : NetworkBehaviour
 	void GameStartClientRpc()
 	{
 		var players = FindObjectsOfType<Player>();
-		mPlayers = new Dictionary<string, Player>();
+		mEntryPlayers = new Dictionary<string, Player>();
 		gameInfo = new GameInfo();
 		foreach(var player in players)
 		{
-			player.id = mUserList.userList[player.OwnerClientId].id;
-			mPlayers.Add(player.id, player);
+			mEntryPlayers.Add(player.id, player);
 		}
-		gameInfo.GameStart(mData, randomSeed.Value, mPlayers, mPlayerChairs);
+		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}
