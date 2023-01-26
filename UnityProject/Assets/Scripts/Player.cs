@@ -33,6 +33,7 @@ public class Player : NetworkBehaviour
 			mGameController = FindObjectOfType<GameController>();
 			mInput = FindObjectOfType<PlayerInput>();
 		}
+		base.OnNetworkSpawn();
 	}
 	public void Apply(UserData inUserData)
 	{
@@ -40,7 +41,7 @@ public class Player : NetworkBehaviour
 		var render = mModel.GetComponent<Renderer>();
 		render.material.color = inUserData.imageColor;
 		mCache = render.material;
-		mName.text = name;
+		mName.text = inUserData.name;
 		mName.color = inUserData.imageColor;
 	}
 	[ServerRpc]

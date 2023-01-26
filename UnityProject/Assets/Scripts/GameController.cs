@@ -41,10 +41,12 @@ public class GameController : NetworkBehaviour
 		mUserList = new UserList();
 		var cd = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		AddUserServerRpc(NetworkManager.LocalClientId, MemoryPackSerializer.Serialize(cd.user));
+		base.OnNetworkSpawn();
 	}
 	public override void OnNetworkDespawn()
 	{
 		Clear();
+		base.OnNetworkDespawn();
 	}
 	public void GameStart()
 	{
