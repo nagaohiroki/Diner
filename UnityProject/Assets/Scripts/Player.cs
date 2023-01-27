@@ -36,6 +36,14 @@ public class Player : NetworkBehaviour
 		}
 		SpawnServerRpc(OwnerClientId, NetworkObjectId, mNpcLevel);
 	}
+	public override void OnDestroy()
+	{
+		if(mCache != null)
+		{
+			Destroy(mCache);
+		}
+		base.OnDestroy();
+	}
 	public void Apply(UserData inUserData, int inNpcLevel)
 	{
 		id = inUserData.id;
@@ -127,26 +135,18 @@ public class Player : NetworkBehaviour
 			Pick();
 			if(Input.GetKeyDown(KeyCode.Return))
 			{
-				EntryNpc();
+				EntryNpc(1);
 			}
 		}
 	}
-	void EntryNpc()
+	void EntryNpc(int inNpcLevel)
 	{
 		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab);
 		if(go.TryGetComponent<Player>(out var player))
 		{
-			player.mNpcLevel = 1;
+			player.mNpcLevel = inNpcLevel;
 			player.NetworkObject.Spawn();
 		}
-	}
-	public override void OnDestroy()
-	{
-		if(mCache != null)
-		{
-			Destroy(mCache);
-		}
-		base.OnDestroy();
 	}
 	UserData GetNpcData(int inNpcLevel)
 	{
