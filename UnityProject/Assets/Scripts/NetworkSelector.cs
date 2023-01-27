@@ -6,7 +6,7 @@ public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
 	MenuRoot mMenuRoot;
-	public Dictionary<ulong, byte[]> connections { get; private set; } = new Dictionary<ulong, byte[]>();
+	public Dictionary<ulong, byte[]> connectionsData { get; private set; } = new Dictionary<ulong, byte[]>();
 	public void StartLocalHost()
 	{
 		SetupUser();
@@ -52,6 +52,7 @@ public class NetworkSelector : MonoBehaviour
 	}
 	public void StartServer()
 	{
+		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartServer();
 	}
 	public void Logout()
@@ -61,7 +62,7 @@ public class NetworkSelector : MonoBehaviour
 	}
 	void SetupUser()
 	{
-		connections.Clear();
+		connectionsData.Clear();
 		var data = new ConnectionData();
 		var menuBoot = mMenuRoot.GetComponentInChildren<MenuBoot>(true);
 		menuBoot.Save();
@@ -71,14 +72,13 @@ public class NetworkSelector : MonoBehaviour
 	}
 	void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 	{
-		var payload = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
-		var myData = MemoryPackSerializer.Deserialize<ConnectionData>(NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		response.Approved = true;
 		response.CreatePlayerObject = true;
 		response.PlayerPrefabHash = null;
 		response.Position = Vector3.zero;
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
+		connectionsData.Add(request.ClientNetworkId, request.Payload);
 	}
 	void Awake()
 	{

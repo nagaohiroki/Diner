@@ -1,7 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using UnityUtility;
-using MemoryPack;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 public class GameController : NetworkBehaviour
@@ -41,7 +40,6 @@ public class GameController : NetworkBehaviour
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
 		}
-		AddUserServerRpc(NetworkManager.LocalClientId, NetworkManager.Singleton.NetworkConfig.ConnectionData);
 		base.OnNetworkSpawn();
 	}
 	public override void OnNetworkDespawn()
@@ -76,27 +74,6 @@ public class GameController : NetworkBehaviour
 		return null;
 	}
 	[ServerRpc(RequireOwnership = false)]
-	void AddUserServerRpc(ulong inId, byte[] inData)
-	{
-		var selector = NetworkManager.Singleton.GetComponent<NetworkSelector>();
-		selector.connections.Add(inId, inData);
-		foreach(var data in selector.connections)
-		{
-			AddUserClientRpc(data.Key, data.Value);
-		}
-	}
-	[ClientRpc]
-	void AddUserClientRpc(ulong inId, byte[] inData)
-	{
-		var selector = NetworkManager.Singleton.GetComponent<NetworkSelector>();
-		if(!IsServer)
-		{
-			selector.connections.Add(inId, inData);
-		}
-		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
-		ApplyPlayer(inId, data.user);
-	}
-	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
 	{
 		PickClientRpc(inDeck, inCard);
@@ -118,21 +95,13 @@ public class GameController : NetworkBehaviour
 		gameInfo = new GameInfo();
 		foreach(var player in players)
 		{
-			mEntryPlayers.Add(player.id, player);
+			if(!mEntryPlayers.ContainsKey(player.id))
+			{
+				mEntryPlayers.Add(player.id, player);
+			}
 		}
 		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
-	}
-	void ApplyPlayer(ulong inId, UserData inUserData)
-	{
-		var players = FindObjectsOfType<Player>();
-		foreach(var player in players)
-		{
-			if(player.OwnerClientId == inId)
-			{
-				player.Apply(inUserData);
-			}
-		}
 	}
 }

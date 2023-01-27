@@ -1,6 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+using MemoryPack;
 public class Player : NetworkBehaviour
 {
 	[SerializeField]
@@ -13,7 +14,8 @@ public class Player : NetworkBehaviour
 	Vector3 mPos;
 	Material mCache;
 	public string id { get; private set; }
-	public bool isNPC { get; set; }
+	public bool isNPC => mNpcLevel > 0;
+	int mNpcLevel;
 	public float rot
 	{
 		get
@@ -32,8 +34,9 @@ public class Player : NetworkBehaviour
 		{
 			mGameController = FindObjectOfType<GameController>();
 		}
+		SpawnServerRpc(OwnerClientId, NetworkObjectId, mNpcLevel);
 	}
-	public void Apply(UserData inUserData)
+	public void Apply(UserData inUserData, int inNpcLevel)
 	{
 		id = inUserData.id;
 		name = inUserData.name;
@@ -42,6 +45,32 @@ public class Player : NetworkBehaviour
 		mCache = render.material;
 		mName.text = inUserData.name;
 		mName.color = inUserData.imageColor;
+		mNpcLevel = inNpcLevel;
+	}
+	[ServerRpc(RequireOwnership = false)]
+	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId, int inNpcLevel)
+	{
+		if(inNpcLevel > 0)
+		{
+			SpawnClientRpc(null, inNpcLevel);
+			return;
+		}
+		var id = NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId;
+		if(inNetworkObjectId == id)
+		{
+			var dataList = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData;
+			SpawnClientRpc(dataList[inClientId]);
+		}
+	}
+	[ClientRpc]
+	void SpawnClientRpc(byte[] inData, int inNpcLevel = 0)
+	{
+		if(inNpcLevel > 0)
+		{
+			Apply(GetNpcData(inNpcLevel), inNpcLevel);
+			return;
+		}
+		Apply(MemoryPackSerializer.Deserialize<ConnectionData>(inData).user, inNpcLevel);
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
@@ -107,9 +136,8 @@ public class Player : NetworkBehaviour
 		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab);
 		if(go.TryGetComponent<Player>(out var player))
 		{
+			player.mNpcLevel = 1;
 			player.NetworkObject.Spawn();
-			player.isNPC = true;
-			player.Apply(UserData.NewSaveData());
 		}
 	}
 	public override void OnDestroy()
@@ -119,5 +147,24 @@ public class Player : NetworkBehaviour
 			Destroy(mCache);
 		}
 		base.OnDestroy();
+	}
+	UserData GetNpcData(int inNpcLevel)
+	{
+		int count = 0;
+		var players = FindObjectsOfType<Player>();
+		foreach(var player in players)
+		{
+			if(player.isNPC)
+			{
+				++count;
+			}
+		}
+		var level = $"NPC_{inNpcLevel}:{count}";
+		return new UserData
+		{
+			name = level,
+			id = level,
+			imageColorCode = System.Convert.ToInt32(ColorUtility.ToHtmlStringRGB(Color.blue), 16)
+		};
 	}
 }

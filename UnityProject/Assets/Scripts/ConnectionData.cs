@@ -31,7 +31,7 @@ public partial class UserData
 		return new UserData
 		{
 			name = $"user#{RandomObject.GetGlobal.Range(0, 10000).ToString("D4")}",
-			id = System.Guid.NewGuid().ToString(),
+			id = $"user_{System.Guid.NewGuid().ToString()}",
 			imageColorCode = GenerateRandomColor()
 		};
 	}
