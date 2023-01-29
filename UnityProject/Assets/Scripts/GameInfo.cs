@@ -76,11 +76,7 @@ public class GameInfo
 		var list = new List<int>();
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			if(deck.deckData.GetSupply <= list.Count)
-			{
-				break;
-			}
-			if(GetPickTurn(inDeck, card) == -1)
+			if(IsSupply(inDeck, card))
 			{
 				list.Add(card);
 			}
@@ -93,8 +89,7 @@ public class GameInfo
 		{
 			return false;
 		}
-		var player = GetPickPlayer(inDeck, inCard);
-		if(player != null)
+		if(!IsSupply(inDeck, inCard))
 		{
 			return false;
 		}
@@ -139,6 +134,25 @@ public class GameInfo
 		}
 		var card = GetCard(inDeck, inCard);
 		return GetTotalPaidCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
+	}
+	public PickInfo AIPick()
+	{
+		int max = 0;
+		var pick = new PickInfo(-1, -1);
+		for(int deck = 0; deck < mDeck.Count; ++deck)
+		{
+			for(int card = 0; card < GetCardList(deck).Count; ++card)
+			{
+				int score = PickScore(deck, card);
+				if(max < score)
+				{
+					pick.card = card;
+					pick.deck = deck;
+					max = score;
+				}
+			}
+		}
+		return pick;
 	}
 	public string GetWinner()
 	{
@@ -198,6 +212,32 @@ public class GameInfo
 		}
 		return -1;
 	}
+	bool IsSupply(int inDeck, int inCard)
+	{
+		if(GetPickTurn(inDeck, inCard) != -1)
+		{
+			return false;
+		}
+		var deck = mDeck[inDeck];
+		int supply = 0;
+		for(int card = 0; card < deck.GetCardList.Count; ++card)
+		{
+			if(GetPickTurn(inDeck, card) != -1)
+			{
+				continue;
+			}
+			if(card == inCard)
+			{
+				return true;
+			}
+			++supply;
+			if(supply >= deck.deckData.GetSupply)
+			{
+				return false;
+			}
+		}
+		return false;
+	}
 	CardData GetPickCard(int inPickTurn)
 	{
 		var pick = mPickInfo[inPickTurn];
@@ -247,5 +287,13 @@ public class GameInfo
 			}
 		}
 		return num;
+	}
+	int PickScore(int inDeck, int inCard)
+	{
+		if(!CanPick(inDeck, inCard))
+		{
+			return -1;
+		}
+		return 1;
 	}
 }

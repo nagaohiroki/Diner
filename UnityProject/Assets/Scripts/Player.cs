@@ -30,7 +30,7 @@ public class Player : NetworkBehaviour
 	public override void OnNetworkSpawn()
 	{
 		base.OnNetworkSpawn();
-		if(IsOwner && !isNPC)
+		if(IsOwner || (isNPC && IsServer))
 		{
 			mGameController = FindObjectOfType<GameController>();
 		}
@@ -137,10 +137,28 @@ public class Player : NetworkBehaviour
 			{
 				EntryNpc(1);
 			}
+			return;
 		}
+		if(isNPC && IsServer)
+		{
+			NpcPick();
+		}
+	}
+	void NpcPick()
+	{
+		if(!mGameController.IsTurnPlayer(this))
+		{
+			return;
+		}
+		var pick = mGameController.gameInfo.AIPick();
+		mGameController.Pick(pick.deck, pick.card);
 	}
 	void EntryNpc(int inNpcLevel)
 	{
+		if(mGameController.isStart)
+		{
+			return;
+		}
 		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab);
 		if(go.TryGetComponent<Player>(out var player))
 		{
