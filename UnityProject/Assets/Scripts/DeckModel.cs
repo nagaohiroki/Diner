@@ -18,75 +18,11 @@ public class DeckModel : MonoBehaviour
 	MeshRenderer mBackfaceMesh;
 	Material mCache;
 	List<CardModel> mCardModels = new List<CardModel>();
-	void ApplySupply(GameController inGameController)
-	{
-		var deck = inGameController.gameInfo.GetDeck(mId);
-		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
-		int supply = 0;
-		for(int card = 0; card < deck.GetCardList.Count; ++card)
-		{
-			if(inGameController.gameInfo.GetPickPlayer(deckIndex, card) != null)
-			{
-				continue;
-			}
-			var pos = transform.position + mSupplyOffset * (supply + 1);
-			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, card);
-			cardModel.ToSupply(pos, supply);
-			++supply;
-			if(supply >= deck.deckData.GetSupply)
-			{
-				break;
-			}
-		}
-	}
-	void ApplyHand(GameController inGameController)
-	{
-		var deck = inGameController.gameInfo.GetDeck(mId);
-		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
-		var hands = new Dictionary<string, List<CardModel>>();
-		for(int card = 0; card < deck.GetCardList.Count; ++card)
-		{
-			var playerId = inGameController.gameInfo.GetPickPlayer(deckIndex, card);
-			if(playerId == null)
-			{
-				continue;
-			}
-			List<CardModel> cards;
-			if(!hands.TryGetValue(playerId, out cards))
-			{
-				cards = new List<CardModel>();
-				hands.Add(playerId, cards);
-			}
-			var model = CreateCardModel(inGameController.gameInfo, deckIndex, card);
-			if(inGameController.gameInfo.IsDiscard(deckIndex, card))
-			{
-				model.gameObject.SetActive(false);
-				continue;
-			}
-			cards.Add(model);
-		}
-		float handScale = 0.5f;
-		var cardOffset = new Vector3(0.6f, 0.0f, 1.0f);
-		var deckOffest = 0.5f;
-		foreach(var hand in hands)
-		{
-			var cardList = hand.Value;
-			cardList.Sort((a, b) => SortHand(a, b, inGameController));
-			for(int card = 0; card < cardList.Count; card++)
-			{
-				var cardModel = cardList[card];
-				var pickPlayer = inGameController.GetPlayer(hand.Key);
-				var cardPos = new Vector3(-cardOffset.x * cardList.Count * 0.5f + cardOffset.x * card, 0.0f, cardOffset.z * cardModel.deckIndex + deckOffest);
-				LeanTween.move(cardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
-				LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, 0.3f);
-				LeanTween.scale(cardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
-			}
-		}
-	}
 	public void Apply(GameController inGameController)
 	{
 		ApplySupply(inGameController);
 		ApplyHand(inGameController);
+		ApplyDiscard(inGameController);
 	}
 	public void Clear()
 	{
@@ -96,11 +32,56 @@ public class DeckModel : MonoBehaviour
 		}
 		mCardModels.Clear();
 	}
-	int SortHand(CardModel inA, CardModel inB, GameController inGameController)
+	void ApplySupply(GameController inGameController)
 	{
-		var info = inGameController.gameInfo;
-		var b = info.GetCard(inB.deckIndex, inB.cardIndex);
-		var a = info.GetCard(inA.deckIndex, inA.cardIndex);
+		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
+		var supplyList = inGameController.gameInfo.Supply(deckIndex);
+		for(int supply = 0; supply < supplyList.Count; supply++)
+		{
+			var pos = transform.position + mSupplyOffset * (supply + 1);
+			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, supplyList[supply]);
+			cardModel.ToSupply(pos, supply);
+		}
+	}
+	void ApplyHand(GameController inGameController)
+	{
+		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
+		var hands = inGameController.gameInfo.Hand(deckIndex);
+		float handScale = 0.5f;
+		var cardOffset = new Vector3(0.6f, 0.0f, 1.0f);
+		var deckOffest = 0.5f;
+		foreach(var hand in hands)
+		{
+			var cardList = hand.Value;
+			cardList.Sort((a, b) => Sort(inGameController.gameInfo, deckIndex, a, b));
+			for(int card = 0; card < cardList.Count; card++)
+			{
+				var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, cardList[card]);
+				var pickPlayer = inGameController.GetPlayer(hand.Key);
+				var cardPos = new Vector3(-cardOffset.x * cardList.Count * 0.5f + cardOffset.x * card, 0.0f, cardOffset.z * cardModel.deckIndex + deckOffest);
+				LeanTween.move(cardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
+				LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, 0.3f);
+				LeanTween.scale(cardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
+			}
+		}
+	}
+	void ApplyDiscard(GameController inGameController)
+	{
+		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
+		var cardList = inGameController.gameInfo.GetCardList(deckIndex);
+		for(int card = 0; card < cardList.Count; ++card)
+		{
+			if(inGameController.gameInfo.IsDiscard(deckIndex, card))
+			{
+				var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, card);
+				cardModel.gameObject.SetActive(false);
+			}
+		}
+	}
+	int Sort(GameInfo inInfo, int inDeck, int inA, int inB)
+	{
+		var b = inInfo.GetCard(inDeck, inB);
+		var a = inInfo.GetCard(inDeck, inA);
 		return b.GetCardType - a.GetCardType;
 	}
 	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)

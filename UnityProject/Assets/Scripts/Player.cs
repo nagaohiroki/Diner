@@ -13,9 +13,9 @@ public class Player : NetworkBehaviour
 	GameController mGameController;
 	Vector3 mPos;
 	Material mCache;
+	int mNpcLevel;
 	public string id { get; private set; }
 	public bool isNPC => mNpcLevel > 0;
-	int mNpcLevel;
 	public float rot
 	{
 		get

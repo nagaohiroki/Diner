@@ -46,6 +46,47 @@ public class GameInfo
 	{
 		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
 	}
+	public Dictionary<string, List<int>> Hand(int inDeck)
+	{
+		var cardList = GetCardList(inDeck);
+		var hand = new Dictionary<string, List<int>>();
+		for(int card = 0; card < cardList.Count; ++card)
+		{
+			foreach(var player in mTurnPlayers)
+			{
+				if(!hand.ContainsKey(player))
+				{
+					hand[player] = new List<int>();
+				}
+				if(GetPickPlayer(inDeck, card) == player)
+				{
+					if(!IsDiscard(inDeck, card))
+					{
+						hand[player].Add(card);
+					}
+				}
+			}
+		}
+		return hand;
+	}
+	public List<int> Supply(int inDeck)
+	{
+		var deck = mDeck[inDeck];
+		var cardList = GetCardList(inDeck);
+		var list = new List<int>();
+		for(int card = 0; card < cardList.Count; ++card)
+		{
+			if(deck.deckData.GetSupply <= list.Count)
+			{
+				break;
+			}
+			if(GetPickTurn(inDeck, card) == -1)
+			{
+				list.Add(card);
+			}
+		}
+		return list;
+	}
 	public bool CanPick(int inDeck, int inCard)
 	{
 		if(GetWinner() != null)
@@ -89,30 +130,15 @@ public class GameInfo
 	{
 		return GetCardList(inDeck)[inCard];
 	}
-	public (int index, int max) GetHand(int inDeck, int inCard, string inPlayer)
-	{
-		var cards = GetCardList(inDeck);
-		int handIndex = 0;
-		int handMax = 0;
-		for(int i = 0; i < cards.Count; i++)
-		{
-			if(GetPickPlayer(inDeck, i) != inPlayer || IsDiscard(inDeck, i))
-			{
-				continue;
-			}
-			if(inCard == i)
-			{
-				handIndex = handMax;
-			}
-			++handMax;
-		}
-		return (handIndex, handMax);
-	}
 	public bool IsDiscard(int inDeck, int inCard)
 	{
-		var card = GetCard(inDeck, inCard);
 		var player = GetPickPlayer(inDeck, inCard);
-		return GetTotalCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
+		if(player == null)
+		{
+			return false;
+		}
+		var card = GetCard(inDeck, inCard);
+		return GetTotalPaidCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
 	}
 	public string GetWinner()
 	{
@@ -187,7 +213,7 @@ public class GameInfo
 		foreach(var newCost in card.GetCost)
 		{
 			int resource = GetTotalResource(inPlayer, newCost.GetCostType);
-			int cost = newCost.GetNum + GetTotalCost(inPlayer, newCost.GetCostType);
+			int cost = newCost.GetNum + GetTotalPaidCost(inPlayer, newCost.GetCostType);
 			if(cost > resource)
 			{
 				return false;
@@ -195,7 +221,7 @@ public class GameInfo
 		}
 		return true;
 	}
-	int GetTotalCost(string inPlayer, CardData.CardType inCardType)
+	int GetTotalPaidCost(string inPlayer, CardData.CardType inCardType)
 	{
 		int num = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
