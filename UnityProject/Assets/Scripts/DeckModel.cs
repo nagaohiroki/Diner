@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 public class DeckModel : MonoBehaviour
 {
 	[SerializeField]
@@ -17,20 +16,18 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	MeshRenderer mBackfaceMesh;
 	Material mCache;
-	List<CardModel> mCardModels = new List<CardModel>();
-	public void Apply(GameController inGameController)
+	Transform mCardRoot;
+	public void Apply(GameController inGameController, Transform inCardRoot)
 	{
+		if(mCardRoot == null)
+		{
+			var root = new GameObject(mId);
+			root.transform.SetParent(inCardRoot);
+			mCardRoot = root.transform;
+		}
 		ApplySupply(inGameController);
 		ApplyHand(inGameController);
 		ApplyDiscard(inGameController);
-	}
-	public void Clear()
-	{
-		foreach(var card in mCardModels)
-		{
-			Destroy(card.gameObject);
-		}
-		mCardModels.Clear();
 	}
 	void ApplySupply(GameController inGameController)
 	{
@@ -86,18 +83,21 @@ public class DeckModel : MonoBehaviour
 	}
 	CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)
 	{
-		foreach(var card in mCardModels)
+		for(int i = 0; i < mCardRoot.childCount; ++i)
 		{
-			if(card.cardIndex == inCard)
+			var child = mCardRoot.GetChild(i);
+			if(child.TryGetComponent<CardModel>(out var card))
 			{
-				return card;
+				if(card.cardIndex == inCard)
+				{
+					return card;
+				}
 			}
 		}
 		var pos = transform.position;
 		var cardPos = new Vector3(pos.x, mRoot.transform.position.y, pos.z);
-		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f));
+		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f), mCardRoot);
 		cardModel.Create(inInfo, inDeck, inCard, mBackface);
-		mCardModels.Add(cardModel);
 		return cardModel;
 	}
 	void SetNum(float inBaseScale, int inNum)

@@ -76,7 +76,8 @@ public class GameInfo
 		var list = new List<int>();
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			if(IsSupply(inDeck, card))
+			int supply = Supply(inDeck, card);
+			if(supply != -1)
 			{
 				list.Add(card);
 			}
@@ -89,7 +90,7 @@ public class GameInfo
 		{
 			return false;
 		}
-		if(!IsSupply(inDeck, inCard))
+		if(Supply(inDeck, inCard) == -1)
 		{
 			return false;
 		}
@@ -212,11 +213,11 @@ public class GameInfo
 		}
 		return -1;
 	}
-	bool IsSupply(int inDeck, int inCard)
+	int Supply(int inDeck, int inCard)
 	{
 		if(GetPickTurn(inDeck, inCard) != -1)
 		{
-			return false;
+			return -1;
 		}
 		var deck = mDeck[inDeck];
 		int supply = 0;
@@ -228,15 +229,15 @@ public class GameInfo
 			}
 			if(card == inCard)
 			{
-				return true;
+				return supply;
 			}
 			++supply;
 			if(supply >= deck.deckData.GetSupply)
 			{
-				return false;
+				break;
 			}
 		}
-		return false;
+		return -1;
 	}
 	CardData GetPickCard(int inPickTurn)
 	{

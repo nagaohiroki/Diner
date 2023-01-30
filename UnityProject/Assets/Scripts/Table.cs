@@ -8,11 +8,17 @@ public class Table : MonoBehaviour
 	MenuRoot mMenuRoot;
 	[SerializeField]
 	List<DeckModel> mDeckModels;
+	GameObject mCardRoot;
+	public bool IsTween => IsTweenCard(mCardRoot);
 	public void Apply(GameController inGameController)
 	{
+		if(mCardRoot == null)
+		{
+			mCardRoot = new GameObject("CardRoot");
+		}
 		foreach(var deck in mDeckModels)
 		{
-			deck.Apply(inGameController);
+			deck.Apply(inGameController, mCardRoot.transform);
 		}
 		var winner = inGameController.gameInfo.GetWinner();
 		if(winner != null)
@@ -31,9 +37,22 @@ public class Table : MonoBehaviour
 	}
 	public void Clear()
 	{
-		foreach(var deck in mDeckModels)
+		Destroy(mCardRoot);
+	}
+	bool IsTweenCard(GameObject inGameObject)
+	{
+		if(LeanTween.isTweening(inGameObject))
 		{
-			deck.Clear();
+			return true;
 		}
+		for(int i = 0; i < inGameObject.transform.childCount; ++i)
+		{
+			var child = inGameObject.transform.GetChild(i);
+			if(IsTweenCard(child.gameObject))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

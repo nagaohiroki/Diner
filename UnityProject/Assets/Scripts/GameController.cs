@@ -32,6 +32,10 @@ public class GameController : NetworkBehaviour
 		{
 			return;
 		}
+		if (mTable.IsTween)
+		{
+		    return;
+		}
 		PickServerRpc(inDeck, inCard);
 	}
 	public override void OnNetworkSpawn()
