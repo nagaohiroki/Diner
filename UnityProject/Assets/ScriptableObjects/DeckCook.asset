@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785d45cd6d53b0a40b9baf7107ca015e, type: 3}
+  m_Name: DeckCook
+  m_EditorClassIdentifier: 
+  id: CardCook
+  supply: 4
+  mCard:
+  - id: Hanburg (point:2 cost:Meatx1, Vegetablex1, ) x50
+    mCard: {fileID: 11400000, guid: cdc07c244570a2b4786ab2341d976f5e, type: 2}
+    mNum: 50
+  - id: sukiyaki (point:4 cost:Meatx2, Vegetablex2, ) x50
+    mCard: {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
+    mNum: 50
+  - id: okonomiyaki (point:5 cost:Meatx1, Vegetablex1, SeaFoodx1, Milkx1, Spicesx1,
+      ) x50
+    mCard: {fileID: 11400000, guid: dcdeddf6820b3ef40bee8c9b7b07d4b3, type: 2}
+    mNum: 50

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785d45cd6d53b0a40b9baf7107ca015e, type: 3}
+  m_Name: DeckFood
+  m_EditorClassIdentifier: 
+  id: CardFood
+  supply: 6
+  mCard:
+  - id: Meat x20
+    mCard: {fileID: 11400000, guid: 0bb29988605ad794791074f47c1aac8d, type: 2}
+    mNum: 20
+  - id: Milk x20
+    mCard: {fileID: 11400000, guid: 76d5b6edf1eadbe46b20aed545337f85, type: 2}
+    mNum: 20
+  - id: SeaFood x10
+    mCard: {fileID: 11400000, guid: 95f19590651d29b4387d45249197f454, type: 2}
+    mNum: 10
+  - id: Spices x10
+    mCard: {fileID: 11400000, guid: ecf6888d4720ddf40a36a4eb06a2c9a0, type: 2}
+    mNum: 10
+  - id: Vegetable x20
+    mCard: {fileID: 11400000, guid: 4a38ed016a514614eb40b235ceb847cf, type: 2}
+    mNum: 20
