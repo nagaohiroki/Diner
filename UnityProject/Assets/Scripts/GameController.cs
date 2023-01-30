@@ -15,8 +15,11 @@ public class GameController : NetworkBehaviour
 	MenuRoot mMenuRoot;
 	[SerializeField]
 	PlayerInput mInput;
+	[SerializeField]
+	Vector3 mMoveRange;
 	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
 	Dictionary<string, Player> mEntryPlayers;
+	public Vector3 GetMoveRange => mMoveRange;
 	public BattleData GetData => mData;
 	public GameInfo gameInfo { get; set; }
 	public bool isStart => gameInfo != null;
@@ -32,9 +35,9 @@ public class GameController : NetworkBehaviour
 		{
 			return;
 		}
-		if (mTable.IsTween)
+		if(mTable.IsTween)
 		{
-		    return;
+			return;
 		}
 		PickServerRpc(inDeck, inCard);
 	}
@@ -76,6 +79,33 @@ public class GameController : NetworkBehaviour
 			return player;
 		}
 		return null;
+	}
+	public void AddBot(int inNpcLevel)
+	{
+		if(isStart)
+		{
+			return;
+		}
+		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
+		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
+		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, new Vector3(x, 0.0f, z), Quaternion.identity);
+		if(go.TryGetComponent<Player>(out var player))
+		{
+			player.botLevel = inNpcLevel;
+			player.NetworkObject.Spawn();
+		}
+	}
+	public void RemoveBot()
+	{
+		var players = FindObjectsOfType<Player>();
+		foreach(var player in players)
+		{
+			if(player.isBot)
+			{
+				Destroy(player.gameObject);
+				break;
+			}
+		}
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)

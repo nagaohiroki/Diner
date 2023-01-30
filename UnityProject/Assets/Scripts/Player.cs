@@ -13,9 +13,9 @@ public class Player : NetworkBehaviour
 	GameController mGameController;
 	Vector3 mPos;
 	Material mCache;
-	int mNpcLevel;
+	public int botLevel { private get; set; }
 	public string id { get; private set; }
-	public bool isNPC => mNpcLevel > 0;
+	public bool isBot => botLevel > 0;
 	public float rot
 	{
 		get
@@ -30,11 +30,11 @@ public class Player : NetworkBehaviour
 	public override void OnNetworkSpawn()
 	{
 		base.OnNetworkSpawn();
-		if(IsOwner || (isNPC && IsServer))
+		if(IsOwner || (isBot && IsServer))
 		{
 			mGameController = FindObjectOfType<GameController>();
 		}
-		SpawnServerRpc(OwnerClientId, NetworkObjectId, mNpcLevel);
+		SpawnServerRpc(OwnerClientId, NetworkObjectId, botLevel);
 	}
 	public override void OnDestroy()
 	{
@@ -53,7 +53,7 @@ public class Player : NetworkBehaviour
 		mCache = render.material;
 		mName.text = inUserData.name;
 		mName.color = inUserData.imageColor;
-		mNpcLevel = inNpcLevel;
+		botLevel = inNpcLevel;
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId, int inNpcLevel)
@@ -124,22 +124,21 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
+		var range = mGameController.GetMoveRange;
 		mPos += new Vector3(v.x, 0.0f, v.y) * Time.deltaTime * 5.0f;
+		mPos.x = Mathf.Clamp(mPos.x, -range.x, range.x);
+		mPos.z = Mathf.Clamp(mPos.z, -range.z, range.z);
 		MoveServerRpc(mPos);
 	}
 	void Update()
 	{
-		if(IsOwner && !isNPC)
+		if(IsOwner && !isBot)
 		{
 			Move();
 			Pick();
-			if(Input.GetKeyDown(KeyCode.Return))
-			{
-				EntryNpc(1);
-			}
 			return;
 		}
-		if(isNPC && IsServer)
+		if(isBot && IsServer)
 		{
 			NpcPick();
 		}
@@ -153,26 +152,13 @@ public class Player : NetworkBehaviour
 		var pick = mGameController.gameInfo.AIPick();
 		mGameController.Pick(pick.deck, pick.card);
 	}
-	void EntryNpc(int inNpcLevel)
-	{
-		if(mGameController.isStart)
-		{
-			return;
-		}
-		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab);
-		if(go.TryGetComponent<Player>(out var player))
-		{
-			player.mNpcLevel = inNpcLevel;
-			player.NetworkObject.Spawn();
-		}
-	}
 	UserData GetNpcData(int inNpcLevel)
 	{
 		int count = 0;
 		var players = FindObjectsOfType<Player>();
 		foreach(var player in players)
 		{
-			if(player.isNPC)
+			if(player.isBot)
 			{
 				++count;
 			}

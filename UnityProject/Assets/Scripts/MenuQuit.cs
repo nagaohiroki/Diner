@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Unity.Netcode;
 using TMPro;
 public class MenuQuit : MonoBehaviour
 {
@@ -22,9 +21,5 @@ public class MenuQuit : MonoBehaviour
 	{
 		mGameStart.SetActive(inActive);
 		mPassword.SetActive(inActive);
-	}
-	void OnEnable()
-	{
-		SetActiveHostButton(NetworkManager.Singleton.IsServer);
 	}
 }

@@ -12,13 +12,13 @@ public class NetworkSelector : MonoBehaviour
 		SetupUser();
 		NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
 		NetworkManager.Singleton.StartHost();
-		mMenuRoot.SwitchMenu<MenuQuit>();
+		mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(true);
 	}
 	public void StartLocalClient()
 	{
 		SetupUser();
 		NetworkManager.Singleton.StartClient();
-		mMenuRoot.SwitchMenu<MenuQuit>();
+		mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(false);
 	}
 	public void StartHost()
 	{
@@ -29,7 +29,9 @@ public class NetworkSelector : MonoBehaviour
 		{
 			if(result && NetworkManager.Singleton.StartHost())
 			{
-				mMenuRoot.SwitchMenu<MenuQuit>().password = code;
+				var quit = mMenuRoot.SwitchMenu<MenuQuit>();
+				quit.password = code;
+				quit.SetActiveHostButton(true);
 				return;
 			}
 			mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuCreate>()).AddText("Error!!");
@@ -44,7 +46,7 @@ public class NetworkSelector : MonoBehaviour
 		{
 			if(result && NetworkManager.Singleton.StartClient())
 			{
-				mMenuRoot.SwitchMenu<MenuQuit>();
+				mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(false);
 				return;
 			}
 			mMenuRoot.CreateDialog(2.0f, () => mMenuRoot.SwitchMenu<MenuJoin>()).AddText("Error!!");

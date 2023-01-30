@@ -316,10 +316,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab1417e130ef9244bb07e771e8807302, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mPlayerPrefab: {fileID: -5002211802294613516}
   mFocusLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  mMoveRange: {x: 9, y: 0, z: 4.5}
   mName: {fileID: 3571724278558604620}
   mModel: {fileID: 291848362835732864}
 --- !u!114 &340087582754402892
