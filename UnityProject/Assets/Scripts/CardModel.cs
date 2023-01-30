@@ -43,6 +43,10 @@ public class CardModel : MonoBehaviour
 	}
 	void ApplyCardData(CardData inCardData)
 	{
+		if(inCardData == null)
+		{
+			return;
+		}
 		if(inCardData.GetCardType != CardData.CardType.Cooking)
 		{
 			var icon = Instantiate(mIconPrefab);

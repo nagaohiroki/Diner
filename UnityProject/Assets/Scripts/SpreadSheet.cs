@@ -27,7 +27,9 @@ public class SpreadSheet : MonoBehaviour
 {
 	void Start()
 	{
-		var url = "https://docs.google.com/spreadsheets/d/1zNdlU6Y8eumEI9GXs4DSIh-gh3TvNJJt8uX83iT0pBA/export?format=tsv";
+		var sheet = "1zNdlU6Y8eumEI9GXs4DSIh-gh3TvNJJt8uX83iT0pBA";
+		var page = "0";
+		var url = $"https://docs.google.com/spreadsheets/d/{sheet}/export?format=tsv&gid={page}";
 		StartCoroutine(GetSheets(url));
 	}
 	IEnumerator GetSheets(string inURL)
