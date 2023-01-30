@@ -58,7 +58,12 @@ public class GameController : NetworkBehaviour
 	{
 		if(IsServer && !isStart)
 		{
-			GameStartClientRpc();
+			var players = FindObjectsOfType<Player>();
+			if(players.Length <= mPlayerChairs.maxNum)
+			{
+				mMenuRoot.GetComponentInChildren<MenuQuit>().SetActiveHostButton(false);
+				GameStartClientRpc();
+			}
 		}
 	}
 	public void Clear()
@@ -86,6 +91,11 @@ public class GameController : NetworkBehaviour
 		{
 			return;
 		}
+		var players = FindObjectsOfType<Player>();
+		if(players.Length >= mPlayerChairs.maxNum)
+		{
+			return;
+		}
 		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
 		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
 		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, new Vector3(x, 0.0f, z), Quaternion.identity);
@@ -107,6 +117,20 @@ public class GameController : NetworkBehaviour
 			}
 		}
 	}
+	Dictionary<string, Player> EntryPlayers()
+	{
+		var players = FindObjectsOfType<Player>();
+		var entryPlayers = new Dictionary<string, Player>();
+		gameInfo = new GameInfo();
+		foreach(var player in players)
+		{
+			if(!entryPlayers.ContainsKey(player.id))
+			{
+				entryPlayers.Add(player.id, player);
+			}
+		}
+		return entryPlayers;
+	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
 	{
@@ -124,16 +148,7 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void GameStartClientRpc()
 	{
-		var players = FindObjectsOfType<Player>();
-		mEntryPlayers = new Dictionary<string, Player>();
-		gameInfo = new GameInfo();
-		foreach(var player in players)
-		{
-			if(!mEntryPlayers.ContainsKey(player.id))
-			{
-				mEntryPlayers.Add(player.id, player);
-			}
-		}
+		mEntryPlayers = EntryPlayers();
 		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");

@@ -34,6 +34,7 @@ public class PlayerChairs : MonoBehaviour
 		{Dir.Right,     new Vector3( 1.0f, 0.0f,  0.0f)},
 		{Dir.DownRight, new Vector3( 1.0f, 0.0f, -1.0f)},
 	};
+	public int maxNum => mEntryChair.Count;
 	public void Sitdown(List<string> inTurn, Dictionary<string, Player> inPlayers)
 	{
 		int ownerIndex = OwnerPlayerIndex(inTurn, inPlayers);
