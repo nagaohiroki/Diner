@@ -3,11 +3,11 @@ using TMPro;
 public class MenuQuit : MonoBehaviour
 {
 	[SerializeField]
-	GameObject mGameStart;
+	GameObject[] mHostButtons;
 	[SerializeField]
 	GameObject mPassword;
 	const string mDefaultText = "Password";
-	public string password{private get;set;}
+	public string password { private get; set; }
 	public void TogglePassword(TextMeshProUGUI inText)
 	{
 		if(inText.text == mDefaultText)
@@ -19,7 +19,9 @@ public class MenuQuit : MonoBehaviour
 	}
 	public void SetActiveHostButton(bool inActive)
 	{
-		mGameStart.SetActive(inActive);
-		mPassword.SetActive(inActive);
+		foreach(var button in mHostButtons)
+		{
+			button.SetActive(inActive);
+		}
 	}
 }

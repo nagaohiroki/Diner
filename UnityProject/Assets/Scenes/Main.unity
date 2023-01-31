@@ -895,7 +895,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53035e96a966fa240bfd5e3afabca5d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mGameStart: {fileID: 752749947}
+  mHostButtons:
+  - {fileID: 752749947}
+  - {fileID: 874775075}
+  - {fileID: 729415763}
+  - {fileID: 1742145411}
   mPassword: {fileID: 874775075}
 --- !u!1 &292214892
 GameObject:
