@@ -24,7 +24,8 @@ public class CardData : ScriptableObject
 		SeaFood,
 		Vegetable,
 		Milk,
-		Spices
+		Spices,
+		Grain
 	}
 	[SerializeField]
 	string id;
@@ -70,5 +71,6 @@ public class CardData : ScriptableObject
 			point = 0;
 			cost.Clear();
 		}
+		id = name.Replace("CardFood", "").Replace("CardCook", "");
 	}
 }

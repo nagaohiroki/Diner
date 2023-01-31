@@ -15,13 +15,15 @@ MonoBehaviour:
   id: CardCook
   supply: 4
   mCard:
-  - id: Hanburg (point:2 cost:Meatx1, Vegetablex1, ) x50
-    mCard: {fileID: 11400000, guid: cdc07c244570a2b4786ab2341d976f5e, type: 2}
-    mNum: 50
-  - id: sukiyaki (point:4 cost:Meatx2, Vegetablex2, ) x50
-    mCard: {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
-    mNum: 50
-  - id: okonomiyaki (point:5 cost:Meatx1, Vegetablex1, SeaFoodx1, Milkx1, Spicesx1,
-      ) x50
-    mCard: {fileID: 11400000, guid: dcdeddf6820b3ef40bee8c9b7b07d4b3, type: 2}
-    mNum: 50
+  - mCard: {fileID: 11400000, guid: cdc07c244570a2b4786ab2341d976f5e, type: 2}
+    mNum: 5
+  - mCard: {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
+    mNum: 5
+  - mCard: {fileID: 11400000, guid: dcdeddf6820b3ef40bee8c9b7b07d4b3, type: 2}
+    mNum: 5
+  - mCard: {fileID: 11400000, guid: 0666e71b74182274bb7cf7960f3c6ae9, type: 2}
+    mNum: 5
+  - mCard: {fileID: 11400000, guid: cffb81cb1f0bca540933a93bf17f34f6, type: 2}
+    mNum: 5
+  - mCard: {fileID: 11400000, guid: b96aba4dccf484b4cae1cbde2521ee4a, type: 2}
+    mNum: 5

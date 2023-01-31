@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Hanburg
   cardType: 0
-  point: 2
+  point: 3
   cost:
   - mCostType: 1
     mNum: 1

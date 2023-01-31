@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TMPro;
 public class CardModel : MonoBehaviour
 {
 	[SerializeField]
@@ -11,6 +12,10 @@ public class CardModel : MonoBehaviour
 	Transform mCostAnchor;
 	[SerializeField]
 	MeshRenderer mBackfaceMesh;
+	[SerializeField]
+	TextMeshPro mCardName;
+	[SerializeField]
+	Vector3 mIconOffset = new Vector3(0.7f, 0.0f, 1.1f);
 	public int supplyIndex { set; get; }
 	public int cardIndex { private set; get; }
 	public int deckIndex { private set; get; }
@@ -54,12 +59,14 @@ public class CardModel : MonoBehaviour
 			icon.transform.SetParent(mFoodAnchor, false);
 			return;
 		}
+		mCardName.gameObject.SetActive(true);
+		mCardName.text = inCardData.GetId;
 		for(int i = 0; i < inCardData.GetPoint; i++)
 		{
 			var icon = Instantiate(mIconPrefab);
 			icon.SetIcon(CardData.CardType.Cooking);
 			icon.transform.SetParent(mPointAnchor, false);
-			icon.transform.localPosition = Vector3.right * i;
+			icon.transform.localPosition = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
 		}
 		for(int costType = 0; costType < inCardData.GetCost.Count; ++costType)
 		{
@@ -69,7 +76,7 @@ public class CardModel : MonoBehaviour
 				var icon = Instantiate(mIconPrefab);
 				icon.SetIcon(cost.GetCostType);
 				icon.transform.SetParent(mCostAnchor, false);
-				icon.transform.localPosition = new Vector3(i, 0.0f, -costType);
+				icon.transform.localPosition = new Vector3(i * mIconOffset.x, 0.0f, -costType * mIconOffset.z);
 			}
 		}
 	}

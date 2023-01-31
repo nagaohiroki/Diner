@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
   m_Name: CardCookOkonomiyaki
   m_EditorClassIdentifier: 
-  id: okonomiyaki
+  id: Okonomiyaki
   cardType: 0
-  point: 5
+  point: 7
   cost:
   - mCostType: 1
     mNum: 1

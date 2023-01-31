@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: beff3ca7446596c438f05343503d9aae, type: 3}
-  m_Name: BattleData
+  m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
+  m_Name: CardCookSushi
   m_EditorClassIdentifier: 
-  winPoint: 15
-  deckList:
-  - {fileID: 11400000, guid: ffed4c35266d5164485d9c5ccf8e5fdd, type: 2}
-  - {fileID: 11400000, guid: abea5c27a4e4757418d312cb476fe962, type: 2}
+  id: Sushi
+  cardType: 0
+  point: 5
+  cost:
+  - mCostType: 2
+    mNum: 2

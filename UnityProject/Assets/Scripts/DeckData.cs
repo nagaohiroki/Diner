@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 [System.Serializable]
 public class CardCounter
 {
-#if UNITY_EDITOR
-	[SerializeField]
-	string id;
-#endif
 	[SerializeField]
 	CardData mCard;
 	[SerializeField]
@@ -17,12 +16,10 @@ public class CardCounter
 	{
 		return $"{mCard} x{mNum}";
 	}
-#if UNITY_EDITOR
-	public void OnValidate()
+	public void Set(CardData inCardData)
 	{
-		id = ToString();
+		mCard = inCardData;
 	}
-#endif
 }
 [CreateAssetMenu]
 public class DeckData : ScriptableObject
@@ -62,9 +59,25 @@ public class DeckData : ScriptableObject
 #if UNITY_EDITOR
 	public void OnValidate()
 	{
-		foreach(var card in mCard)
+		var paths = AssetDatabase.GetAllAssetPaths();
+		foreach(var path in paths)
 		{
-			card.OnValidate();
+			if(!path.Contains(id))
+			{
+				continue;
+			}
+			var cardData = AssetDatabase.LoadAssetAtPath<CardData>(path);
+			if(cardData == null)
+			{
+				continue;
+			}
+			var cards = mCard.Find(card => card.GetCard.GetId == cardData.GetId);
+			if(cards == null)
+			{
+				var cardCounter = new CardCounter();
+				cardCounter.Set(cardData);
+				mCard.Add(cardCounter);
+			}
 		}
 	}
 #endif
