@@ -138,22 +138,37 @@ public class GameInfo
 	}
 	public PickInfo AIPick()
 	{
-		int max = 0;
-		var pick = new PickInfo(-1, -1);
+		var cardTypeScore = CalcCardTypeScore();
+		var pick = new List<(float score, int deck, int card)>();
 		for(int deck = 0; deck < mDeck.Count; ++deck)
 		{
 			for(int card = 0; card < GetCardList(deck).Count; ++card)
 			{
-				int score = PickScore(deck, card);
-				if(max < score)
+				var score = PickScore(deck, card, cardTypeScore);
+				if(score >= 0)
 				{
-					pick.card = card;
-					pick.deck = deck;
-					max = score;
+					pick.Add((score, deck, card));
 				}
 			}
 		}
-		return pick;
+		if(pick.Count <= 0)
+		{
+			return null;
+		}
+		RandomObject.GetGlobal.Shuffle(pick);
+		int maxDeck = int.MinValue;
+		int maxCard = int.MinValue;
+		float maxScore = float.MinValue;
+		foreach(var p in pick)
+		{
+			if(p.score > maxScore)
+			{
+				maxScore = p.score;
+				maxDeck = p.deck;
+				maxCard = p.card;
+			}
+		}
+		return new PickInfo(maxDeck, maxCard);
 	}
 	public string GetWinner()
 	{
@@ -253,14 +268,16 @@ public class GameInfo
 		}
 		foreach(var newCost in card.GetCost)
 		{
-			int resource = GetTotalResource(inPlayer, newCost.GetCostType);
-			int cost = newCost.GetNum + GetTotalPaidCost(inPlayer, newCost.GetCostType);
-			if(cost > resource)
+			if(GetHandResource(inPlayer, newCost.GetCostType) < newCost.GetNum)
 			{
 				return false;
 			}
 		}
 		return true;
+	}
+	int GetHandResource(string inPlayer, CardData.CardType inCardType)
+	{
+		return GetTotalResource(inPlayer, inCardType) - GetTotalPaidCost(inPlayer, inCardType);
 	}
 	int GetTotalPaidCost(string inPlayer, CardData.CardType inCardType)
 	{
@@ -289,12 +306,58 @@ public class GameInfo
 		}
 		return num;
 	}
-	int PickScore(int inDeck, int inCard)
+	Dictionary<CardData.CardType, float> CalcCardTypeScore()
+	{
+		var score = new Dictionary<CardData.CardType, float>();
+		for(int deck = 0; deck < mDeck.Count; ++deck)
+		{
+			var supply = Supply(deck);
+			for(int card = 0; card < supply.Count; ++card)
+			{
+				var remaindCostDict = new Dictionary<CardData.CardType, int>();
+				var cardData = GetCard(deck, supply[card]);
+				int totalCost = 0;
+				foreach(var cost in cardData.GetCost)
+				{
+					int remaindCost = cost.GetNum - GetHandResource(GetCurrentTurnPlayer, cost.GetCostType);
+					if(remaindCost > 0)
+					{
+						totalCost += remaindCost;
+						if(!remaindCostDict.ContainsKey(cost.GetCostType))
+						{
+							remaindCostDict.Add(cost.GetCostType, 0);
+						}
+						remaindCostDict[cost.GetCostType] += remaindCost;
+					}
+				}
+				foreach(var remaind in remaindCostDict)
+				{
+					if(!score.ContainsKey(remaind.Key))
+					{
+						score.Add(remaind.Key, 0);
+					}
+					score[remaind.Key] += (float)cardData.GetPoint / (float)totalCost;
+				}
+			}
+		}
+		return score;
+	}
+	float PickScore(int inDeck, int inCard, Dictionary<CardData.CardType, float> inScore)
 	{
 		if(!CanPick(inDeck, inCard))
 		{
 			return -1;
 		}
-		return 1;
+		var cardData = GetCard(inDeck, inCard);
+		int point = cardData.GetPoint;
+		if(point > 0)
+		{
+			return cardData.GetPoint * 100.0f;
+		}
+		if(inScore.TryGetValue(cardData.GetCardType, out var val))
+		{
+			return val;
+		}
+		return 0;
 	}
 }

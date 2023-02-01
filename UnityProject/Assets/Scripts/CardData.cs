@@ -45,9 +45,9 @@ public class CardData : ScriptableObject
 		if(cost.Count != 0)
 		{
 			var costLog = string.Empty;
-			foreach (var c in cost)
+			foreach(var c in cost)
 			{
-			    costLog += $"{c}, ";
+				costLog += $"{c}, ";
 			}
 			text += $" (point:{point} cost:{costLog})";
 		}
