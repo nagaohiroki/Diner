@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "4a62556c10bdbd0e4206b07586c42e2a224c613c"
+      "hash": "2eb8e42861d105f6d8a8ba7638eb119972d5c630"
     },
     "com.github.nagaohiroki.unity_nvim": {
       "version": "https://github.com/nagaohiroki/unity_nvim.git?path=unity_nvim/Assets",
@@ -19,7 +19,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e1c5273e6b3f4e04fd3b976fb2af919aeefd4d84"
+      "hash": "8e1b09f6c9a1aaf8a85c5484c5a2e8ff0279d31a"
     },
     "com.oss.leantween": {
       "version": "https://github.com/JohannesDeml/LeanTween.git",
