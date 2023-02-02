@@ -16,11 +16,12 @@ public class Table : MonoBehaviour
 		{
 			mCardRoot = new GameObject("CardRoot");
 		}
+		mMenuRoot.Apply(inGameController);
 		foreach(var deck in mDeckModels)
 		{
 			deck.Apply(inGameController, mCardRoot.transform);
 		}
-		var winner = inGameController.gameInfo.GetWinner();
+		var winner = inGameController.gameInfo.GetWinner(inGameController.GetData.GetWinPoint);
 		if(winner != null)
 		{
 			var result = mMenuRoot.SwitchMenu<MenuResult>();

@@ -150,6 +150,10 @@ public class Player : NetworkBehaviour
 			return;
 		}
 		var pick = mGameController.gameInfo.AIPick();
+		if(pick == null)
+		{
+			return;
+		}
 		mGameController.Pick(pick.deck, pick.card);
 	}
 	UserData GetNpcData(int inNpcLevel)

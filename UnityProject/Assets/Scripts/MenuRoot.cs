@@ -4,6 +4,10 @@ public class MenuRoot : MonoBehaviour
 {
 	[SerializeField]
 	MenuDialog mMenuDialogPrefab;
+	public void Apply(GameController inGameController)
+	{
+		GetComponentInChildren<MenuQuit>(true).Apply(inGameController);
+	}
 	public void Switch(GameObject inActive)
 	{
 		int count = transform.childCount;

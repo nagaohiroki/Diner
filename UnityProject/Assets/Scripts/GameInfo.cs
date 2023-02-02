@@ -8,7 +8,7 @@ public class GameInfo
 	List<PickInfo> mPickInfo;
 	public bool IsStart => mTurnPlayers != null;
 	public string GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
-	int mWinPoint;
+	public List<string> GetTurnPlayers => mTurnPlayers;
 	public override string ToString()
 	{
 		return $"pick:{mPickInfo.Count}";
@@ -19,7 +19,6 @@ public class GameInfo
 		{
 			return;
 		}
-		mWinPoint = inData.GetWinPoint;
 		mTurnPlayers = new List<string>();
 		foreach(var player in inPlayers)
 		{
@@ -86,10 +85,6 @@ public class GameInfo
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{
-		if(GetWinner() != null)
-		{
-			return false;
-		}
 		if(Supply(inDeck, inCard) == -1)
 		{
 			return false;
@@ -170,18 +165,18 @@ public class GameInfo
 		}
 		return new PickInfo(maxDeck, maxCard);
 	}
-	public string GetWinner()
+	public string GetWinner(int inWinPoint)
 	{
 		foreach(var player in mTurnPlayers)
 		{
-			if(GetPoint(player) >= mWinPoint)
+			if(GetPoint(player) >= inWinPoint)
 			{
 				return player;
 			}
 		}
 		return null;
 	}
-	int GetPoint(string inId)
+	public int GetPoint(string inId)
 	{
 		int point = 0;
 		for(int i = 0; i < mPickInfo.Count; ++i)

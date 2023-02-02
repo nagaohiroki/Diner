@@ -16,14 +16,22 @@ MonoBehaviour:
   supply: 4
   mCard:
   - mCard: {fileID: 11400000, guid: cdc07c244570a2b4786ab2341d976f5e, type: 2}
-    mNum: 5
+    mNum: 2
   - mCard: {fileID: 11400000, guid: e915dcf8b3ba3c44196215e6be45604e, type: 2}
-    mNum: 5
+    mNum: 2
   - mCard: {fileID: 11400000, guid: dcdeddf6820b3ef40bee8c9b7b07d4b3, type: 2}
-    mNum: 5
+    mNum: 2
   - mCard: {fileID: 11400000, guid: 0666e71b74182274bb7cf7960f3c6ae9, type: 2}
-    mNum: 5
+    mNum: 2
   - mCard: {fileID: 11400000, guid: cffb81cb1f0bca540933a93bf17f34f6, type: 2}
-    mNum: 5
+    mNum: 2
   - mCard: {fileID: 11400000, guid: b96aba4dccf484b4cae1cbde2521ee4a, type: 2}
-    mNum: 5
+    mNum: 2
+  - mCard: {fileID: 11400000, guid: 23d5a42355476a0409941ac8124fcb48, type: 2}
+    mNum: 2
+  - mCard: {fileID: 11400000, guid: 8316980f9280e1f42bda61d62929e7e1, type: 2}
+    mNum: 2
+  - mCard: {fileID: 11400000, guid: 1670b042691367f449856bc7d5a9e845, type: 2}
+    mNum: 2
+  - mCard: {fileID: 11400000, guid: 9000c02ca9c559b4da3f07b7c33b002c, type: 2}
+    mNum: 2

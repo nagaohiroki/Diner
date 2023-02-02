@@ -31,6 +31,10 @@ public class GameController : NetworkBehaviour
 	}
 	public void Pick(int inDeck, int inCard)
 	{
+		if(gameInfo.GetWinner(mData.GetWinPoint) != null)
+		{
+			return;
+		}
 		if(!gameInfo.CanPick(inDeck, inCard))
 		{
 			return;
