@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityUtility;
 using TMPro;
 public class CardModel : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class CardModel : MonoBehaviour
 	TextMeshPro mCardName;
 	[SerializeField]
 	Vector3 mIconOffset = new Vector3(0.7f, 0.0f, 1.1f);
+	[SerializeField]
+	AudioSource mPickSE;
 	public int supplyIndex { set; get; }
 	public int cardIndex { private set; get; }
 	public int deckIndex { private set; get; }
@@ -37,9 +40,12 @@ public class CardModel : MonoBehaviour
 		{
 			return;
 		}
+		mPickSE.pitch = RandomObject.GetGlobal.Range(0.5f, 3.0f);
+		mPickSE.Play();
 		var lt = LeanTween.move(gameObject, inPos, 0.3f);
 		if(supplyIndex == -1)
 		{
+			mPickSE.PlayDelayed(0.4f);
 			lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
 			.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
 			.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));

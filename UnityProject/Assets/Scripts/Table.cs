@@ -7,6 +7,8 @@ public class Table : MonoBehaviour
 	[SerializeField]
 	MenuRoot mMenuRoot;
 	[SerializeField]
+	AudioSource mWinnerSE;
+	[SerializeField]
 	List<DeckModel> mDeckModels;
 	GameObject mCardRoot;
 	public bool IsTween => IsTweenCard(mCardRoot);
@@ -27,6 +29,7 @@ public class Table : MonoBehaviour
 			var result = mMenuRoot.SwitchMenu<MenuResult>();
 			var player = inGameController.GetPlayer(winner);
 			result.SetText($"{player.name} is Win!!");
+			mWinnerSE.Play();
 			return;
 		}
 		LeanTween.delayedCall(1.0f, () =>
