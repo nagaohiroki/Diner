@@ -113,4 +113,4 @@ MonoBehaviour:
   - mCardType: 6
     mTexture: {fileID: 2800000, guid: 78fb8a111475c1847bb56473a7a2d943, type: 3}
   - mCardType: 7
-    mTexture: {fileID: 2800000, guid: 78fb8a111475c1847bb56473a7a2d943, type: 3}
+    mTexture: {fileID: 2800000, guid: aef527adf515bcd45814c31fea2759cf, type: 3}
