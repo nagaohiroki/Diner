@@ -16,14 +16,16 @@ MonoBehaviour:
   supply: 6
   mCard:
   - mCard: {fileID: 11400000, guid: 0bb29988605ad794791074f47c1aac8d, type: 2}
-    mNum: 40
+    mNum: 20
   - mCard: {fileID: 11400000, guid: 76d5b6edf1eadbe46b20aed545337f85, type: 2}
-    mNum: 30
+    mNum: 20
   - mCard: {fileID: 11400000, guid: 95f19590651d29b4387d45249197f454, type: 2}
-    mNum: 30
+    mNum: 20
   - mCard: {fileID: 11400000, guid: ecf6888d4720ddf40a36a4eb06a2c9a0, type: 2}
-    mNum: 25
+    mNum: 10
   - mCard: {fileID: 11400000, guid: 4a38ed016a514614eb40b235ceb847cf, type: 2}
-    mNum: 40
+    mNum: 10
   - mCard: {fileID: 11400000, guid: 86cfad9c694c15745abf3c2b5879be13, type: 2}
-    mNum: 40
+    mNum: 10
+  - mCard: {fileID: 11400000, guid: b057dc0d2d9f0c149997884d29673f5e, type: 2}
+    mNum: 2

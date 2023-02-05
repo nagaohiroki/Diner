@@ -25,8 +25,11 @@ public class CardData : ScriptableObject
 		Vegetable,
 		Milk,
 		Spices,
-		Grain
+		Grain,
+		Rare
 	}
+	[SerializeField]
+	string mName;
 	[SerializeField]
 	string id;
 	[SerializeField]

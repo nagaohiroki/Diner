@@ -10,13 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
-  m_Name: CardCookHanburg
+  m_Name: CardCook_7Vegetable
   m_EditorClassIdentifier: 
-  id: Hanburg
+  mName: 
+  id: _7Vegetable
   cardType: 0
-  point: 3
+  point: 7
   cost:
-  - mCostType: 1
-    mNum: 1
   - mCostType: 3
+    mNum: 3
+  - mCostType: 5
+    mNum: 1
+  - mCostType: 4
     mNum: 1

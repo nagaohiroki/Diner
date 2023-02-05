@@ -10,19 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
-  m_Name: CardCookOkonomiyaki
+  m_Name: CardCook_10Rare
   m_EditorClassIdentifier: 
-  id: Okonomiyaki
+  mName: 
+  id: _10Rare
   cardType: 0
-  point: 7
+  point: 10
   cost:
   - mCostType: 1
     mNum: 1
-  - mCostType: 3
-    mNum: 1
   - mCostType: 2
+    mNum: 1
+  - mCostType: 3
     mNum: 1
   - mCostType: 4
     mNum: 1
   - mCostType: 5
+    mNum: 1
+  - mCostType: 6
+    mNum: 1
+  - mCostType: 7
     mNum: 1
