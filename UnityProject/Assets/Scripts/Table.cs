@@ -34,9 +34,12 @@ public class Table : MonoBehaviour
 		}
 		LeanTween.delayedCall(1.0f, () =>
 		{
-			var trans = inGameController.GetCurrentTurnPlayer.transform;
-			var rot = Quaternion.Euler(0.0f, inGameController.GetCurrentTurnPlayer.rot, 0.0f);
-			LeanTween.move(mTurnClock, trans.position + rot * Vector3.forward * 2.0f, 0.2f);
+			if(inGameController.GetCurrentTurnPlayer != null)
+			{
+				var trans = inGameController.GetCurrentTurnPlayer.transform;
+				var rot = Quaternion.Euler(0.0f, inGameController.GetCurrentTurnPlayer.rot, 0.0f);
+				LeanTween.move(mTurnClock, trans.position + rot * Vector3.forward * 2.0f, 0.2f);
+			}
 		});
 	}
 	public void Clear()

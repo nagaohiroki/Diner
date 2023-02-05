@@ -5,25 +5,36 @@ public class MenuQuit : MonoBehaviour
 	[SerializeField]
 	GameObject[] mHostButtons;
 	[SerializeField]
-	GameObject mPassword;
+	TextMeshProUGUI mPasswordText;
 	[SerializeField]
 	Transform mUserRoot;
 	const string mDefaultText = "Password";
 	public string password { private get; set; }
-	public void TogglePassword(TextMeshProUGUI inText)
+	public void TogglePassword()
 	{
-		if(inText.text == mDefaultText)
-		{
-			inText.text = password;
-			return;
-		}
-		inText.text = mDefaultText;
+		mPasswordText.text = mPasswordText.text == mDefaultText ? password : mDefaultText;
+	}
+	void OnEnable()
+	{
+		Clear();
 	}
 	public void SetActiveHostButton(bool inActive)
 	{
 		foreach(var button in mHostButtons)
 		{
 			button.SetActive(inActive);
+		}
+	}
+	void Clear()
+	{
+		mPasswordText.text = mDefaultText;
+		for(int i = 0; i < mUserRoot.childCount; ++i)
+		{
+			var child = mUserRoot.GetChild(i);
+			if(child.TryGetComponent<TextMeshProUGUI>(out var text))
+			{
+				text.text = null;
+			}
 		}
 	}
 	public void Apply(GameController inGameController)

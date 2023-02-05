@@ -34,18 +34,17 @@ public class CardModel : MonoBehaviour
 		mCache = mBackfaceMesh.material;
 		ApplyCardData(card);
 	}
-	public void ToSupply(Vector3 inPos, int inSupply)
+	public void ToSupply(Vector3 inPos, int inSupply, float inPitch)
 	{
 		if(inSupply == supplyIndex)
 		{
 			return;
 		}
-		mPickSE.pitch = RandomObject.GetGlobal.Range(0.5f, 3.0f);
+		mPickSE.pitch = inPitch;
 		mPickSE.Play();
 		var lt = LeanTween.move(gameObject, inPos, 0.3f);
 		if(supplyIndex == -1)
 		{
-			mPickSE.PlayDelayed(0.4f);
 			lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
 			.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
 			.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));

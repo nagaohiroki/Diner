@@ -8,6 +8,8 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	Vector3 mSupplyOffset;
 	[SerializeField]
+	float mSEPitch = 1.0f;
+	[SerializeField]
 	CardModel mCardModelPrefab;
 	[SerializeField]
 	GameObject mRoot;
@@ -37,7 +39,7 @@ public class DeckModel : MonoBehaviour
 		{
 			var pos = transform.position + mSupplyOffset * (supply + 1);
 			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, supplyList[supply]);
-			cardModel.ToSupply(pos, supply);
+			cardModel.ToSupply(pos, supply, mSEPitch);
 		}
 	}
 	void ApplyHand(GameController inGameController)

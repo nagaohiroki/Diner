@@ -14,7 +14,7 @@ public class Player : NetworkBehaviour
 	Vector3 mPos;
 	Material mCache;
 	public int botLevel { private get; set; }
-	public string id { get; private set; }
+	public string id { get; set; }
 	public bool isBot => botLevel > 0;
 	public float rot
 	{
@@ -34,7 +34,7 @@ public class Player : NetworkBehaviour
 		{
 			mGameController = FindObjectOfType<GameController>();
 		}
-		SpawnServerRpc(OwnerClientId, NetworkObjectId, botLevel);
+		SpawnServerRpc(OwnerClientId, NetworkObjectId);
 	}
 	public override void OnDestroy()
 	{
@@ -44,45 +44,70 @@ public class Player : NetworkBehaviour
 		}
 		base.OnDestroy();
 	}
-	public void Apply(UserData inUserData, int inNpcLevel)
+	void SetParam(Color inColor, string inName)
 	{
-		id = inUserData.id;
-		name = inUserData.name;
 		var render = mModel.GetComponent<Renderer>();
-		render.material.color = inUserData.imageColor;
+		render.material.color = inColor;
 		mCache = render.material;
-		mName.text = inUserData.name;
-		mName.color = inUserData.imageColor;
-		botLevel = inNpcLevel;
+		mName.color = inColor;
+		name = inName;
+		mName.text = inName;
 	}
-	[ServerRpc(RequireOwnership = false)]
-	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId, int inNpcLevel)
+	void Apply(byte[] inData, int inBotLevel)
 	{
-		if(inNpcLevel > 0)
+		if(id != null)
 		{
-			SpawnClientRpc(null, inNpcLevel);
 			return;
 		}
-		var id = NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId;
-		if(inNetworkObjectId == id)
+		if(inData != null)
+		{
+			var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
+			var user = data.user;
+			id = user.id;
+			SetParam(user.imageColor, user.name);
+		}
+		else
+		{
+			botLevel = inBotLevel;
+			int count = 0;
+			var players = FindObjectsOfType<Player>();
+			foreach(var player in players)
+			{
+				if(player.isBot)
+				{
+					++count;
+				}
+			}
+			id = $"NPC_{botLevel}:{count}";
+			SetParam(Color.gray, id);
+		}
+	}
+	[ServerRpc(RequireOwnership = false)]
+	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId)
+	{
+		if(botLevel > 0)
+		{
+			SpawnClientRpc(null, botLevel);
+			return;
+		}
+		if(inNetworkObjectId == NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId)
 		{
 			var dataList = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData;
-			SpawnClientRpc(dataList[inClientId]);
+			SpawnClientRpc(dataList[inClientId], 0);
 		}
 	}
 	[ClientRpc]
-	void SpawnClientRpc(byte[] inData, int inNpcLevel = 0)
+	void SpawnClientRpc(byte[] inData, int inBotLevel)
 	{
-		if(inNpcLevel > 0)
-		{
-			Apply(GetNpcData(inNpcLevel), inNpcLevel);
-			return;
-		}
-		Apply(MemoryPackSerializer.Deserialize<ConnectionData>(inData).user, inNpcLevel);
+		Apply(inData, inBotLevel);
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
 	{
+		if(mGameController != null && mGameController.isStart)
+		{
+			return;
+		}
 		MoveClientRpc(inPos);
 	}
 	[ClientRpc]
@@ -140,10 +165,10 @@ public class Player : NetworkBehaviour
 		}
 		if(isBot && IsServer)
 		{
-			NpcPick();
+			BotPick();
 		}
 	}
-	void NpcPick()
+	void BotPick()
 	{
 		if(!mGameController.IsTurnPlayer(this))
 		{
@@ -155,24 +180,5 @@ public class Player : NetworkBehaviour
 			return;
 		}
 		mGameController.Pick(pick.deck, pick.card);
-	}
-	UserData GetNpcData(int inNpcLevel)
-	{
-		int count = 0;
-		var players = FindObjectsOfType<Player>();
-		foreach(var player in players)
-		{
-			if(player.isBot)
-			{
-				++count;
-			}
-		}
-		var level = $"NPC_{inNpcLevel}:{count}";
-		return new UserData
-		{
-			name = level,
-			id = level,
-			imageColorCode = System.Convert.ToInt32(ColorUtility.ToHtmlStringRGB(Color.blue), 16)
-		};
 	}
 }
