@@ -23,12 +23,18 @@ public class Table : MonoBehaviour
 		{
 			deck.Apply(inGameController, mCardRoot.transform);
 		}
-		var winner = inGameController.gameInfo.GetWinner(inGameController.GetData.GetWinPoint);
-		if(winner != null)
+		var winners = inGameController.gameInfo.GetWinners(inGameController.GetData.GetWinPoint);
+		if(winners != null)
 		{
 			var result = mMenuRoot.SwitchMenu<MenuResult>();
-			var player = inGameController.GetPlayer(winner);
-			result.SetText($"{player.name} is Win!!");
+			var str = string.Empty;
+			foreach(var winner in winners)
+			{
+				var player = inGameController.GetPlayer(winner);
+				str += $"{player.name}\n";
+			}
+			str += $" is Win !!";
+			result.SetText(str);
 			mWinnerSE.Play();
 			return;
 		}

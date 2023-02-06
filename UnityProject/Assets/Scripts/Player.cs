@@ -104,10 +104,6 @@ public class Player : NetworkBehaviour
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
 	{
-		if(mGameController != null && mGameController.isStart)
-		{
-			return;
-		}
 		MoveClientRpc(inPos);
 	}
 	[ClientRpc]

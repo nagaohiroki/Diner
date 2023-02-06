@@ -41,10 +41,6 @@ public class GameInfo
 		Debug.Log($"{pick}\n {ToString()}");
 		mPickInfo.Add(pick);
 	}
-	public string GetPickPlayer(int inDeck, int inCard)
-	{
-		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
-	}
 	public Dictionary<string, List<int>> Hand(int inDeck)
 	{
 		var cardList = GetCardList(inDeck);
@@ -75,7 +71,7 @@ public class GameInfo
 		var list = new List<int>();
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			int supply = Supply(inDeck, card);
+			int supply = SupplyIndex(inDeck, card);
 			if(supply != -1)
 			{
 				list.Add(card);
@@ -85,7 +81,7 @@ public class GameInfo
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{
-		if(Supply(inDeck, inCard) == -1)
+		if(SupplyIndex(inDeck, inCard) == -1)
 		{
 			return false;
 		}
@@ -165,16 +161,44 @@ public class GameInfo
 		}
 		return new PickInfo(maxDeck, maxCard);
 	}
-	public string GetWinner(int inWinPoint)
+	public List<string> GetWinners(int inWinPoint)
 	{
 		foreach(var player in mTurnPlayers)
 		{
 			if(GetPoint(player) >= inWinPoint)
 			{
-				return player;
+				return new List<string> { player };
 			}
 		}
-		return null;
+		for(int deck = 0; deck < mDeck.Count; ++deck)
+		{
+			var cardList = GetCardList(deck);
+			for(int card = 0; card < cardList.Count; ++card)
+			{
+				if(CanPick(deck, card))
+				{
+					return null;
+				}
+			}
+		}
+		int maxPoint = int.MinValue;
+		var players = new List<string>();
+		foreach(var player in mTurnPlayers)
+		{
+			int point = GetPoint(player);
+			if(point > maxPoint)
+			{
+				maxPoint = point;
+			}
+		}
+		foreach(var player in mTurnPlayers)
+		{
+			if(GetPoint(player) == maxPoint)
+			{
+				players.Add(player);
+			}
+		}
+		return players;
 	}
 	public int GetPoint(string inId)
 	{
@@ -207,6 +231,10 @@ public class GameInfo
 		}
 		return num;
 	}
+	string GetPickPlayer(int inDeck, int inCard)
+	{
+		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
+	}
 	string GetTurnPlayer(int inTurn)
 	{
 		return inTurn < 0 ? null : mTurnPlayers[inTurn % mTurnPlayers.Count];
@@ -223,7 +251,7 @@ public class GameInfo
 		}
 		return -1;
 	}
-	int Supply(int inDeck, int inCard)
+	int SupplyIndex(int inDeck, int inCard)
 	{
 		if(GetPickTurn(inDeck, inCard) != -1)
 		{
