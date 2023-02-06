@@ -30,10 +30,7 @@ public class Player : NetworkBehaviour
 	public override void OnNetworkSpawn()
 	{
 		base.OnNetworkSpawn();
-		if(IsOwner || (isBot && IsServer))
-		{
-			mGameController = FindObjectOfType<GameController>();
-		}
+		mGameController = FindObjectOfType<GameController>();
 		SpawnServerRpc(OwnerClientId, NetworkObjectId);
 	}
 	public override void OnDestroy()
@@ -104,6 +101,10 @@ public class Player : NetworkBehaviour
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
 	{
+		if(mGameController != null && mGameController.isStart)
+		{
+			return;
+		}
 		MoveClientRpc(inPos);
 	}
 	[ClientRpc]

@@ -125,7 +125,6 @@ public class GameController : NetworkBehaviour
 	{
 		var players = FindObjectsOfType<Player>();
 		var entryPlayers = new Dictionary<string, Player>();
-		gameInfo = new GameInfo();
 		foreach(var player in players)
 		{
 			if(!entryPlayers.ContainsKey(player.id))
@@ -153,6 +152,7 @@ public class GameController : NetworkBehaviour
 	void GameStartClientRpc()
 	{
 		mEntryPlayers = EntryPlayers();
+		gameInfo = new GameInfo();
 		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
