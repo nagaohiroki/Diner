@@ -61,6 +61,7 @@ public partial class UserData
 public partial class ConnectionData
 {
 	public UserData user { get; set; }
+	public int botLevel { get; set; }
 	public override string ToString()
 	{
 		return $"{user}";

@@ -42,62 +42,41 @@ public class Player : NetworkBehaviour
 		}
 		base.OnDestroy();
 	}
-	void SetParam(Color inColor, string inName)
-	{
-		var render = mModel.GetComponent<Renderer>();
-		render.material.color = inColor;
-		mCache = render.material;
-		mName.color = inColor;
-		name = inName;
-		mName.text = inName;
-	}
-	void Apply(byte[] inData, int inBotLevel)
+	void Apply(byte[] inData)
 	{
 		if(id != null)
 		{
 			return;
 		}
-		botLevel = inBotLevel;
-		if(inData != null)
-		{
-			var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
-			var user = data.user;
-			id = user.id;
-			SetParam(user.imageColor, user.name);
-		}
-		else
-		{
-			int count = 0;
-			var players = FindObjectsOfType<Player>();
-			foreach(var player in players)
-			{
-				if(player.isBot)
-				{
-					++count;
-				}
-			}
-			id = $"NPC_{botLevel}:{count}";
-			SetParam(Color.gray, id);
-		}
+		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
+		var user = data.user;
+		id = user.id;
+		botLevel = data.botLevel;
+		var render = mModel.GetComponent<Renderer>();
+		render.material.color = user.imageColor;
+		mCache = render.material;
+		mName.color = user.imageColor;
+		name = user.name;
+		mName.text = user.name;
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId)
 	{
 		if(botLevel > 0)
 		{
-			SpawnClientRpc(null, botLevel);
+			SpawnClientRpc(CreateBotData(botLevel));
 			return;
 		}
 		if(inNetworkObjectId == NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId)
 		{
 			var dataList = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData;
-			SpawnClientRpc(dataList[inClientId], 0);
+			SpawnClientRpc(dataList[inClientId]);
 		}
 	}
 	[ClientRpc]
-	void SpawnClientRpc(byte[] inData, int inBotLevel)
+	void SpawnClientRpc(byte[] inData)
 	{
-		Apply(inData, inBotLevel);
+		Apply(inData);
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
@@ -178,5 +157,20 @@ public class Player : NetworkBehaviour
 			return;
 		}
 		mGameController.Pick(pick.deck, pick.card);
+	}
+	byte[] CreateBotData(int inBotLevel)
+	{
+		var user = new UserData
+		{
+			name = $"bot#Lv{inBotLevel}",
+			id = $"bot_{System.Guid.NewGuid().ToString()}",
+			imageColorCode = System.Convert.ToInt32(ColorUtility.ToHtmlStringRGB(Color.blue), 16)
+		};
+		var data = new ConnectionData
+		{
+			botLevel = inBotLevel,
+			user = user
+		};
+		return MemoryPackSerializer.Serialize(data);
 	}
 }
