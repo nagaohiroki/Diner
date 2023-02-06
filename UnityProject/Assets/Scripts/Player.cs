@@ -15,6 +15,7 @@ public class Player : NetworkBehaviour
 	Material mCache;
 	public int botLevel { private get; set; }
 	public string id { get; set; }
+	public string reserveId { get; set; }
 	public bool isBot => botLevel > 0;
 	public float rot
 	{
@@ -44,12 +45,12 @@ public class Player : NetworkBehaviour
 	}
 	void Apply(byte[] inData)
 	{
-		if(id != null)
+		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
+		var user = data.user;
+		if(id == user.id)
 		{
 			return;
 		}
-		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
-		var user = data.user;
 		id = user.id;
 		botLevel = data.botLevel;
 		var render = mModel.GetComponent<Renderer>();
@@ -64,13 +65,13 @@ public class Player : NetworkBehaviour
 	{
 		if(botLevel > 0)
 		{
-			SpawnClientRpc(CreateBotData(botLevel));
+			SpawnClientRpc(CreateBotData());
 			return;
 		}
-		if(inNetworkObjectId == NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId)
+		var data = mGameController.FindUserData(inClientId, inNetworkObjectId);
+		if(data != null)
 		{
-			var dataList = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData;
-			SpawnClientRpc(dataList[inClientId]);
+			SpawnClientRpc(data);
 		}
 	}
 	[ClientRpc]
@@ -158,17 +159,18 @@ public class Player : NetworkBehaviour
 		}
 		mGameController.Pick(pick.deck, pick.card);
 	}
-	byte[] CreateBotData(int inBotLevel)
+	byte[] CreateBotData()
 	{
+		var newId = reserveId != null ? reserveId : $"bot_{System.Guid.NewGuid().ToString()}";
 		var user = new UserData
 		{
-			name = $"bot#Lv{inBotLevel}",
-			id = $"bot_{System.Guid.NewGuid().ToString()}",
+			name = $"bot#Lv{botLevel}",
+			id = newId,
 			imageColorCode = System.Convert.ToInt32(ColorUtility.ToHtmlStringRGB(Color.blue), 16)
 		};
 		var data = new ConnectionData
 		{
-			botLevel = inBotLevel,
+			botLevel = botLevel,
 			user = user
 		};
 		return MemoryPackSerializer.Serialize(data);

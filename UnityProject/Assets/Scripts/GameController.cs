@@ -26,9 +26,18 @@ public class GameController : NetworkBehaviour
 	public bool isStart => gameInfo != null;
 	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
 	public PlayerInput GetInput => mInput;
+	Dictionary<ulong, byte[]> connectionsData { get; set; } = new Dictionary<ulong, byte[]>();
 	public bool IsTurnPlayer(Player inPlayer)
 	{
 		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
+	}
+	public byte[] FindUserData(ulong inClientId, ulong inNetworkObjectId)
+	{
+		if(inNetworkObjectId == NetworkManager.Singleton.ConnectedClients[inClientId].PlayerObject.NetworkObjectId)
+		{
+			return connectionsData[inClientId];
+		}
+		return null;
 	}
 	public void Pick(int inDeck, int inCard)
 	{
@@ -61,9 +70,11 @@ public class GameController : NetworkBehaviour
 	}
 	public void DisconnectClient(ulong inId)
 	{
-		var data = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData[inId];
+		var data = connectionsData[inId];
 		var connection = MemoryPackSerializer.Deserialize<ConnectionData>(data);
-		// ボットと入れ替える
+		var obj = NetworkManager.Singleton.ConnectedClients[inId];
+		Debug.Log($"Logout {inId}:{connection.user.id}:{obj.PlayerObject.transform.position}");
+		CreateBot(1, connection.user.id, obj.PlayerObject.transform.position);
 	}
 	public void GameStart()
 	{
@@ -83,6 +94,7 @@ public class GameController : NetworkBehaviour
 		mMenuRoot.SwitchMenu<MenuBoot>();
 		gameInfo = null;
 		mTable.Clear();
+		connectionsData.Clear();
 		if(IsServer)
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
@@ -96,30 +108,9 @@ public class GameController : NetworkBehaviour
 		}
 		return null;
 	}
-	public Vector3 RandomPos()
+	public void AddBot()
 	{
-		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
-		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
-		return new Vector3(x, 0.0f, z);
-	}
-	public void AddBot(int inNpcLevel)
-	{
-		if(isStart)
-		{
-			return;
-		}
-		var players = FindObjectsOfType<Player>();
-		if(players.Length >= mPlayerChairs.maxNum)
-		{
-			return;
-		}
-		var pos = RandomPos();
-		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, pos, Quaternion.identity);
-		if(go.TryGetComponent<Player>(out var player))
-		{
-			player.botLevel = inNpcLevel;
-			player.NetworkObject.Spawn();
-		}
+		CreateBot(1, null, Vector3.zero);
 	}
 	public void RemoveBot()
 	{
@@ -132,6 +123,44 @@ public class GameController : NetworkBehaviour
 				break;
 			}
 		}
+	}
+	public void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+	{
+		response.Approved = true;
+		response.CreatePlayerObject = true;
+		response.PlayerPrefabHash = null;
+		response.Position = RandomPos();
+		response.Rotation = Quaternion.identity;
+		response.Pending = false;
+		connectionsData.Add(request.ClientNetworkId, request.Payload);
+	}
+	Vector3 RandomPos()
+	{
+		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
+		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
+		return new Vector3(x, 0.0f, z);
+	}
+	Player CreateBot(int inNpcLevel, string inId, Vector3 inPos)
+	{
+		if(isStart)
+		{
+			return null;
+		}
+		var players = FindObjectsOfType<Player>();
+		if(players.Length >= mPlayerChairs.maxNum)
+		{
+			return null;
+		}
+		var pos = inId == null ? RandomPos() : inPos;
+		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, pos, Quaternion.identity);
+		if(!go.TryGetComponent<Player>(out var player))
+		{
+			return null;
+		}
+		player.reserveId = inId;
+		player.botLevel = inNpcLevel;
+		player.NetworkObject.Spawn();
+		return player;
 	}
 	Dictionary<string, Player> EntryPlayers()
 	{
