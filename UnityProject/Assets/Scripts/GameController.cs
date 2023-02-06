@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityUtility;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using MemoryPack;
 public class GameController : NetworkBehaviour
 {
 	[SerializeField]
@@ -58,6 +59,12 @@ public class GameController : NetworkBehaviour
 		Clear();
 		base.OnNetworkDespawn();
 	}
+	public void DisconnectClient(ulong inId)
+	{
+		var data = NetworkManager.Singleton.GetComponent<NetworkSelector>().connectionsData[inId];
+		var connection = MemoryPackSerializer.Deserialize<ConnectionData>(data);
+		// ボットと入れ替える
+	}
 	public void GameStart()
 	{
 		if(IsServer && !isStart)
@@ -89,6 +96,12 @@ public class GameController : NetworkBehaviour
 		}
 		return null;
 	}
+	public Vector3 RandomPos()
+	{
+		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
+		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
+		return new Vector3(x, 0.0f, z);
+	}
 	public void AddBot(int inNpcLevel)
 	{
 		if(isStart)
@@ -100,9 +113,8 @@ public class GameController : NetworkBehaviour
 		{
 			return;
 		}
-		var x = RandomObject.GetGlobal.Range(-mMoveRange.x, mMoveRange.x);
-		var z = RandomObject.GetGlobal.Range(-mMoveRange.z, mMoveRange.z);
-		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, new Vector3(x, 0.0f, z), Quaternion.identity);
+		var pos = RandomPos();
+		var go = Instantiate(NetworkManager.Singleton.NetworkConfig.PlayerPrefab, pos, Quaternion.identity);
 		if(go.TryGetComponent<Player>(out var player))
 		{
 			player.botLevel = inNpcLevel;

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class NetworkSelector : MonoBehaviour
 {
 	[SerializeField]
+	GameController mGameContorller;
+	[SerializeField]
 	MenuRoot mMenuRoot;
 	public Dictionary<ulong, byte[]> connectionsData { get; private set; } = new Dictionary<ulong, byte[]>();
 	public void StartLocalHost()
@@ -77,7 +79,7 @@ public class NetworkSelector : MonoBehaviour
 		response.Approved = true;
 		response.CreatePlayerObject = true;
 		response.PlayerPrefabHash = null;
-		response.Position = Vector3.zero;
+		response.Position = mGameContorller.RandomPos();
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
 		connectionsData.Add(request.ClientNetworkId, request.Payload);

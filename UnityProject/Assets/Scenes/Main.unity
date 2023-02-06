@@ -5675,6 +5675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bced38c21df953145b32a5429533de5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mGameContorller: {fileID: 1173965647}
   mMenuRoot: {fileID: 357220069}
 --- !u!1 &1249655403
 GameObject:

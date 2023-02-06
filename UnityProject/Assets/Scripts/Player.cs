@@ -31,6 +31,7 @@ public class Player : NetworkBehaviour
 	{
 		base.OnNetworkSpawn();
 		mGameController = FindObjectOfType<GameController>();
+		mPos = transform.position;
 		SpawnServerRpc(OwnerClientId, NetworkObjectId);
 	}
 	public override void OnDestroy()
@@ -56,6 +57,7 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
+		botLevel = inBotLevel;
 		if(inData != null)
 		{
 			var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
@@ -65,7 +67,6 @@ public class Player : NetworkBehaviour
 		}
 		else
 		{
-			botLevel = inBotLevel;
 			int count = 0;
 			var players = FindObjectsOfType<Player>();
 			foreach(var player in players)
