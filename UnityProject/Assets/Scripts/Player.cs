@@ -43,7 +43,7 @@ public class Player : NetworkBehaviour
 		}
 		base.OnDestroy();
 	}
-	void Apply(byte[] inData, bool inIsStart)
+	void Apply(byte[] inData)
 	{
 		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
 		var user = data.user;
@@ -68,19 +68,19 @@ public class Player : NetworkBehaviour
 	{
 		if(botLevel > 0)
 		{
-			SpawnClientRpc(CreateBotData(), false);
+			SpawnClientRpc(CreateBotData());
 			return;
 		}
 		var data = mGameController.FindUserData(inClientId, inNetworkObjectId);
 		if(data != null)
 		{
-			SpawnClientRpc(data, mGameController.isStart);
+			SpawnClientRpc(data);
 		}
 	}
 	[ClientRpc]
-	void SpawnClientRpc(byte[] inData, bool inIsStart)
+	void SpawnClientRpc(byte[] inData)
 	{
-		Apply(inData, inIsStart);
+		Apply(inData);
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)

@@ -132,13 +132,12 @@ public class GameController : NetworkBehaviour
 	{
 		if(isStart)
 		{
-			return;
-			//var data = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
-			//if(!mEntryPlayers.ContainsKey(data.user.id))
-			//{
-			//	response.Approved = false;
-			//	return;
-			//}
+			// var data = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
+			// if(!mEntryPlayers.ContainsKey(data.user.id))
+			{
+				response.Approved = false;
+				return;
+			}
 		}
 		response.Approved = true;
 		response.CreatePlayerObject = true;
@@ -155,7 +154,10 @@ public class GameController : NetworkBehaviour
 			return;
 		}
 		var oldPlayer = mEntryPlayers[inPlayer.id];
-		Destroy(oldPlayer.gameObject);
+		if(oldPlayer.NetworkObject.IsSpawned)
+		{
+			oldPlayer.NetworkObject.Despawn(true);
+		}
 		mEntryPlayers[inPlayer.id] = inPlayer;
 		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
 	}
