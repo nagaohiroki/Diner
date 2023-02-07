@@ -26,6 +26,8 @@ public class GameController : NetworkBehaviour
 	public bool isStart => gameInfo != null;
 	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
 	public PlayerInput GetInput => mInput;
+	public int entryPlayerNum => mEntryPlayers != null ? mEntryPlayers.Count : 0;
+	int mRestartCounter;
 	Dictionary<ulong, byte[]> connectionsData { get; set; } = new Dictionary<ulong, byte[]>();
 	public bool IsTurnPlayer(Player inPlayer)
 	{
@@ -70,7 +72,7 @@ public class GameController : NetworkBehaviour
 	}
 	public void DisconnectClient(ulong inId)
 	{
-		if(!isStart)
+		if(!IsServer || !isStart)
 		{
 			return;
 		}
@@ -88,7 +90,7 @@ public class GameController : NetworkBehaviour
 			if(players.Length <= mPlayerChairs.maxNum)
 			{
 				mMenuRoot.GetComponentInChildren<MenuQuit>().SetActiveHostButton(false);
-				GameStartClientRpc();
+				GameStartClientRpc(null);
 			}
 		}
 	}
@@ -99,6 +101,7 @@ public class GameController : NetworkBehaviour
 		gameInfo = null;
 		mTable.Clear();
 		connectionsData.Clear();
+		mRestartCounter = 0;
 		if(IsServer)
 		{
 			randomSeed.Value = RandomObject.GenerateSeed();
@@ -106,11 +109,7 @@ public class GameController : NetworkBehaviour
 	}
 	public Player GetPlayer(string inId)
 	{
-		if(mEntryPlayers.TryGetValue(inId, out var player))
-		{
-			return player;
-		}
-		return null;
+		return mEntryPlayers.TryGetValue(inId, out var player) ? player : null;
 	}
 	public void AddBot()
 	{
@@ -132,8 +131,8 @@ public class GameController : NetworkBehaviour
 	{
 		if(isStart)
 		{
-			// var data = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
-			// if(!mEntryPlayers.ContainsKey(data.user.id))
+			var data = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
+			if(!mEntryPlayers.ContainsKey(data.user.id))
 			{
 				response.Approved = false;
 				return;
@@ -147,7 +146,24 @@ public class GameController : NetworkBehaviour
 		response.Pending = false;
 		connectionsData.Add(request.ClientNetworkId, request.Payload);
 	}
-	public void ReplacePlayer(Player inPlayer)
+	public void Restart(Player inPlayer, int inServerEntryPlayerNum)
+	{
+		ReplacePlayer(inPlayer);
+		RestartGame(inServerEntryPlayerNum);
+	}
+	void RestartGame(int inServerEntryPlayerNum)
+	{
+		if(isStart || IsServer)
+		{
+			return;
+		}
+		++mRestartCounter;
+		if(mRestartCounter == inServerEntryPlayerNum)
+		{
+			GameRestartServerRpc();
+		}
+	}
+	void ReplacePlayer(Player inPlayer)
 	{
 		if(!isStart)
 		{
@@ -198,6 +214,18 @@ public class GameController : NetworkBehaviour
 		}
 		return entryPlayers;
 	}
+	void GameStartInternal(byte[] inPickData)
+	{
+		if(isStart)
+		{
+			return;
+		}
+		mEntryPlayers = EntryPlayers();
+		gameInfo = new GameInfo();
+		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs, inPickData);
+		mTable.Apply(this);
+		Debug.Log($"seed:{randomSeed.Value}");
+	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
 	{
@@ -212,13 +240,19 @@ public class GameController : NetworkBehaviour
 			mTable.Apply(this);
 		}
 	}
-	[ClientRpc]
-	void GameStartClientRpc()
+	[ServerRpc(RequireOwnership = false)]
+	void GameRestartServerRpc()
 	{
-		mEntryPlayers = EntryPlayers();
-		gameInfo = new GameInfo();
-		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs);
-		mTable.Apply(this);
-		Debug.Log($"seed:{randomSeed.Value}");
+		if(!isStart)
+		{
+			return;
+		}
+		var data = MemoryPackSerializer.Serialize(gameInfo.GetPickInfoList);
+		GameStartClientRpc(data);
+	}
+	[ClientRpc]
+	void GameStartClientRpc(byte[] inPickData)
+	{
+		GameStartInternal(inPickData);
 	}
 }

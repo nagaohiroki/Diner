@@ -1,19 +1,32 @@
 ﻿using System.Collections.Generic;
 using UnityUtility;
 using UnityEngine;
+public class Deck
+{
+	List<CardData> mCardList;
+	public DeckData deckData { get; private set; }
+	public List<CardData> GetCardList => mCardList;
+	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData)
+	{
+		deckData = inDeckData;
+		mCardList = inDeckData.GenerateCardList();
+		inRand.Shuffle(mCardList);
+	}
+}
 public class GameInfo
 {
 	List<string> mTurnPlayers;
 	List<Deck> mDeck;
-	List<PickInfo> mPickInfo;
+	PickInfoList mPickInfo;
 	public bool IsStart => mTurnPlayers != null;
 	public string GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
 	public List<string> GetTurnPlayers => mTurnPlayers;
+	public PickInfoList GetPickInfoList => mPickInfo;
 	public override string ToString()
 	{
 		return $"pick:{mPickInfo.Count}";
 	}
-	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, PlayerChairs inPlayerChairs)
+	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, PlayerChairs inPlayerChairs, byte[] inPickData)
 	{
 		if(inPlayers == null)
 		{
@@ -31,13 +44,13 @@ public class GameInfo
 		{
 			mDeck.Add(new Deck(rand, inData, deckData));
 		}
-		mPickInfo = new List<PickInfo>();
+		mPickInfo = PickInfoList.Load(inPickData);
 		inPlayerChairs.Sitdown(mTurnPlayers, inPlayers);
 		Debug.Log($"GameStart\n {ToString()}");
 	}
 	public void Pick(int inDeck, int inCard)
 	{
-		var pick = new PickInfo(inDeck, inCard);
+		var pick = new PickInfo { deck = inDeck, card = inCard };
 		Debug.Log($"{pick}\n {ToString()}");
 		mPickInfo.Add(pick);
 	}
@@ -159,7 +172,7 @@ public class GameInfo
 				maxCard = p.card;
 			}
 		}
-		return new PickInfo(maxDeck, maxCard);
+		return new PickInfo { deck = maxDeck, card = maxCard };
 	}
 	public List<string> GetWinners(int inWinPoint)
 	{
@@ -222,7 +235,7 @@ public class GameInfo
 			{
 				continue;
 			}
-			var pick = mPickInfo[i];
+			var pick = mPickInfo.Get(i);
 			num += targetCost == GetCard(pick.deck, pick.card).GetCardType ? 1 : 0;
 			if(pick.deck == inDeck && pick.card == inCard)
 			{
@@ -243,7 +256,7 @@ public class GameInfo
 	{
 		for(int i = 0; i < mPickInfo.Count; i++)
 		{
-			var pick = mPickInfo[i];
+			var pick = mPickInfo.Get(i);
 			if(pick.deck == inDeck && pick.card == inCard)
 			{
 				return i;
@@ -279,7 +292,7 @@ public class GameInfo
 	}
 	CardData GetPickCard(int inPickTurn)
 	{
-		var pick = mPickInfo[inPickTurn];
+		var pick = mPickInfo.Get(inPickTurn);
 		return GetCard(pick.deck, pick.card);
 	}
 	bool HasCost(string inPlayer, int inDeck, int inCard)

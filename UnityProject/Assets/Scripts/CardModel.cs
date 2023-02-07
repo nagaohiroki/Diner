@@ -43,13 +43,18 @@ public class CardModel : MonoBehaviour
 		mPickSE.pitch = inPitch;
 		mPickSE.Play();
 		var lt = LeanTween.move(gameObject, inPos, 0.3f);
-		if(supplyIndex == -1)
-		{
-			lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
-			.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
-			.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));
-		}
+		Open(lt);
 		supplyIndex = inSupply;
+	}
+	public LTDescr Open(LTDescr lt)
+	{
+		if(!Mathf.Approximately(transform.eulerAngles.z, 180.0f))
+		{
+		    return null;
+		}
+		return lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
+		.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
+		.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));
 	}
 	void ApplyCardData(CardData inCardData)
 	{

@@ -60,7 +60,8 @@ public class DeckModel : MonoBehaviour
 				var cardPos = new Vector3(-cardOffset.x * cardList.Count * 0.5f + cardOffset.x * card, 0.0f, cardOffset.z * cardModel.deckIndex + deckOffest);
 				LeanTween.move(cardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
 				LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, 0.3f);
-				LeanTween.scale(cardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
+				var lt = LeanTween.scale(cardModel.gameObject, new Vector3(handScale, 1.0f, handScale), 0.3f);
+				cardModel.Open(lt);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
+﻿using MemoryPack;
 using System.Collections.Generic;
-using UnityUtility;
-public class PickInfo
+[MemoryPackable]
+public partial class PickInfo
 {
 	public int deck { get; set; }
 	public int card { get; set; }
@@ -8,21 +9,26 @@ public class PickInfo
 	{
 		return $"Pick deck:{deck}, card{card}";
 	}
-	public PickInfo(int inDeck, int inCard)
-	{
-		deck = inDeck;
-		card = inCard;
-	}
 }
-public class Deck
+[MemoryPackable]
+public partial class PickInfoList
 {
-	List<CardData> mCardList;
-	public DeckData deckData { get; private set; }
-	public List<CardData> GetCardList => mCardList;
-	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData)
+	public List<PickInfo> picks { get; set; }
+	public int Count => picks.Count;
+	public void Add(PickInfo inPick)
 	{
-		deckData = inDeckData;
-		mCardList = inDeckData.GenerateCardList();
-		inRand.Shuffle(mCardList);
+		picks.Add(inPick);
+	}
+	public PickInfo Get(int inIndex)
+	{
+		return picks[inIndex];
+	}
+	public static PickInfoList Load(byte[] inData)
+	{
+		if(inData == null)
+		{
+			return new PickInfoList { picks = new List<PickInfo>() };
+		}
+		return MemoryPackSerializer.Deserialize<PickInfoList>(inData);
 	}
 }

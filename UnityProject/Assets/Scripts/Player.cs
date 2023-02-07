@@ -43,7 +43,7 @@ public class Player : NetworkBehaviour
 		}
 		base.OnDestroy();
 	}
-	void Apply(byte[] inData)
+	void Apply(byte[] inData, int inServerEntryPlayerNum)
 	{
 		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
 		var user = data.user;
@@ -61,26 +61,26 @@ public class Player : NetworkBehaviour
 		mName.text = user.name;
 		rot = transform.eulerAngles.y;
 		transform.eulerAngles = Vector3.zero;
-		mGameController.ReplacePlayer(this);
+		mGameController.Restart(this, inServerEntryPlayerNum);
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void SpawnServerRpc(ulong inClientId, ulong inNetworkObjectId)
 	{
 		if(botLevel > 0)
 		{
-			SpawnClientRpc(CreateBotData());
+			SpawnClientRpc(CreateBotData(), mGameController.entryPlayerNum);
 			return;
 		}
 		var data = mGameController.FindUserData(inClientId, inNetworkObjectId);
 		if(data != null)
 		{
-			SpawnClientRpc(data);
+			SpawnClientRpc(data, mGameController.entryPlayerNum);
 		}
 	}
 	[ClientRpc]
-	void SpawnClientRpc(byte[] inData)
+	void SpawnClientRpc(byte[] inData, int inServerEntryPlayerNum)
 	{
-		Apply(inData);
+		Apply(inData, inServerEntryPlayerNum);
 	}
 	[ServerRpc]
 	void MoveServerRpc(Vector3 inPos)
