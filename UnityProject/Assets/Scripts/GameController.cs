@@ -39,6 +39,19 @@ public class GameController : NetworkBehaviour
 		}
 		return null;
 	}
+	public override void OnNetworkSpawn()
+	{
+		if(IsServer)
+		{
+			randomSeed.Value = RandomObject.GenerateSeed();
+		}
+		base.OnNetworkSpawn();
+	}
+	public override void OnNetworkDespawn()
+	{
+		Clear();
+		base.OnNetworkDespawn();
+	}
 	public void Pick(int inDeck, int inCard)
 	{
 		if(gameInfo.GetWinners(mData.GetWinPoint) != null)
@@ -55,25 +68,16 @@ public class GameController : NetworkBehaviour
 		}
 		PickServerRpc(inDeck, inCard);
 	}
-	public override void OnNetworkSpawn()
-	{
-		if(IsServer)
-		{
-			randomSeed.Value = RandomObject.GenerateSeed();
-		}
-		base.OnNetworkSpawn();
-	}
-	public override void OnNetworkDespawn()
-	{
-		Clear();
-		base.OnNetworkDespawn();
-	}
 	public void DisconnectClient(ulong inId)
 	{
+		if(!isStart)
+		{
+			return;
+		}
 		var data = connectionsData[inId];
 		var connection = MemoryPackSerializer.Deserialize<ConnectionData>(data);
 		var obj = NetworkManager.Singleton.ConnectedClients[inId];
-		Debug.Log($"Logout {inId}:{connection.user.id}:{obj.PlayerObject.transform.position}");
+		Debug.Log($"DisconnectClient: {inId}:{connection.user.id}:{obj.PlayerObject.transform.position}");
 		CreateBot(1, connection.user.id, obj.PlayerObject.transform.position);
 	}
 	public void GameStart()
@@ -126,6 +130,16 @@ public class GameController : NetworkBehaviour
 	}
 	public void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
 	{
+		if(isStart)
+		{
+			return;
+			//var data = MemoryPackSerializer.Deserialize<ConnectionData>(request.Payload);
+			//if(!mEntryPlayers.ContainsKey(data.user.id))
+			//{
+			//	response.Approved = false;
+			//	return;
+			//}
+		}
 		response.Approved = true;
 		response.CreatePlayerObject = true;
 		response.PlayerPrefabHash = null;
@@ -133,6 +147,17 @@ public class GameController : NetworkBehaviour
 		response.Rotation = Quaternion.identity;
 		response.Pending = false;
 		connectionsData.Add(request.ClientNetworkId, request.Payload);
+	}
+	public void ReplacePlayer(Player inPlayer)
+	{
+		if(!isStart)
+		{
+			return;
+		}
+		var oldPlayer = mEntryPlayers[inPlayer.id];
+		Destroy(oldPlayer.gameObject);
+		mEntryPlayers[inPlayer.id] = inPlayer;
+		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
 	}
 	Vector3 RandomPos()
 	{
@@ -142,10 +167,6 @@ public class GameController : NetworkBehaviour
 	}
 	Player CreateBot(int inNpcLevel, string inId, Vector3 inPos)
 	{
-		if(isStart)
-		{
-			return null;
-		}
 		var players = FindObjectsOfType<Player>();
 		if(players.Length >= mPlayerChairs.maxNum)
 		{
