@@ -164,7 +164,11 @@ public class Player : NetworkBehaviour
 	}
 	byte[] CreateBotData()
 	{
-		var newId = reserveId != null ? reserveId : $"bot_{System.Guid.NewGuid().ToString()}";
+		var newId = id;
+		if(newId == null)
+		{
+			newId = reserveId != null ? reserveId : $"bot_{System.Guid.NewGuid().ToString()}";
+		}
 		var user = new UserData
 		{
 			name = $"bot#Lv{botLevel}",
