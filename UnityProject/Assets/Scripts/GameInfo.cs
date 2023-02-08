@@ -225,6 +225,31 @@ public class GameInfo
 		}
 		return point;
 	}
+	public int GetMoney(string inId)
+	{
+		int totalMoney = GetTotalMoney(inId);
+		for(int i = 0; i < mPickInfo.Count; ++i)
+		{
+			if(GetTurnPlayer(i) != inId)
+			{
+				continue;
+			}
+			var card = GetPickCard(i);
+		}
+		return 0;
+	}
+	int GetTotalMoney(string inId)
+	{
+		int money = 0;
+		for(int i = 0; i < mPickInfo.Count; ++i)
+		{
+			if(GetTurnPlayer(i) == inId)
+			{
+				money += GetPickCard(i).GetMoney;
+			}
+		}
+		return money;
+	}
 	int GetResourcePos(string inPlayer, int inDeck, int inCard)
 	{
 		var targetCost = GetCard(inDeck, inCard).GetCardType;

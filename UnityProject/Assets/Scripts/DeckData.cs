@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 [System.Serializable]
 public class CardCounter
 {
@@ -56,29 +53,4 @@ public class DeckData : ScriptableObject
 		log += $"---\nTotal:{total}\n";
 		return log;
 	}
-#if UNITY_EDITOR
-	public void OnValidate()
-	{
-		var paths = AssetDatabase.GetAllAssetPaths();
-		foreach(var path in paths)
-		{
-			if(!path.Contains(id))
-			{
-				continue;
-			}
-			var cardData = AssetDatabase.LoadAssetAtPath<CardData>(path);
-			if(cardData == null)
-			{
-				continue;
-			}
-			var cards = mCard.Find(card => card.GetCard.GetId == cardData.GetId);
-			if(cards == null)
-			{
-				var cardCounter = new CardCounter();
-				cardCounter.Set(cardData);
-				mCard.Add(cardCounter);
-			}
-		}
-	}
-#endif
 }

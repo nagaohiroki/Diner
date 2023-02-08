@@ -26,7 +26,8 @@ public class CardData : ScriptableObject
 		Milk,
 		Spices,
 		Grain,
-		Rare
+		Rare,
+		Num
 	}
 	[SerializeField]
 	string mName;
@@ -37,9 +38,12 @@ public class CardData : ScriptableObject
 	[SerializeField]
 	int point;
 	[SerializeField]
+	int money;
+	[SerializeField]
 	List<Cost> cost;
 	public string GetId => id;
 	public int GetPoint => point;
+	public int GetMoney => money;
 	public List<Cost> GetCost => cost;
 	public CardType GetCardType => cardType;
 	public override string ToString()
@@ -52,7 +56,7 @@ public class CardData : ScriptableObject
 			{
 				costLog += $"{c}, ";
 			}
-			text += $" (point:{point} cost:{costLog})";
+			text += $" (point:{point} money:{money} cost:{costLog} )";
 		}
 		return text;
 	}
