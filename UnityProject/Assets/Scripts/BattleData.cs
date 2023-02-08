@@ -18,13 +18,4 @@ public class BattleData : ScriptableObject
 		}
 		return log;
 	}
-#if UNITY_EDITOR
-	public void OnValidate()
-	{
-		foreach(var deck in deckList)
-		{
-			deck.OnValidate();
-		}
-	}
-#endif
 }
