@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _2Vegetable
   cardType: 0
   point: 2
+  money: 1
   cost:
   - mCostType: 3
     mNum: 1

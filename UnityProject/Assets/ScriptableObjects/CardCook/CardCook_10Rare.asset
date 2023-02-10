@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _10Rare
   cardType: 0
   point: 10
+  money: 0
   cost:
   - mCostType: 1
     mNum: 1

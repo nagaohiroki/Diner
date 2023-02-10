@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _7Fish
   cardType: 0
   point: 7
+  money: 0
   cost:
   - mCostType: 2
     mNum: 3

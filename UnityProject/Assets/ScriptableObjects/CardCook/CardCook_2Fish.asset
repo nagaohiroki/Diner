@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _2Fish
   cardType: 0
   point: 2
+  money: 1
   cost:
   - mCostType: 2
     mNum: 1

@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _5Fish
   cardType: 0
   point: 5
+  money: 0
   cost:
   - mCostType: 2
     mNum: 2

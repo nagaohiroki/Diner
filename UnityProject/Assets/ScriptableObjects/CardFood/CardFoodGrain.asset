@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
   m_Name: CardFoodGrain
   m_EditorClassIdentifier: 
+  mName: 
   id: Grain
   cardType: 6
   point: 0
+  money: 0
   cost: []

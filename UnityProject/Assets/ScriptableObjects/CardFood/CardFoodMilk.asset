@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
   m_Name: CardFoodMilk
   m_EditorClassIdentifier: 
+  mName: 
   id: Milk
   cardType: 4
   point: 0
+  money: 0
   cost: []

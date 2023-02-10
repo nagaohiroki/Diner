@@ -16,6 +16,7 @@ MonoBehaviour:
   id: _7Meat
   cardType: 0
   point: 7
+  money: 0
   cost:
   - mCostType: 1
     mNum: 3

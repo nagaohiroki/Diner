@@ -15,6 +15,16 @@ public class Deck
 }
 public class GameInfo
 {
+	static readonly List<CardData.CardType> resourceType = new List<CardData.CardType>
+	{
+		CardData.CardType.Meat,
+		CardData.CardType.SeaFood,
+		CardData.CardType.Vegetable,
+		CardData.CardType.Milk,
+		CardData.CardType.Spices,
+		CardData.CardType.Grain,
+		CardData.CardType.Rare,
+	};
 	List<string> mTurnPlayers;
 	List<Deck> mDeck;
 	PickInfoList mPickInfo;
@@ -98,7 +108,8 @@ public class GameInfo
 		{
 			return false;
 		}
-		return HasCost(GetCurrentTurnPlayer, inDeck, inCard);
+		int over = OverCost(GetCurrentTurnPlayer, inDeck, inCard);
+		return over <= GetMoney(GetCurrentTurnPlayer);
 	}
 	public int GetDeckIndex(string inId)
 	{
@@ -131,6 +142,10 @@ public class GameInfo
 		return GetCardList(inDeck)[inCard];
 	}
 	public bool IsDiscard(int inDeck, int inCard)
+	{
+		return GetPaidTurn(inDeck, inCard) != -1;
+	}
+	public bool IsDiscard_(int inDeck, int inCard)
 	{
 		var player = GetPickPlayer(inDeck, inCard);
 		if(player == null)
@@ -213,42 +228,120 @@ public class GameInfo
 		}
 		return players;
 	}
-	public int GetPoint(string inId)
+	public int GetPoint(string inPlayer)
 	{
 		int point = 0;
 		for(int i = 0; i < mPickInfo.Count; ++i)
 		{
-			if(GetTurnPlayer(i) == inId)
+			if(GetTurnPlayer(i) == inPlayer)
 			{
 				point += GetPickCard(i).GetPoint;
 			}
 		}
 		return point;
 	}
-	public int GetMoney(string inId)
+	public int GetMoney(string inPlayer)
 	{
-		int totalMoney = GetTotalMoney(inId);
-		for(int i = 0; i < mPickInfo.Count; ++i)
+		int totalMoney = 0;
+		for(int i = 0; i < mPickInfo.Count; i++)
 		{
-			if(GetTurnPlayer(i) != inId)
+			if(GetTurnPlayer(i) == inPlayer)
+			{
+				var card = GetPickCard(i);
+				totalMoney += card.GetMoney;
+			}
+		}
+		int paid = 0;
+		foreach(var res in resourceType)
+		{
+			paid += GetTypeMoneyCost(inPlayer, res);
+		}
+		return totalMoney - paid;
+	}
+	int GetTypeMoneyCost(string inPlayer, CardData.CardType inType)
+	{
+		int money = 0;
+		int resource = 0;
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			if(GetTurnPlayer(i) != inPlayer)
 			{
 				continue;
 			}
 			var card = GetPickCard(i);
-		}
-		return 0;
-	}
-	int GetTotalMoney(string inId)
-	{
-		int money = 0;
-		for(int i = 0; i < mPickInfo.Count; ++i)
-		{
-			if(GetTurnPlayer(i) == inId)
+			if(card.GetCardType == inType)
 			{
-				money += GetPickCard(i).GetMoney;
+				++resource;
+			}
+			var costs = card.GetCost;
+			if(costs == null)
+			{
+				continue;
+			}
+			foreach(var cost in costs)
+			{
+				if(cost.GetCostType != inType)
+				{
+					continue;
+				}
+				resource -= cost.GetNum;
+				if(resource < 0)
+				{
+					money -= resource;
+				}
 			}
 		}
 		return money;
+	}
+	public int GetPaidTurn(int inDeck, int inCard)
+	{
+		var player = GetPickPlayer(inDeck, inCard);
+		if(player == null)
+		{
+			return -1;
+		}
+		var type = GetCard(inDeck, inCard).GetCardType;
+		int resource = 0;
+		int resourcePos = -1;
+		for(int i = 0; i < mPickInfo.Count; i++)
+		{
+			if(GetTurnPlayer(i) != player)
+			{
+				continue;
+			}
+			var card = GetPickCard(i);
+			if(card.GetCardType == type)
+			{
+				++resource;
+				var pick = mPickInfo.Get(i);
+				if(pick.deck == inDeck && pick.card == inCard)
+				{
+					resourcePos = resource;
+				}
+			}
+			if(card.GetCost == null)
+			{
+				continue;
+			}
+			foreach(var cost in card.GetCost)
+			{
+				if(cost.GetCostType != type)
+				{
+					continue;
+				}
+				resource -= cost.GetNum;
+				if(resource < resourcePos)
+				{
+					return i;
+				}
+				if(resource <= 0)
+				{
+					resourcePos = -1;
+					resource = 0;
+				}
+			}
+		}
+		return -1;
 	}
 	int GetResourcePos(string inPlayer, int inDeck, int inCard)
 	{
@@ -320,21 +413,23 @@ public class GameInfo
 		var pick = mPickInfo.Get(inPickTurn);
 		return GetCard(pick.deck, pick.card);
 	}
-	bool HasCost(string inPlayer, int inDeck, int inCard)
+	int OverCost(string inPlayer, int inDeck, int inCard)
 	{
+		int overCost = 0;
 		var card = GetCard(inDeck, inCard);
 		if(card.GetCost == null)
 		{
-			return true;
+			return 0;
 		}
 		foreach(var newCost in card.GetCost)
 		{
-			if(GetHandResource(inPlayer, newCost.GetCostType) < newCost.GetNum)
+			int over = newCost.GetNum - GetHandResource(inPlayer, newCost.GetCostType);
+			if(over > 0)
 			{
-				return false;
+				overCost += over;
 			}
 		}
-		return true;
+		return overCost;
 	}
 	int GetHandResource(string inPlayer, CardData.CardType inCardType)
 	{

@@ -16,4 +16,5 @@ MonoBehaviour:
   id: Rare
   cardType: 7
   point: 0
+  money: 0
   cost: []
