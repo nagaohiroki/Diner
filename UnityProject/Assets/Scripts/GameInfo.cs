@@ -56,7 +56,6 @@ public class GameInfo
 		}
 		mPickInfo = PickInfoList.Load(inPickData);
 		inPlayerChairs.Sitdown(mTurnPlayers, inPlayers);
-		Debug.Log($"GameStart\n {ToString()}");
 	}
 	public void Pick(int inDeck, int inCard)
 	{
@@ -108,8 +107,7 @@ public class GameInfo
 		{
 			return false;
 		}
-		int over = OverCost(GetCurrentTurnPlayer, inDeck, inCard);
-		return over <= GetMoney(GetCurrentTurnPlayer);
+		return OverCost(GetCurrentTurnPlayer, inDeck, inCard) <= GetMoney(GetCurrentTurnPlayer);
 	}
 	public int GetDeckIndex(string inId)
 	{
@@ -144,16 +142,6 @@ public class GameInfo
 	public bool IsDiscard(int inDeck, int inCard)
 	{
 		return GetPaidTurn(inDeck, inCard) != -1;
-	}
-	public bool IsDiscard_(int inDeck, int inCard)
-	{
-		var player = GetPickPlayer(inDeck, inCard);
-		if(player == null)
-		{
-			return false;
-		}
-		var card = GetCard(inDeck, inCard);
-		return GetTotalPaidCost(player, card.GetCardType) >= GetResourcePos(player, inDeck, inCard);
 	}
 	public PickInfo AIPick()
 	{
@@ -293,7 +281,7 @@ public class GameInfo
 		}
 		return money;
 	}
-	public int GetPaidTurn(int inDeck, int inCard)
+	int GetPaidTurn(int inDeck, int inCard)
 	{
 		var player = GetPickPlayer(inDeck, inCard);
 		if(player == null)
@@ -342,25 +330,6 @@ public class GameInfo
 			}
 		}
 		return -1;
-	}
-	int GetResourcePos(string inPlayer, int inDeck, int inCard)
-	{
-		var targetCost = GetCard(inDeck, inCard).GetCardType;
-		int num = 0;
-		for(int i = 0; i < mPickInfo.Count; i++)
-		{
-			if(GetTurnPlayer(i) != inPlayer)
-			{
-				continue;
-			}
-			var pick = mPickInfo.Get(i);
-			num += targetCost == GetCard(pick.deck, pick.card).GetCardType ? 1 : 0;
-			if(pick.deck == inDeck && pick.card == inCard)
-			{
-				return num;
-			}
-		}
-		return num;
 	}
 	string GetPickPlayer(int inDeck, int inCard)
 	{
@@ -433,34 +402,16 @@ public class GameInfo
 	}
 	int GetHandResource(string inPlayer, CardData.CardType inCardType)
 	{
-		return GetTotalResource(inPlayer, inCardType) - GetTotalPaidCost(inPlayer, inCardType);
-	}
-	int GetTotalPaidCost(string inPlayer, CardData.CardType inCardType)
-	{
-		int num = 0;
+		int count = 0;
 		for(int i = 0; i < mPickInfo.Count; i++)
 		{
-			if(GetTurnPlayer(i) == inPlayer)
+			var pick = mPickInfo.Get(i);
+			if(GetTurnPlayer(i) == inPlayer && GetPaidTurn(pick.deck, pick.card) == -1 && GetPickCard(i).GetCardType == inCardType)
 			{
-				num += GetPickCard(i).GetCostNum(inCardType);
+				++count;
 			}
 		}
-		return num;
-	}
-	int GetTotalResource(string inPlayer, CardData.CardType inCardType)
-	{
-		int num = 0;
-		for(int i = 0; i < mPickInfo.Count; i++)
-		{
-			if(GetTurnPlayer(i) == inPlayer)
-			{
-				if(GetPickCard(i).GetCardType == inCardType)
-				{
-					++num;
-				}
-			}
-		}
-		return num;
+		return count;
 	}
 	Dictionary<CardData.CardType, float> CalcCardTypeScore()
 	{
