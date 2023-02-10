@@ -86,21 +86,6 @@ public class GameInfo
 		}
 		return hand;
 	}
-	public List<int> Supply(int inDeck)
-	{
-		var deck = mDeck[inDeck];
-		var cardList = GetCardList(inDeck);
-		var list = new List<int>();
-		for(int card = 0; card < cardList.Count; ++card)
-		{
-			int supply = SupplyIndex(inDeck, card);
-			if(supply != -1)
-			{
-				list.Add(card);
-			}
-		}
-		return list;
-	}
 	public bool CanPick(int inDeck, int inCard)
 	{
 		if(SupplyIndex(inDeck, inCard) == -1)
@@ -122,14 +107,8 @@ public class GameInfo
 	}
 	public Deck GetDeck(string inId)
 	{
-		foreach(var deck in mDeck)
-		{
-			if(deck.deckData.GetId == inId)
-			{
-				return deck;
-			}
-		}
-		return null;
+		int index = GetDeckIndex(inId);
+		return index != -1 ? mDeck[index] : null;
 	}
 	public List<CardData> GetCardList(int inDeck)
 	{
@@ -246,6 +225,32 @@ public class GameInfo
 		}
 		return totalMoney - paid;
 	}
+	public int SupplyIndex(int inDeck, int inCard)
+	{
+		if(GetPickTurn(inDeck, inCard) != -1)
+		{
+			return -1;
+		}
+		var deck = mDeck[inDeck];
+		int supply = 0;
+		for(int card = 0; card < deck.GetCardList.Count; ++card)
+		{
+			if(GetPickTurn(inDeck, card) != -1)
+			{
+				continue;
+			}
+			if(card == inCard)
+			{
+				return supply;
+			}
+			++supply;
+			if(supply >= deck.deckData.GetSupply)
+			{
+				break;
+			}
+		}
+		return -1;
+	}
 	int GetTypeMoneyCost(string inPlayer, CardData.CardType inType)
 	{
 		int money = 0;
@@ -351,32 +356,6 @@ public class GameInfo
 		}
 		return -1;
 	}
-	int SupplyIndex(int inDeck, int inCard)
-	{
-		if(GetPickTurn(inDeck, inCard) != -1)
-		{
-			return -1;
-		}
-		var deck = mDeck[inDeck];
-		int supply = 0;
-		for(int card = 0; card < deck.GetCardList.Count; ++card)
-		{
-			if(GetPickTurn(inDeck, card) != -1)
-			{
-				continue;
-			}
-			if(card == inCard)
-			{
-				return supply;
-			}
-			++supply;
-			if(supply >= deck.deckData.GetSupply)
-			{
-				break;
-			}
-		}
-		return -1;
-	}
 	CardData GetPickCard(int inPickTurn)
 	{
 		var pick = mPickInfo.Get(inPickTurn);
@@ -418,11 +397,15 @@ public class GameInfo
 		var score = new Dictionary<CardData.CardType, float>();
 		for(int deck = 0; deck < mDeck.Count; ++deck)
 		{
-			var supply = Supply(deck);
-			for(int card = 0; card < supply.Count; ++card)
+			var cardList = GetCardList(deck);
+			for(int card = 0; card < cardList.Count; ++card)
 			{
+				if(SupplyIndex(deck, card) == -1)
+				{
+					continue;
+				}
 				var remaindCostDict = new Dictionary<CardData.CardType, int>();
-				var cardData = GetCard(deck, supply[card]);
+				var cardData = GetCard(deck, card);
 				int totalCost = 0;
 				foreach(var cost in cardData.GetCost)
 				{

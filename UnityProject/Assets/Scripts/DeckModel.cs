@@ -34,12 +34,18 @@ public class DeckModel : MonoBehaviour
 	void ApplySupply(GameController inGameController)
 	{
 		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
-		var supplyList = inGameController.gameInfo.Supply(deckIndex);
-		for(int supply = 0; supply < supplyList.Count; supply++)
+		var cardList = inGameController.gameInfo.GetCardList(deckIndex);
+		for(int card = 0; card < cardList.Count; ++card)
 		{
+			int supply = inGameController.gameInfo.SupplyIndex(deckIndex, card);
+			if(supply == -1)
+			{
+				continue;
+			}
 			var pos = transform.position + mSupplyOffset * (supply + 1);
-			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, supplyList[supply]);
+			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, card);
 			cardModel.ToSupply(pos, supply, mSEPitch);
+
 		}
 	}
 	void ApplyHand(GameController inGameController)
