@@ -222,7 +222,8 @@ public class GameController : NetworkBehaviour
 		}
 		mEntryPlayers = EntryPlayers();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, mPlayerChairs, inPickData);
+		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, inPickData);
+		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}

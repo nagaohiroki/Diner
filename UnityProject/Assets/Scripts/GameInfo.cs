@@ -1,21 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityUtility;
 using UnityEngine;
-public class Deck
-{
-	List<CardData> mCardList;
-	public DeckData deckData { get; private set; }
-	public List<CardData> GetCardList => mCardList;
-	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData)
-	{
-		deckData = inDeckData;
-		mCardList = inDeckData.GenerateCardList();
-		inRand.Shuffle(mCardList);
-	}
-}
+using UnityUtility;
 public class GameInfo
 {
-	static readonly List<CardData.CardType> resourceType = new List<CardData.CardType>
+	static readonly List<CardData.CardType> resourceMoneyType = new List<CardData.CardType>
 	{
 		CardData.CardType.Meat,
 		CardData.CardType.SeaFood,
@@ -36,7 +24,7 @@ public class GameInfo
 	{
 		return $"pick:{mPickInfo.Count}";
 	}
-	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, PlayerChairs inPlayerChairs, byte[] inPickData)
+	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData)
 	{
 		if(inPlayers == null)
 		{
@@ -55,7 +43,6 @@ public class GameInfo
 			mDeck.Add(new Deck(rand, inData, deckData));
 		}
 		mPickInfo = PickInfoList.Load(inPickData);
-		inPlayerChairs.Sitdown(mTurnPlayers, inPlayers);
 	}
 	public void Pick(int inDeck, int inCard)
 	{
@@ -215,11 +202,17 @@ public class GameInfo
 			if(GetTurnPlayer(i) == inPlayer)
 			{
 				var card = GetPickCard(i);
-				totalMoney += card.GetMoney;
+				int money = card.GetMoney;
+				if(money == 0)
+				{
+					continue;
+				}
+				int turn = GetTurnCount(inPlayer, mPickInfo.Count) - GetTurnCount(inPlayer, i);
+				totalMoney += money * turn;
 			}
 		}
 		int paid = 0;
-		foreach(var res in resourceType)
+		foreach(var res in resourceMoneyType)
 		{
 			paid += GetTypeMoneyCost(inPlayer, res);
 		}
@@ -391,6 +384,10 @@ public class GameInfo
 			}
 		}
 		return count;
+	}
+	int GetTurnCount(string inPlayer, int inTurn)
+	{
+		return Mathf.Max(0, (inTurn - mTurnPlayers.IndexOf(inPlayer)) / mTurnPlayers.Count);
 	}
 	Dictionary<CardData.CardType, float> CalcCardTypeScore()
 	{
