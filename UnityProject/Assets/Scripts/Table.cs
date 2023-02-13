@@ -18,16 +18,12 @@ public class Table : MonoBehaviour
 	Dictionary<string, List<GameObject>> mCoin = new Dictionary<string, List<GameObject>>();
 	public void Apply(GameController inGameController)
 	{
-		if(mCardRoot == null)
-		{
-			mCardRoot = new GameObject("CardRoot");
-		}
+		Init(inGameController);
 		mMenuRoot.Apply(inGameController);
 		foreach(var deck in mDeckModels)
 		{
 			deck.Apply(inGameController, mCardRoot.transform);
 		}
-		RemoveCoin(inGameController);
 		var winners = inGameController.gameInfo.GetWinners(inGameController.GetData.GetWinPoint);
 		if(winners != null)
 		{
@@ -52,76 +48,67 @@ public class Table : MonoBehaviour
 				LeanTween.move(mTurnClock, trans.position + rot * Vector3.forward * 2.0f, 0.2f);
 			}
 		});
-		AddCoin(inGameController);
+		ApplyCoin(inGameController);
 	}
 	public void Clear()
 	{
-		Destroy(mCardRoot);
+		if(mCardRoot != null)
+		{
+			Destroy(mCardRoot);
+			mCardRoot = null;
+		}
 	}
-	void RemoveCoin(GameController inGameController)
+	void Init(GameController inGameController)
 	{
-		var info = inGameController.gameInfo;
-		var player = info.GetCurrentTurnPlayer;
-		if(!mCoin.TryGetValue(player, out var coins))
+		if(mCardRoot != null)
 		{
 			return;
 		}
-		int oldMoney = coins.Count;
-		int newMoney = info.GetMoney(player);
-		int diff = oldMoney - newMoney;
-		if(diff <= 0)
+		mCardRoot = new GameObject("CardRoot");
+		mCoinRoot = new GameObject("CoinRoot");
+		mCoinRoot.transform.SetParent(mCardRoot.transform);
+		foreach(var player in inGameController.gameInfo.GetTurnPlayers)
 		{
-			return;
-		}
-	//	Debug.Log($"old: {oldMoney} new:{newMoney}");
-		for(int i = oldMoney - 1; i >= newMoney; --i)
-		{
-	//		Debug.Log($"delete:{i}");
-			Destroy(coins[i]);
-			coins.RemoveAt(i);
+			if(!mCoin.ContainsKey(player))
+			{
+				mCoin.Add(player, new List<GameObject>());
+			}
 		}
 	}
-	void AddCoin(GameController inGameController)
+	void ApplyCoin(GameController inGameController)
 	{
-		if(mCoinRoot == null)
-		{
-			mCoinRoot = new GameObject("CoinRoot");
-			mCoinRoot.transform.SetParent(mCardRoot.transform);
-		}
 		var gameInfo = inGameController.gameInfo;
-		var player = gameInfo.GetCurrentTurnPlayer;
-		for(int i = 0; i < gameInfo.GetPickInfoList.Count; ++i)
+		int count = gameInfo.GetPickInfoList.Count;
+		var offset = new Vector3(-0.15f, 0.0f, 0.0f);
+		var rot = Quaternion.Euler(0.0f, 0.0f, -5.0f);
+		for(int turn = 0; turn < count; ++turn)
 		{
-			if(gameInfo.GetTurnPlayer(i) != player)
+			var player = gameInfo.GetTurnPlayer(turn);
+			int money = gameInfo.GetMoney(player);
+			var coins = mCoin[player];
+			int coinCount = coins.Count;
+			int diff = money - coinCount;
+			if(diff > 0)
 			{
+				for(int i = 0; i < diff; ++i)
+				{
+					var playerGo = inGameController.GetPlayer(player).gameObject;
+					var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+					coins.Add(coin);
+					coin.transform.position = playerGo.transform.position + offset * coins.Count;
+					coin.transform.rotation = rot;
+				}
 				continue;
 			}
-			var card = gameInfo.GetPickCard(i);
-			int money = card.GetMoney;
-			if(money == 0)
+			if(diff < 0)
 			{
+				for(int i = coinCount - 1; i >= money; --i)
+				{
+					Destroy(coins[i]);
+					coins.RemoveAt(i);
+				}
 				continue;
 			}
-			List<GameObject> coins = null;
-			if(!mCoin.TryGetValue(player, out coins))
-			{
-				coins = new List<GameObject>();
-				mCoin.Add(player, coins);
-			}
-			var pick = gameInfo.GetPickInfoList.Get(i);
-			var cardModel = mDeckModels[pick.deck].GetCardModel(pick.card);
-			var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
-			coins.Add(coin);
-			coin.SetActive(false);
-			var offset = new Vector3(-0.12f, 0.0f, 0.0f) * coins.Count;
-			coin.transform.position = cardModel.transform.position;
-			coin.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -5.0f);
-			var playerGo = inGameController.GetPlayer(player).gameObject;
-			LeanTween.delayedCall(0.5f, () =>
-			{
-				coin.SetActive(true);
-				LeanTween.move(coin, playerGo.transform.position + offset, 0.2f);
-			});
 		}
 	}
 	bool IsTweenCard(GameObject inGameObject)

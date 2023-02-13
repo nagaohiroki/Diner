@@ -188,10 +188,11 @@ public class GameInfo
 		}
 		return point;
 	}
-	public int GetMoney(string inPlayer)
+	public int GetMoney(string inPlayer) => GetMoney(inPlayer, mPickInfo.Count);
+	public int GetMoney(string inPlayer, int inTurn)
 	{
 		int totalMoney = 0;
-		for(int i = 0; i < mPickInfo.Count; i++)
+		for(int i = 0; i < inTurn; i++)
 		{
 			if(GetTurnPlayer(i) == inPlayer)
 			{
@@ -201,7 +202,7 @@ public class GameInfo
 				{
 					continue;
 				}
-				int turn = GetTurnCount(inPlayer, mPickInfo.Count) - GetTurnCount(inPlayer, i);
+				int turn = GetTurnCount(inPlayer, inTurn) - GetTurnCount(inPlayer, i);
 				totalMoney += money * turn;
 			}
 		}
