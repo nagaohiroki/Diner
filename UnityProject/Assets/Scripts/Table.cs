@@ -9,9 +9,13 @@ public class Table : MonoBehaviour
 	[SerializeField]
 	AudioSource mWinnerSE;
 	[SerializeField]
+	GameObject mCoinPrefab;
+	[SerializeField]
 	List<DeckModel> mDeckModels;
 	GameObject mCardRoot;
+	GameObject mCoinRoot;
 	public bool IsTween => IsTweenCard(mCardRoot);
+	Dictionary<string, List<GameObject>> mCoin = new Dictionary<string, List<GameObject>>();
 	public void Apply(GameController inGameController)
 	{
 		if(mCardRoot == null)
@@ -47,10 +51,54 @@ public class Table : MonoBehaviour
 				LeanTween.move(mTurnClock, trans.position + rot * Vector3.forward * 2.0f, 0.2f);
 			}
 		});
+		AddCoin(inGameController);
 	}
 	public void Clear()
 	{
 		Destroy(mCardRoot);
+	}
+	void AddCoin(GameController inGameController)
+	{
+		if(mCoinRoot == null)
+		{
+			mCoinRoot = new GameObject("CoinRoot");
+			mCoinRoot.transform.SetParent(mCardRoot.transform);
+		}
+		var gameInfo = inGameController.gameInfo;
+		var player = gameInfo.GetCurrentTurnPlayer;
+		for(int i = 0; i < gameInfo.GetPickInfoList.Count; ++i)
+		{
+			if(gameInfo.GetTurnPlayer(i) != player)
+			{
+				continue;
+			}
+			var card = gameInfo.GetPickCard(i);
+			int money = card.GetMoney;
+			if(money == 0)
+			{
+				continue;
+			}
+			List<GameObject> coins = null;
+			if(!mCoin.TryGetValue(player, out coins))
+			{
+				coins = new List<GameObject>();
+				mCoin.Add(player, coins);
+			}
+			var pick = gameInfo.GetPickInfoList.Get(i);
+			var cardModel = mDeckModels[pick.deck].GetCardModel(pick.card);
+			var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+			coins.Add(coin);
+			coin.SetActive(false);
+			var offset = new Vector3(-0.12f, 0.0f, 0.0f) * coins.Count;
+			coin.transform.position = cardModel.transform.position;
+			coin.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -5.0f);
+			var playerGo = inGameController.GetPlayer(player).gameObject;
+			LeanTween.delayedCall(0.5f, () =>
+			{
+				coin.SetActive(true);
+				LeanTween.move(coin, playerGo.transform.position + offset, 0.2f);
+			});
+		}
 	}
 	bool IsTweenCard(GameObject inGameObject)
 	{

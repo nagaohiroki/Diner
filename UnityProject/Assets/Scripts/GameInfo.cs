@@ -333,7 +333,7 @@ public class GameInfo
 	{
 		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
 	}
-	string GetTurnPlayer(int inTurn)
+	public string GetTurnPlayer(int inTurn)
 	{
 		return inTurn < 0 ? null : mTurnPlayers[inTurn % mTurnPlayers.Count];
 	}
@@ -349,7 +349,7 @@ public class GameInfo
 		}
 		return -1;
 	}
-	CardData GetPickCard(int inPickTurn)
+	public CardData GetPickCard(int inPickTurn)
 	{
 		var pick = mPickInfo.Get(inPickTurn);
 		return GetCard(pick.deck, pick.card);

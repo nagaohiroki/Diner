@@ -177,8 +177,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mBackface: {fileID: 0}
   mId: 
-  mAnchor: {fileID: 0}
+  mSupplyOffset: {x: 0, y: 0, z: 0}
+  mSEPitch: 1
   mCardModelPrefab: {fileID: 2518866154619904136, guid: 8ee90d707823f204b97ba6938f545267, type: 3}
+  mCoinPrefab: {fileID: 3650101188929987479, guid: 8ee90d707823f204b97ba6938f545267, type: 3}
   mRoot: {fileID: 1507238531635530774}
   mDeck: {fileID: 475188330851335806}
   mBackfaceMesh: {fileID: 8131222035029053520}

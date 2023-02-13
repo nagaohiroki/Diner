@@ -19,6 +19,17 @@ public class DeckModel : MonoBehaviour
 	MeshRenderer mBackfaceMesh;
 	Material mCache;
 	Transform mCardRoot;
+	public GameObject GetCardModel(int inCard)
+	{
+		for(int i = 0; i < mCardRoot.childCount; ++i)
+		{
+			if(mCardRoot.GetChild(i).TryGetComponent<CardModel>(out var model) && model.cardIndex == inCard)
+			{
+				return model.gameObject;
+			}
+		}
+		return null;
+	}
 	public void Apply(GameController inGameController, Transform inCardRoot)
 	{
 		if(mCardRoot == null)
@@ -45,7 +56,6 @@ public class DeckModel : MonoBehaviour
 			var pos = transform.position + mSupplyOffset * (supply + 1);
 			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, card);
 			cardModel.ToSupply(pos, supply, mSEPitch);
-
 		}
 	}
 	void ApplyHand(GameController inGameController)
