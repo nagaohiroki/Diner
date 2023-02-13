@@ -20,10 +20,6 @@ public class GameInfo
 	public string GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
 	public List<string> GetTurnPlayers => mTurnPlayers;
 	public PickInfoList GetPickInfoList => mPickInfo;
-	public override string ToString()
-	{
-		return $"pick:{mPickInfo.Count}";
-	}
 	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData)
 	{
 		if(inPlayers == null)
@@ -36,19 +32,17 @@ public class GameInfo
 			mTurnPlayers.Add(player.Key);
 		}
 		var rand = new RandomObject(inSeed);
-		rand.Shuffle(mTurnPlayers);
 		mDeck = new List<Deck>();
 		foreach(var deckData in inData.GetDeckList)
 		{
 			mDeck.Add(new Deck(rand, inData, deckData));
 		}
+		rand.Shuffle(mTurnPlayers);
 		mPickInfo = PickInfoList.Load(inPickData);
 	}
 	public void Pick(int inDeck, int inCard)
 	{
-		var pick = new PickInfo { deck = inDeck, card = inCard };
-		Debug.Log($"{pick}\n {ToString()}");
-		mPickInfo.Add(pick);
+		mPickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
 	}
 	public Dictionary<string, List<int>> Hand(int inDeck)
 	{
@@ -387,7 +381,7 @@ public class GameInfo
 	}
 	int GetTurnCount(string inPlayer, int inTurn)
 	{
-		return Mathf.Max(0, (inTurn - mTurnPlayers.IndexOf(inPlayer)) / mTurnPlayers.Count);
+		return Mathf.Max(0, (inTurn - mTurnPlayers.IndexOf(inPlayer))) / mTurnPlayers.Count;
 	}
 	Dictionary<CardData.CardType, float> CalcCardTypeScore()
 	{

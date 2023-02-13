@@ -27,6 +27,7 @@ public class Table : MonoBehaviour
 		{
 			deck.Apply(inGameController, mCardRoot.transform);
 		}
+		RemoveCoin(inGameController);
 		var winners = inGameController.gameInfo.GetWinners(inGameController.GetData.GetWinPoint);
 		if(winners != null)
 		{
@@ -56,6 +57,29 @@ public class Table : MonoBehaviour
 	public void Clear()
 	{
 		Destroy(mCardRoot);
+	}
+	void RemoveCoin(GameController inGameController)
+	{
+		var info = inGameController.gameInfo;
+		var player = info.GetCurrentTurnPlayer;
+		if(!mCoin.TryGetValue(player, out var coins))
+		{
+			return;
+		}
+		int oldMoney = coins.Count;
+		int newMoney = info.GetMoney(player);
+		int diff = oldMoney - newMoney;
+		if(diff <= 0)
+		{
+			return;
+		}
+	//	Debug.Log($"old: {oldMoney} new:{newMoney}");
+		for(int i = oldMoney - 1; i >= newMoney; --i)
+		{
+	//		Debug.Log($"delete:{i}");
+			Destroy(coins[i]);
+			coins.RemoveAt(i);
+		}
 	}
 	void AddCoin(GameController inGameController)
 	{
