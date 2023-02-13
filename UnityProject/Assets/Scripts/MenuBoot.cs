@@ -7,44 +7,25 @@ public class MenuBoot : MonoBehaviour
 	TMP_InputField mUserName;
 	[SerializeField]
 	Image mImage;
+	[SerializeField]
+	Toggle mLocalMode;
 	int imageColorCode;
-	public UserData userData { get; private set; }
 	public void ChangeColor()
 	{
 		imageColorCode = UserData.GenerateRandomColor();
 		mImage.color = UserData.IntToColor(imageColorCode);
 	}
-	public void Save()
+	public void Save(UserData inUserData, OptionData inOptionData)
 	{
-		if(IsChange(userData))
-		{
-			userData.name = mUserName.text;
-			userData.imageColorCode = imageColorCode;
-			UserData.Save(userData);
-		}
+		inUserData.name = mUserName.text;
+		inUserData.imageColorCode = imageColorCode;
+		inOptionData.isLocal = mLocalMode.isOn;
 	}
-	public void ResetUser()
+	public void Load(UserData inUserData, OptionData inOptionData)
 	{
-		userData = UserData.NewSaveData();
-		Apply();
-	}
-	public void Load()
-	{
-		userData = UserData.Load();
-		if(userData == null)
-		{
-			userData = UserData.NewSaveData();
-		}
-		Apply();
-	}
-	bool IsChange(UserData inSaveData)
-	{
-		return mUserName.text != inSaveData.name || imageColorCode != inSaveData.imageColorCode;
-	}
-	void Apply()
-	{
-		mUserName.text = userData.name;
-		imageColorCode = userData.imageColorCode;
+		mUserName.text = inUserData.name;
+		imageColorCode = inUserData.imageColorCode;
 		mImage.color = UserData.IntToColor(imageColorCode);
+		mLocalMode.isOn = inOptionData.isLocal;
 	}
 }

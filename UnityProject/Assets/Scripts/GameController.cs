@@ -41,16 +41,6 @@ public class GameController : NetworkBehaviour
 		}
 		return null;
 	}
-	public override void OnNetworkSpawn()
-	{
-		if(IsServer)
-		{
-			// randomSeed.Value = RandomObject.GenerateSeed();
-			randomSeed.Value = 1138463702;
-
-		}
-		base.OnNetworkSpawn();
-	}
 	public override void OnNetworkDespawn()
 	{
 		Clear();
@@ -88,6 +78,7 @@ public class GameController : NetworkBehaviour
 	{
 		if(IsServer && !isStart)
 		{
+			randomSeed.Value = RandomObject.GenerateSeed();
 			var players = FindObjectsOfType<Player>();
 			if(players.Length <= mPlayerChairs.maxNum)
 			{
@@ -104,10 +95,6 @@ public class GameController : NetworkBehaviour
 		mTable.Clear();
 		connectionsData.Clear();
 		mRestartCounter = 0;
-		if(IsServer)
-		{
-			randomSeed.Value = RandomObject.GenerateSeed();
-		}
 	}
 	public Player GetPlayer(string inId)
 	{

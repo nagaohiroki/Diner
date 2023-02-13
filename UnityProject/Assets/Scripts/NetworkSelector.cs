@@ -7,21 +7,17 @@ public class NetworkSelector : MonoBehaviour
 	GameController mGameContorller;
 	[SerializeField]
 	MenuRoot mMenuRoot;
-	public void StartLocalHost()
-	{
-		SetupUser();
-		NetworkManager.Singleton.StartHost();
-		mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(true);
-	}
-	public void StartLocalClient()
-	{
-		SetupUser();
-		NetworkManager.Singleton.StartClient();
-		mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(false);
-	}
+	OptionData optionData { get; set; }
+	UserData userData { get; set; }
 	public void StartHost()
 	{
 		SetupUser();
+		if(optionData.isLocal)
+		{
+			NetworkManager.Singleton.StartHost();
+			mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(true);
+			return;
+		}
 		mMenuRoot.SwitchMenu<MenuLoading>();
 		StartCoroutine(RelaySetting.StartHost(5, (result, code) =>
 		{
@@ -38,6 +34,12 @@ public class NetworkSelector : MonoBehaviour
 	public void StartClient(MenuJoin inJoin)
 	{
 		SetupUser();
+		if(optionData.isLocal)
+		{
+			NetworkManager.Singleton.StartClient();
+			mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(false);
+			return;
+		}
 		var menu = mMenuRoot.GetComponentInChildren<MenuJoin>(true);
 		mMenuRoot.SwitchMenu<MenuLoading>();
 		StartCoroutine(RelaySetting.StartClient(menu.GetPassword, result =>
@@ -54,17 +56,14 @@ public class NetworkSelector : MonoBehaviour
 	{
 		NetworkManager.Singleton.StartServer();
 	}
-	public void Logout()
-	{
-		NetworkManager.Singleton.Shutdown();
-		Debug.Log("Logout");
-	}
 	void SetupUser()
 	{
 		var data = new ConnectionData();
 		var menuBoot = mMenuRoot.GetComponentInChildren<MenuBoot>(true);
-		menuBoot.Save();
-		data.user = menuBoot.userData;
+		menuBoot.Save(userData, optionData);
+		SaveUtility.Save(UserData.fileName, userData);
+		SaveUtility.Save(OptionData.fileName, optionData);
+		data.user = userData;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		Debug.Log($"SetupUser:{data}");
 	}
@@ -75,7 +74,17 @@ public class NetworkSelector : MonoBehaviour
 #if UNITY_SERVER
 		StartServer();
 #else
-		mMenuRoot.SwitchMenu<MenuBoot>().Load();
+		userData = SaveUtility.Load<UserData>(UserData.fileName);
+		if(userData == null)
+		{
+			userData = UserData.NewSaveData;
+		}
+		optionData = SaveUtility.Load<OptionData>(OptionData.fileName);
+		if(optionData == null)
+		{
+			optionData = new OptionData();
+		}
+		mMenuRoot.SwitchMenu<MenuBoot>().Load(userData, optionData);
 #endif
 	}
 }

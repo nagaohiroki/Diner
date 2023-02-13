@@ -2,6 +2,40 @@
 using UnityEngine;
 using System.IO;
 using UnityUtility;
+public static class SaveUtility
+{
+	public static T Load<T>(string inPath) where T : class
+	{
+		var path = MakePath(inPath);
+		if(!File.Exists(path))
+		{
+			return null;
+		}
+		using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+		{
+			var bytes = new byte[stream.Length];
+			stream.Read(bytes, 0, bytes.Length);
+			return MemoryPackSerializer.Deserialize<T>(bytes);
+		}
+	}
+	public static void Save<T>(string inPath, T inData)
+	{
+		var path = MakePath(inPath);
+		var bytes = MemoryPackSerializer.Serialize<T>(inData);
+		using(var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))
+		{
+			stream.Write(bytes, 0, bytes.Length);
+		}
+	}
+	static string MakePath(string inPath)
+	{
+		var path = inPath;
+#if UNITY_EDITOR
+		path = Path.GetFileName(Path.GetFullPath(Path.Join(Application.dataPath, ".."))) + "_" + path;
+#endif
+		return Path.Join(Application.persistentDataPath, path) + ".dat";
+	}
+}
 [MemoryPackable]
 public partial class UserData
 {
@@ -9,7 +43,13 @@ public partial class UserData
 	public string id { get; set; }
 	public int imageColorCode { get; set; }
 	public Color imageColor => IntToColor(imageColorCode);
-	static string userPath => Path.Join(Application.persistentDataPath, "savedata.dat");
+	public static string fileName => "savedata";
+	public static UserData NewSaveData => new UserData
+	{
+		name = $"user#{RandomObject.GetGlobal.Range(0, 10000).ToString("D4")}",
+		id = $"user_{System.Guid.NewGuid().ToString()}",
+		imageColorCode = GenerateRandomColor()
+	};
 	public override string ToString()
 	{
 		return $"user:{name}, id:{id}, imageColor:{imageColor}";
@@ -26,36 +66,6 @@ public partial class UserData
 		}
 		return Color.white;
 	}
-	public static UserData NewSaveData()
-	{
-		return new UserData
-		{
-			name = $"user#{RandomObject.GetGlobal.Range(0, 10000).ToString("D4")}",
-			id = $"user_{System.Guid.NewGuid().ToString()}",
-			imageColorCode = GenerateRandomColor()
-		};
-	}
-	public static UserData Load()
-	{
-		if(!File.Exists(userPath))
-		{
-			return null;
-		}
-		using(var stream = new FileStream(userPath, FileMode.Open, FileAccess.Read))
-		{
-			var bytes = new byte[stream.Length];
-			stream.Read(bytes, 0, bytes.Length);
-			return MemoryPackSerializer.Deserialize<UserData>(bytes);
-		}
-	}
-	public static void Save(UserData inUserData)
-	{
-		var bytes = MemoryPackSerializer.Serialize<UserData>(inUserData);
-		using(var stream = new FileStream(userPath, FileMode.OpenOrCreate, FileAccess.Write))
-		{
-			stream.Write(bytes, 0, bytes.Length);
-		}
-	}
 }
 [MemoryPackable]
 public partial class ConnectionData
@@ -66,4 +76,10 @@ public partial class ConnectionData
 	{
 		return $"{user}";
 	}
+}
+[MemoryPackable]
+public partial class OptionData
+{
+	public static string fileName => "option";
+	public bool isLocal { get; set; }
 }
