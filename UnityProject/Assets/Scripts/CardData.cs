@@ -27,6 +27,7 @@ public class CardData : ScriptableObject
 		Spices,
 		Grain,
 		Rare,
+		Coin
 	}
 	[SerializeField]
 	string mName;

@@ -11,6 +11,8 @@ public class CardModel : MonoBehaviour
 	[SerializeField]
 	Transform mCostAnchor;
 	[SerializeField]
+	Transform mCoinAnchor;
+	[SerializeField]
 	MeshRenderer mBackfaceMesh;
 	[SerializeField]
 	TextMeshPro mCardName;
@@ -49,7 +51,7 @@ public class CardModel : MonoBehaviour
 	{
 		if(!Mathf.Approximately(transform.eulerAngles.z, 180.0f))
 		{
-		    return null;
+			return null;
 		}
 		return lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
 		.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
@@ -70,24 +72,32 @@ public class CardModel : MonoBehaviour
 		}
 		mCardName.gameObject.SetActive(true);
 		mCardName.text = inCardData.GetId;
-		for(int i = 0; i < inCardData.GetPoint; i++)
+		for(int i = 0; i < inCardData.GetPoint; ++i)
 		{
-			var icon = Instantiate(mIconPrefab);
-			icon.SetIcon(CardData.CardType.Cooking);
-			icon.transform.SetParent(mPointAnchor, false);
-			icon.transform.localPosition = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
+			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
+			CreateIcon(mPointAnchor, CardData.CardType.Cooking, pos);
+		}
+		for(int i = 0; i < inCardData.GetMoney; ++i)
+		{
+			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
+			CreateIcon(mCostAnchor, CardData.CardType.Coin, pos);
 		}
 		for(int costType = 0; costType < inCardData.GetCost.Count; ++costType)
 		{
 			var cost = inCardData.GetCost[costType];
 			for(int i = 0; i < cost.GetNum; i++)
 			{
-				var icon = Instantiate(mIconPrefab);
-				icon.SetIcon(cost.GetCostType);
-				icon.transform.SetParent(mCostAnchor, false);
-				icon.transform.localPosition = new Vector3(i * mIconOffset.x, 0.0f, -costType * mIconOffset.z);
+				var pos = new Vector3(i * mIconOffset.x, 0.0f, -costType * mIconOffset.z);
+				CreateIcon(mCostAnchor, cost.GetCostType, pos);
 			}
 		}
+	}
+	void CreateIcon(Transform inParent, CardData.CardType inCardType, Vector3 inPos)
+	{
+		var icon = Instantiate(mIconPrefab);
+		icon.SetIcon(inCardType);
+		icon.transform.SetParent(inParent, false);
+		icon.transform.localPosition = inPos;
 	}
 	void OnDestroy()
 	{

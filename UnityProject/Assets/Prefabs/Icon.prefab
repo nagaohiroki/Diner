@@ -114,3 +114,5 @@ MonoBehaviour:
     mTexture: {fileID: 2800000, guid: 78fb8a111475c1847bb56473a7a2d943, type: 3}
   - mCardType: 7
     mTexture: {fileID: 2800000, guid: aef527adf515bcd45814c31fea2759cf, type: 3}
+  - mCardType: 8
+    mTexture: {fileID: 2800000, guid: f6827824f43324148ab9c583c4ab7390, type: 3}
