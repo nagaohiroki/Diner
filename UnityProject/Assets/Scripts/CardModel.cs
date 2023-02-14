@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityUtility;
 using TMPro;
 public class CardModel : MonoBehaviour
 {

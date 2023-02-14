@@ -72,11 +72,6 @@ public class CardData : ScriptableObject
 	}
 	void OnValidate()
 	{
-		if(cardType != CardType.Cooking)
-		{
-			point = 0;
-			cost.Clear();
-		}
 		id = name.Replace("CardFood", "").Replace("CardCook", "");
 	}
 }
