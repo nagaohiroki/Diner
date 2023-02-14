@@ -14,6 +14,20 @@ public class Cost
 		return $"{mCostType}x{mNum}";
 	}
 }
+[System.Serializable]
+public class BonusCost
+{
+	[SerializeField]
+	CardData.BonusType mCookType;
+	[SerializeField]
+	int mNum;
+	public CardData.BonusType GetCookType => mCookType;
+	public int GetNum => mNum;
+	public override string ToString()
+	{
+		return $"{mCookType}x{mNum}";
+	}
+}
 [CreateAssetMenu]
 public class CardData : ScriptableObject
 {
@@ -29,10 +43,19 @@ public class CardData : ScriptableObject
 		Rare,
 		Coin
 	}
+	public enum BonusType
+	{
+		First,
+		Main,
+		Sub,
+		Dessert,
+	}
 	[SerializeField]
 	string mName;
 	[SerializeField]
 	string id;
+	[SerializeField]
+	BonusType bonusType;
 	[SerializeField]
 	CardType cardType;
 	[SerializeField]
@@ -41,10 +64,13 @@ public class CardData : ScriptableObject
 	int money;
 	[SerializeField]
 	List<Cost> cost;
+	[SerializeField]
+	List<BonusCost> bonus;
 	public string GetId => id;
 	public int GetPoint => point;
 	public int GetMoney => money;
 	public List<Cost> GetCost => cost;
+	public List<BonusCost> GetBonusCosts => bonus;
 	public CardType GetCardType => cardType;
 	public override string ToString()
 	{
@@ -56,7 +82,7 @@ public class CardData : ScriptableObject
 			{
 				costLog += $"{c}, ";
 			}
-			text += $" (point:{point} money:{money} cost:{costLog} )";
+			text += $" (point:{point} money:{money} cost:{costLog})";
 		}
 		return text;
 	}

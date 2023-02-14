@@ -80,7 +80,7 @@ public class CardModel : MonoBehaviour
 		for(int i = 0; i < inCardData.GetMoney; ++i)
 		{
 			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
-			CreateIcon(mCostAnchor, CardData.CardType.Coin, pos);
+			CreateIcon(mCoinAnchor, CardData.CardType.Coin, pos);
 		}
 		for(int costType = 0; costType < inCardData.GetCost.Count; ++costType)
 		{
