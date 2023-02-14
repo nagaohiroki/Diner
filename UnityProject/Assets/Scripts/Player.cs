@@ -59,8 +59,6 @@ public class Player : NetworkBehaviour
 		mName.color = user.imageColor;
 		name = user.name;
 		mName.text = user.name;
-		rot = transform.eulerAngles.y;
-		transform.eulerAngles = Vector3.zero;
 		mGameController.Restart(this, inServerEntryPlayerNum);
 	}
 	[ServerRpc(RequireOwnership = false)]
