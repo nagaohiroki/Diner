@@ -41,6 +41,14 @@ public class GameController : NetworkBehaviour
 		}
 		return null;
 	}
+	public override void OnNetworkSpawn()
+	{
+		if(IsServer)
+		{
+			randomSeed.Value = RandomObject.GenerateSeed();
+		}
+		base.OnNetworkSpawn();
+	}
 	public override void OnNetworkDespawn()
 	{
 		Clear();
@@ -78,7 +86,6 @@ public class GameController : NetworkBehaviour
 	{
 		if(IsServer && !isStart)
 		{
-			randomSeed.Value = RandomObject.GenerateSeed();
 			var players = FindObjectsOfType<Player>();
 			if(players.Length <= mPlayerChairs.maxNum)
 			{
