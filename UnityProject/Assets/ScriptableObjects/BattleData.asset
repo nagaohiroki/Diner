@@ -16,3 +16,4 @@ MonoBehaviour:
   deckList:
   - {fileID: 11400000, guid: ffed4c35266d5164485d9c5ccf8e5fdd, type: 2}
   - {fileID: 11400000, guid: abea5c27a4e4757418d312cb476fe962, type: 2}
+  - {fileID: 11400000, guid: a32fb81b0656e1d45a577c79aab715f4, type: 2}

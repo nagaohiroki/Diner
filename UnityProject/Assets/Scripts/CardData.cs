@@ -18,14 +18,14 @@ public class Cost
 public class BonusCost
 {
 	[SerializeField]
-	CardData.BonusType mCookType;
+	CardData.BonusType mBonusType;
 	[SerializeField]
 	int mNum;
-	public CardData.BonusType GetCookType => mCookType;
+	public CardData.BonusType GetBonusType => mBonusType;
 	public int GetNum => mNum;
 	public override string ToString()
 	{
-		return $"{mCookType}x{mNum}";
+		return $"{mBonusType}x{mNum}";
 	}
 }
 [CreateAssetMenu]
@@ -45,6 +45,7 @@ public class CardData : ScriptableObject
 	}
 	public enum BonusType
 	{
+		None,
 		First,
 		Main,
 		Sub,
@@ -72,6 +73,8 @@ public class CardData : ScriptableObject
 	public List<Cost> GetCost => cost;
 	public List<BonusCost> GetBonusCosts => bonus;
 	public CardType GetCardType => cardType;
+	public BonusType GetBonusType => bonusType;
+	public bool IsBonus => bonus.Count > 0;
 	public override string ToString()
 	{
 		var text = $"{id}";

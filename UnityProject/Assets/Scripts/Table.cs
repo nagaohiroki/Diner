@@ -11,7 +11,7 @@ public class Table : MonoBehaviour
 	[SerializeField]
 	GameObject mCoinPrefab;
 	[SerializeField]
-	List<DeckModel> mDeckModels;
+	Transform mDecks;
 	GameObject mCardRoot;
 	GameObject mCoinRoot;
 	public bool IsTween => IsTweenCard(mCardRoot);
@@ -20,9 +20,13 @@ public class Table : MonoBehaviour
 	{
 		Init(inGameController);
 		mMenuRoot.Apply(inGameController);
-		foreach(var deck in mDeckModels)
+		for(int i = 0; i < mDecks.childCount; ++i)
 		{
-			deck.Apply(inGameController, mCardRoot.transform);
+			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
+			{
+				deck.Apply(inGameController, mCardRoot.transform);
+			}
+
 		}
 		var winners = inGameController.gameInfo.GetWinners(inGameController.GetData.GetWinPoint);
 		if(winners != null)
