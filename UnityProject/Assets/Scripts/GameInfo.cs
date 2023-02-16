@@ -56,7 +56,7 @@ public class GameInfo
 		{
 			foreach(var player in mTurnPlayers)
 			{
-				if((GetPickPlayer(inDeck, card) == player && !IsDiscard(inDeck, card)) || HasBonusCard(player, inDeck, card))
+				if((GetPickPlayer(inDeck, card) == player && !IsDiscard(inDeck, card)))
 				{
 					hand[player].Add(card);
 				}
@@ -213,7 +213,7 @@ public class GameInfo
 	}
 	public int SupplyIndex(int inDeck, int inCard)
 	{
-		if(GetPickTurn(inDeck, inCard) != -1)
+		if(GetPickPlayer(inDeck, inCard) != null)
 		{
 			return -1;
 		}
@@ -324,7 +324,17 @@ public class GameInfo
 	}
 	string GetPickPlayer(int inDeck, int inCard)
 	{
-		return GetTurnPlayer(GetPickTurn(inDeck, inCard));
+		var player = GetTurnPlayer(GetPickTurn(inDeck, inCard));
+		if(player != null)
+		{
+			return player;
+		}
+		var bonus = PickBonusPlayer(inDeck, inCard, mPickInfo.Count);
+		if(bonus != null)
+		{
+			return bonus;
+		}
+		return null;
 	}
 	public string GetTurnPlayer(int inTurn)
 	{
@@ -364,26 +374,64 @@ public class GameInfo
 		}
 		return overCost;
 	}
-	bool HasBonusCard(string inPlayer, int inDeck, int inCard)
+	string PickBonusPlayer(int inDeck, int inCard, int inTurn)
 	{
-		var cardData = GetCard(inDeck, inCard);
-		if(!cardData.IsBonus)
+		int supply = 0;
+		for(int deck = 0; deck < mDeck.Count; ++deck)
+		{
+			int supplyMax = mDeck[deck].deckData.GetSupply;
+			var cardList = GetCardList(deck);
+			for(int card = 0; card < cardList.Count; ++card)
+			{
+				var cardData = GetCard(deck, card);
+				if(!cardData.IsBonus)
+				{
+					continue;
+				}
+				bool picked = false;
+				foreach(var player in mTurnPlayers)
+				{
+					picked = ConditionBonusCard(player, cardData, inTurn);
+					if(inDeck == deck && inCard == card && picked)
+					{
+						return player;
+					}
+					if(picked)
+					{
+						break;
+					}
+				}
+				if(!picked)
+				{
+					++supply;
+					if(supply >= supplyMax)
+					{
+						return null;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	bool ConditionBonusCard(string inPlayer, CardData inCard, int inTurn)
+	{
+		if(!inCard.IsBonus)
 		{
 			return false;
 		}
-		foreach(var cost in cardData.GetBonusCosts)
+		foreach(var cost in inCard.GetBonusCosts)
 		{
-			if(GetHandBonusResource(inPlayer, cost.GetBonusType) < cost.GetNum)
+			if(GetHandBonusResource(inPlayer, cost.GetBonusType, inTurn) < cost.GetNum)
 			{
 				return false;
 			}
 		}
 		return true;
 	}
-	int GetHandBonusResource(string inPlayer, CardData.BonusType inBonusType)
+	int GetHandBonusResource(string inPlayer, CardData.BonusType inBonusType, int inTurn)
 	{
 		int count = 0;
-		for(int i = 0; i < mPickInfo.Count; i++)
+		for(int i = 0; i < inTurn; ++i)
 		{
 			var pick = mPickInfo.Get(i);
 			if(GetTurnPlayer(i) == inPlayer && GetPaidTurn(pick.deck, pick.card) == -1 && GetPickCard(i).GetBonusType == inBonusType)
@@ -396,7 +444,7 @@ public class GameInfo
 	int GetHandResource(string inPlayer, CardData.CardType inCardType)
 	{
 		int count = 0;
-		for(int i = 0; i < mPickInfo.Count; i++)
+		for(int i = 0; i < mPickInfo.Count; ++i)
 		{
 			var pick = mPickInfo.Get(i);
 			if(GetTurnPlayer(i) == inPlayer && GetPaidTurn(pick.deck, pick.card) == -1 && GetPickCard(i).GetCardType == inCardType)

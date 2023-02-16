@@ -10,19 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
-  m_Name: CardBonus_FullCorse
+  m_Name: CardCook2Vegetable
   m_EditorClassIdentifier: 
   mName: 
-  id: CardBonus_FullCorse
-  bonusType: 0
+  id: _2Vegetable
   cardType: 0
-  point: 5
-  money: 0
-  cost: []
-  bonus:
-  - mBonusType: 2
+  point: 2
+  money: 1
+  cost:
+  - mCostType: 3
     mNum: 1
-  - mBonusType: 3
+  - mCostType: 4
     mNum: 1
-  - mBonusType: 4
+  - mCostType: 5
     mNum: 1

@@ -75,6 +75,7 @@ public class CardData : ScriptableObject
 	public CardType GetCardType => cardType;
 	public BonusType GetBonusType => bonusType;
 	public bool IsBonus => bonus.Count > 0;
+	static readonly string[] suffixList = new[] { "CardFood", "CardCook", "CardBonus" };
 	public override string ToString()
 	{
 		var text = $"{id}";
@@ -102,6 +103,10 @@ public class CardData : ScriptableObject
 	}
 	void OnValidate()
 	{
-		id = name.Replace("CardFood", "").Replace("CardCook", "");
+		id = name;
+		foreach(var suffix in suffixList)
+		{
+			id = id.Replace(suffix, string.Empty);
+		}
 	}
 }

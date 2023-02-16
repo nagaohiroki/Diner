@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fcb3f373dc3fb654489d98828b882a60, type: 3}
-  m_Name: CardCook_2Meat
+  m_Name: CardCook5Fish
   m_EditorClassIdentifier: 
   mName: 
-  id: _2Meat
+  id: _5Fish
   cardType: 0
-  point: 2
-  money: 1
+  point: 5
+  money: 0
   cost:
+  - mCostType: 2
+    mNum: 2
   - mCostType: 1
-    mNum: 1
-  - mCostType: 5
     mNum: 1
   - mCostType: 6
     mNum: 1
