@@ -12,8 +12,6 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	CardModel mCardModelPrefab;
 	[SerializeField]
-	GameObject mRoot;
-	[SerializeField]
 	GameObject mDeck;
 	[SerializeField]
 	MeshRenderer mBackfaceMesh;
@@ -33,19 +31,21 @@ public class DeckModel : MonoBehaviour
 	}
 	void ApplySupply(GameController inGameController)
 	{
-		int deckIndex = inGameController.gameInfo.GetDeckIndex(mId);
-		var cardList = inGameController.gameInfo.GetCardList(deckIndex);
+		var info = inGameController.gameInfo;
+		int deckIndex = info.GetDeckIndex(mId);
+		var cardList = info.GetCardList(deckIndex);
 		for(int card = 0; card < cardList.Count; ++card)
 		{
-			int supply = inGameController.gameInfo.SupplyIndex(deckIndex, card);
+			int supply = info.SupplyIndex(deckIndex, card);
 			if(supply == -1)
 			{
 				continue;
 			}
 			var pos = transform.position + mSupplyOffset * (supply + 1);
-			var cardModel = CreateCardModel(inGameController.gameInfo, deckIndex, card);
+			var cardModel = CreateCardModel(info, deckIndex, card);
 			cardModel.ToSupply(pos, supply, mSEPitch);
 		}
+		SetDeckSize(0.002f, info.RemainingCards(deckIndex));
 	}
 	void ApplyHand(GameController inGameController)
 	{
@@ -103,25 +103,29 @@ public class DeckModel : MonoBehaviour
 			}
 		}
 		var pos = transform.position;
-		var cardPos = new Vector3(pos.x, mRoot.transform.position.y, pos.z);
+		var cardPos = new Vector3(pos.x, mBackfaceMesh.transform.position.y, pos.z);
 		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f), mCardRoot);
 		cardModel.Create(inInfo, inDeck, inCard, mBackface);
 		return cardModel;
 	}
-	void SetNum(float inBaseScale, int inNum)
+	void SetDeckSize(float inBaseScale, int inNum)
 	{
 		if(inNum == 0)
 		{
 			gameObject.SetActive(false);
+			return;
 		}
 		gameObject.SetActive(true);
 		float deckScale = inBaseScale * inNum;
 		var scale = mDeck.transform.localScale;
 		scale.z = deckScale;
 		mDeck.transform.localScale = scale;
-		var pos = mRoot.transform.position;
+		var pos = mDeck.transform.position;
 		pos.y = deckScale * 0.5f;
-		mRoot.transform.position = pos;
+		mDeck.transform.position = pos;
+		var backPos = mBackfaceMesh.transform.position;
+		backPos.y = deckScale;
+		mBackfaceMesh.transform.position = backPos;
 	}
 	void Start()
 	{

@@ -20,7 +20,7 @@ public class GameInfo
 	public string GetCurrentTurnPlayer => GetTurnPlayer(mPickInfo.Count);
 	public List<string> GetTurnPlayers => mTurnPlayers;
 	public PickInfoList GetPickInfoList => mPickInfo;
-	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData)
+	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData, RuleData inRule)
 	{
 		if(inPlayers == null)
 		{
@@ -35,7 +35,7 @@ public class GameInfo
 		mDeck = new List<Deck>();
 		foreach(var deckData in inData.GetDeckList)
 		{
-			mDeck.Add(new Deck(rand, inData, deckData));
+			mDeck.Add(new Deck(rand, inData, deckData, inRule));
 		}
 		rand.Shuffle(mTurnPlayers);
 		mPickInfo = PickInfoList.Load(inPickData);
@@ -210,6 +210,19 @@ public class GameInfo
 			paid += GetTypeMoneyCost(inPlayer, res);
 		}
 		return totalMoney - paid;
+	}
+	public int RemainingCards(int inDeck)
+	{
+		var cardList = GetCardList(inDeck);
+		int num = 0;
+		for (int card = 0; card < cardList.Count; ++card)
+		{
+			if(GetPickPlayer(inDeck, card) == null)
+			{
+				++num;
+			}
+		}
+		return Mathf.Max(0, num - mDeck[inDeck].deckData.GetSupply);
 	}
 	public int SupplyIndex(int inDeck, int inCard)
 	{

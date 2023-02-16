@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardCook2Vegetable
   m_EditorClassIdentifier: 
   mName: 
-  id: _2Vegetable
+  id: 2Vegetable
+  bonusType: 0
   cardType: 0
   point: 2
   money: 1
@@ -24,3 +25,4 @@ MonoBehaviour:
     mNum: 1
   - mCostType: 5
     mNum: 1
+  bonus: []

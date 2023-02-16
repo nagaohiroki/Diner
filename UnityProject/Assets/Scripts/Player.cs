@@ -47,6 +47,10 @@ public class Player : NetworkBehaviour
 	{
 		var data = MemoryPackSerializer.Deserialize<ConnectionData>(inData);
 		var user = data.user;
+		if(data.rule != null)
+		{
+			mGameController.ruleData = data.rule;
+		}
 		if(id == user.id)
 		{
 			return;

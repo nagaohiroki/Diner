@@ -69,12 +69,13 @@ public class CardData : ScriptableObject
 	List<BonusCost> bonus;
 	public string GetId => id;
 	public int GetPoint => point;
-	public int GetMoney => money;
+	public int GetMoney => notUseCoin ? 0 : money;
 	public List<Cost> GetCost => cost;
 	public List<BonusCost> GetBonusCosts => bonus;
 	public CardType GetCardType => cardType;
 	public BonusType GetBonusType => bonusType;
 	public bool IsBonus => bonus.Count > 0;
+	public bool notUseCoin { get; set; }
 	static readonly string[] suffixList = new[] { "CardFood", "CardCook", "CardBonus" };
 	public override string ToString()
 	{

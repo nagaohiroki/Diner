@@ -11,7 +11,7 @@ public class NetworkSelector : MonoBehaviour
 	UserData userData { get; set; }
 	public void StartHost()
 	{
-		SetupUser();
+		SetupUser(true);
 		if(optionData.isLocal)
 		{
 			NetworkManager.Singleton.StartHost();
@@ -33,7 +33,7 @@ public class NetworkSelector : MonoBehaviour
 	}
 	public void StartClient(MenuJoin inJoin)
 	{
-		SetupUser();
+		SetupUser(false);
 		if(optionData.isLocal)
 		{
 			NetworkManager.Singleton.StartClient();
@@ -56,10 +56,15 @@ public class NetworkSelector : MonoBehaviour
 	{
 		NetworkManager.Singleton.StartServer();
 	}
-	void SetupUser()
+	void SetupUser(bool inIsHost)
 	{
 		var data = new ConnectionData();
 		var menuBoot = mMenuRoot.GetComponentInChildren<MenuBoot>(true);
+		if(inIsHost)
+		{
+			var menuCreate = mMenuRoot.GetComponentInChildren<MenuCreate>(true);
+			data.rule = menuCreate.GetRule;
+		}
 		menuBoot.Save(userData, optionData);
 		SaveUtility.Save(UserData.fileName, userData);
 		SaveUtility.Save(OptionData.fileName, optionData);

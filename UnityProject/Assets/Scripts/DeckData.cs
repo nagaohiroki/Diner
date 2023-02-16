@@ -60,10 +60,21 @@ public class Deck
 	List<CardData> mCardList;
 	public DeckData deckData { get; private set; }
 	public List<CardData> GetCardList => mCardList;
-	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData)
+	public Deck(RandomObject inRand, BattleData inData, DeckData inDeckData, RuleData inRule)
 	{
 		deckData = inDeckData;
 		mCardList = inDeckData.GenerateCardList();
 		inRand.Shuffle(mCardList);
+		foreach(var card in mCardList)
+		{
+			if(!inRule.isCoin)
+			{
+				card.notUseCoin = true;
+			}
+		}
+		if(!inRule.isBonus)
+		{
+			mCardList.RemoveAll(card => card.IsBonus);
+		}
 	}
 }

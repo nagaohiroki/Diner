@@ -71,10 +71,11 @@ public partial class UserData
 public partial class ConnectionData
 {
 	public UserData user { get; set; }
+	public RuleData rule { get; set; }
 	public int botLevel { get; set; }
 	public override string ToString()
 	{
-		return $"{user}";
+		return $"{user}\n{botLevel}\n{rule}";
 	}
 }
 [MemoryPackable]
@@ -82,4 +83,17 @@ public partial class OptionData
 {
 	public static string fileName => "option";
 	public bool isLocal { get; set; }
+}
+[MemoryPackable]
+public partial class RuleData
+{
+	public static string fileName => "rule";
+	public bool isBonus { get; set; } = true;
+	public bool isCoin { get; set; } = true;
+	public int MemberNum { get; set; } = 5;
+	public override string ToString()
+	{
+		return $"isBonus:{isBonus}, isCoin:{isCoin}, MemberNum:{MemberNum}";
+	}
+
 }

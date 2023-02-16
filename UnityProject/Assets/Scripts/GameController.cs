@@ -27,6 +27,7 @@ public class GameController : NetworkBehaviour
 	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
 	public PlayerInput GetInput => mInput;
 	public int entryPlayerNum => mEntryPlayers != null ? mEntryPlayers.Count : 0;
+	public RuleData ruleData { get; set; }
 	int mRestartCounter;
 	Dictionary<ulong, byte[]> connectionsData { get; set; } = new Dictionary<ulong, byte[]>();
 	public bool IsTurnPlayer(Player inPlayer)
@@ -218,7 +219,7 @@ public class GameController : NetworkBehaviour
 		}
 		mEntryPlayers = EntryPlayers();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, inPickData);
+		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, inPickData, ruleData);
 		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
