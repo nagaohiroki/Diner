@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: CardCook5Fish
   m_EditorClassIdentifier: 
   mName: 
-  id: _5Fish
+  id: 5Fish
+  bonusType: 3
   cardType: 0
   point: 5
   money: 0
@@ -24,3 +25,4 @@ MonoBehaviour:
     mNum: 1
   - mCostType: 6
     mNum: 1
+  bonus: []

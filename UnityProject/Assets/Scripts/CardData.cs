@@ -46,7 +46,7 @@ public class CardData : ScriptableObject
 	public enum BonusType
 	{
 		None,
-		First,
+		Fast,
 		Main,
 		Sub,
 		Dessert,

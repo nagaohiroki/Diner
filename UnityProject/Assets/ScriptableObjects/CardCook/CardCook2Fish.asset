@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mName: 
   id: 2Fish
-  bonusType: 0
+  bonusType: 4
   cardType: 0
   point: 2
   money: 1

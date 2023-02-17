@@ -99,20 +99,41 @@ MonoBehaviour:
   mMesh: {fileID: 5290252164268049836}
   mIcons:
   - mCardType: 0
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 90fd52d97fa7bcb4dabed423b796aa75, type: 3}
   - mCardType: 1
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 0fd93143cd5ed50468d6a908511842c1, type: 3}
   - mCardType: 2
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: c145a5d1aa7659545afda75c615cb982, type: 3}
   - mCardType: 3
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 3ffaed0a804cf1a4d9a1c86a04c89976, type: 3}
   - mCardType: 4
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 5783e1bfe13e0534cbf7a2ce67b0a11a, type: 3}
   - mCardType: 5
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 2eb02d3fd60fda541a343648952fbd32, type: 3}
   - mCardType: 6
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: 78fb8a111475c1847bb56473a7a2d943, type: 3}
   - mCardType: 7
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: aef527adf515bcd45814c31fea2759cf, type: 3}
   - mCardType: 8
+    mBonusType: 0
     mTexture: {fileID: 2800000, guid: f6827824f43324148ab9c583c4ab7390, type: 3}
+  - mCardType: 0
+    mBonusType: 1
+    mTexture: {fileID: 2800000, guid: 9b5f273ca2faafb439b1ee4677230684, type: 3}
+  - mCardType: 0
+    mBonusType: 2
+    mTexture: {fileID: 2800000, guid: 20ff81df072b1664884af3e6d08bf143, type: 3}
+  - mCardType: 0
+    mBonusType: 3
+    mTexture: {fileID: 2800000, guid: 21946b5b52adea74d838c5f22f3bc653, type: 3}
+  - mCardType: 0
+    mBonusType: 4
+    mTexture: {fileID: 2800000, guid: f35150f3580b94f4f844278d97d891db, type: 3}

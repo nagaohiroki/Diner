@@ -66,21 +66,22 @@ public class CardModel : MonoBehaviour
 		if(inCardData.GetCardType != CardData.CardType.Cooking)
 		{
 			var icon = Instantiate(mIconPrefab);
-			icon.SetIcon(inCardData.GetCardType);
+			icon.SetIcon(inCardData.GetCardType, CardData.BonusType.None);
 			icon.transform.SetParent(mFoodAnchor, false);
 			return;
 		}
 		mCardName.gameObject.SetActive(true);
 		mCardName.text = inCardData.GetId;
+		CreateIcon(mPointAnchor, Vector3.zero, CardData.CardType.Cooking, inCardData.GetBonusType);
 		for(int i = 0; i < inCardData.GetPoint; ++i)
 		{
-			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
-			CreateIcon(mPointAnchor, CardData.CardType.Cooking, pos);
+			var pos = new Vector3((i + 1) * mIconOffset.x, 0.0f, 0.0f);
+			CreateIcon(mPointAnchor, pos, CardData.CardType.Cooking, CardData.BonusType.None);
 		}
 		for(int i = 0; i < inCardData.GetMoney; ++i)
 		{
 			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
-			CreateIcon(mCoinAnchor, CardData.CardType.Coin, pos);
+			CreateIcon(mCoinAnchor, pos, CardData.CardType.Coin, CardData.BonusType.None);
 		}
 		for(int costType = 0; costType < inCardData.GetCost.Count; ++costType)
 		{
@@ -88,14 +89,14 @@ public class CardModel : MonoBehaviour
 			for(int i = 0; i < cost.GetNum; i++)
 			{
 				var pos = new Vector3(i * mIconOffset.x, 0.0f, -costType * mIconOffset.z);
-				CreateIcon(mCostAnchor, cost.GetCostType, pos);
+				CreateIcon(mCostAnchor, pos, cost.GetCostType, CardData.BonusType.None);
 			}
 		}
 	}
-	void CreateIcon(Transform inParent, CardData.CardType inCardType, Vector3 inPos)
+	void CreateIcon(Transform inParent, Vector3 inPos, CardData.CardType inCardType, CardData.BonusType inBonusType)
 	{
 		var icon = Instantiate(mIconPrefab);
-		icon.SetIcon(inCardType);
+		icon.SetIcon(inCardType, inBonusType);
 		icon.transform.SetParent(inParent, false);
 		icon.transform.localPosition = inPos;
 	}
