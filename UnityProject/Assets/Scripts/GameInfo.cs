@@ -80,7 +80,9 @@ public class GameInfo
 		{
 			return false;
 		}
-		return OverCost(GetCurrentTurnPlayer, card) <= GetMoney(GetCurrentTurnPlayer);
+		int overCost = OverCost(GetCurrentTurnPlayer, card);
+		int money = GetMoney(GetCurrentTurnPlayer);
+		return overCost <= money;
 	}
 	public int GetDeckIndex(string inId)
 	{
@@ -289,6 +291,7 @@ public class GameInfo
 				if(resource < 0)
 				{
 					money -= resource;
+					resource = 0;
 				}
 			}
 		}
@@ -364,7 +367,8 @@ public class GameInfo
 	}
 	int GetPickTurn(int inDeck, int inCard)
 	{
-		for(int i = 0; i < mPickInfo.Count; i++)
+		int count = mPickInfo.Count;
+		for(int i = 0; i < count; i++)
 		{
 			var pick = mPickInfo.Get(i);
 			if(pick.deck == inDeck && pick.card == inCard)
@@ -466,7 +470,8 @@ public class GameInfo
 	int GetHandResource(string inPlayer, CardData.CardType inCardType)
 	{
 		int count = 0;
-		for(int i = 0; i < mPickInfo.Count; ++i)
+		int pickCount = mPickInfo.Count;
+		for(int i = 0; i < pickCount; ++i)
 		{
 			var pick = mPickInfo.Get(i);
 			if(GetTurnPlayer(i) == inPlayer && GetPaidTurn(pick.deck, pick.card) == -1 && GetPickCard(i).GetCardType == inCardType)

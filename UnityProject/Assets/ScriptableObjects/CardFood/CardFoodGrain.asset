@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mName: 
   id: Grain
-  bonusType: 1
+  bonusType: 0
   cardType: 6
   point: 0
   money: 0

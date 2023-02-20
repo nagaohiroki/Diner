@@ -34,7 +34,7 @@ public class Table : MonoBehaviour
 		{
 			return;
 		}
-		ApplyCoin(inGameController);
+		//ApplyCoin(inGameController);
 	}
 	public void Clear()
 	{
@@ -120,6 +120,7 @@ public class Table : MonoBehaviour
 			{
 				for(int i = coinCount - 1; i >= money; --i)
 				{
+					Debug.Log($"i:{i}, count{coins.Count}, diff:{diff}, money:{money}");
 					Destroy(coins[i]);
 					coins.RemoveAt(i);
 				}

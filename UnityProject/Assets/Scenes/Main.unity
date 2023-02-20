@@ -2349,7 +2349,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1270
+  m_Name: pb_Mesh-1268
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5953,7 +5953,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfab419f6d6b061478a99769441b6745, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mOffset: {x: 8, y: 0, z: 2.5}
+  mOffset: {x: 5, y: 0, z: 2.5}
 --- !u!1 &1305174254
 GameObject:
   m_ObjectHideFlags: 0

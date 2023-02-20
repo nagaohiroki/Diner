@@ -46,7 +46,7 @@ public class GameController : NetworkBehaviour
 	{
 		if(IsServer)
 		{
-			randomSeed.Value = RandomObject.GenerateSeed();
+			randomSeed.Value = -2101373777;
 		}
 		base.OnNetworkSpawn();
 	}
