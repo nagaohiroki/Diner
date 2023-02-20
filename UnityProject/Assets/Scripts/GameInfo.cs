@@ -44,21 +44,30 @@ public class GameInfo
 	{
 		mPickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
 	}
-	public Dictionary<string, List<int>> Hand(int inDeck)
+	public Dictionary<string, Dictionary<CardData.CardType, List<(int deck, int card)>>> GetHand()
 	{
-		var hand = new Dictionary<string, List<int>>();
+		var hand = new Dictionary<string, Dictionary<CardData.CardType, List<(int, int)>>>();
 		foreach(var player in mTurnPlayers)
 		{
-			hand.Add(player, new List<int>());
+			hand.Add(player, new Dictionary<CardData.CardType, List<(int, int)>>());
 		}
-		var cardList = GetCardList(inDeck);
-		for(int card = 0; card < cardList.Count; ++card)
+		for(int deck = 0; deck < mDeck.Count; ++deck)
 		{
-			foreach(var player in mTurnPlayers)
+			var cardList = GetCardList(deck);
+			for(int card = 0; card < cardList.Count; ++card)
 			{
-				if((GetPickPlayer(inDeck, card) == player && !IsDiscard(inDeck, card)))
+				foreach(var player in mTurnPlayers)
 				{
-					hand[player].Add(card);
+					if((GetPickPlayer(deck, card) == player && !IsDiscard(deck, card)))
+					{
+						var cardData = GetCard(deck, card);
+						var playerHand = hand[player];
+						if(!playerHand.ContainsKey(cardData.GetCardType))
+						{
+							playerHand.Add(cardData.GetCardType, new List<(int, int)>());
+						}
+						playerHand[cardData.GetCardType].Add((deck, card));
+					}
 				}
 			}
 		}
@@ -215,7 +224,7 @@ public class GameInfo
 	{
 		var cardList = GetCardList(inDeck);
 		int num = 0;
-		for (int card = 0; card < cardList.Count; ++card)
+		for(int card = 0; card < cardList.Count; ++card)
 		{
 			if(GetPickPlayer(inDeck, card) == null)
 			{

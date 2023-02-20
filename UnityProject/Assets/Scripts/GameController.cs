@@ -24,7 +24,7 @@ public class GameController : NetworkBehaviour
 	public BattleData GetData => mData;
 	public GameInfo gameInfo { get; set; }
 	public bool isStart => gameInfo != null;
-	public Player GetCurrentTurnPlayer => GetPlayer(gameInfo.GetCurrentTurnPlayer);
+	public Player GetCurrentTurnPlayer => isStart ? GetPlayer(gameInfo.GetCurrentTurnPlayer) : null;
 	public PlayerInput GetInput => mInput;
 	public int entryPlayerNum => mEntryPlayers != null ? mEntryPlayers.Count : 0;
 	public RuleData ruleData { get; set; }

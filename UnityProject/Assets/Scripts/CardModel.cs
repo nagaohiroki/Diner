@@ -22,7 +22,6 @@ public class CardModel : MonoBehaviour
 	Vector3 mIconOffset = new Vector3(0.7f, 0.0f, 1.1f);
 	[SerializeField]
 	AudioSource mPickSE;
-	public int supplyIndex { set; get; }
 	public int cardIndex { private set; get; }
 	public int deckIndex { private set; get; }
 	Material mCache;
@@ -32,22 +31,14 @@ public class CardModel : MonoBehaviour
 		deckIndex = inDeck;
 		var card = inInfo.GetCard(inDeck, inCard);
 		name = card.GetId;
-		supplyIndex = -1;
 		mBackfaceMesh.material = inMaterial;
 		mCache = mBackfaceMesh.material;
-		ApplyCardData(card);
+		LayoutIcon(card);
 	}
-	public void ToSupply(Vector3 inPos, int inSupply, float inPitch)
+	public void PlaySE(float inPitch)
 	{
-		if(inSupply == supplyIndex)
-		{
-			return;
-		}
 		mPickSE.pitch = inPitch;
 		mPickSE.Play();
-		var lt = LeanTween.move(gameObject, inPos, 0.3f);
-		Open(lt);
-		supplyIndex = inSupply;
 	}
 	public LTDescr Open(LTDescr lt)
 	{
@@ -59,13 +50,13 @@ public class CardModel : MonoBehaviour
 		.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
 		.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));
 	}
-	void ApplyCardData(CardData inCardData)
+	void LayoutIcon(CardData inCardData)
 	{
 		if(inCardData == null)
 		{
 			return;
 		}
-		if(inCardData.GetCardType != CardData.CardType.Cooking)
+		if(inCardData.GetCardType != CardData.CardType.Cooking && inCardData.GetCardType != CardData.CardType.Bonus)
 		{
 			var icon = Instantiate(mIconPrefab);
 			icon.SetIcon(inCardData.GetCardType, CardData.BonusType.None);

@@ -140,6 +140,7 @@ public class Player : NetworkBehaviour
 	}
 	void Update()
 	{
+		TurnMotion();
 		if(IsOwner && !isBot)
 		{
 			Move();
@@ -149,6 +150,24 @@ public class Player : NetworkBehaviour
 		if(isBot && IsServer)
 		{
 			BotPick();
+		}
+	}
+	void TurnMotion()
+	{
+		if(mGameController == null)
+		{
+			return;
+		}
+		if(!mGameController.IsTurnPlayer(this))
+		{
+			LeanTween.moveLocal(mModel, new Vector3(0.0f, 0.1f, 0.0f), 0.3f);
+			//LeanTween.scale(mModel, Vector3.one * 0.2f, 0.3f);
+			//LeanTween.rotateLocal(mModel, Vector3.one, 0.3f);
+			return;
+		}
+		if(!LeanTween.isTweening(mModel))
+		{
+			LeanTween.moveLocal(mModel, new Vector3(0.0f, 0.5f, 0.0f), 0.3f).setLoopPingPong();
 		}
 	}
 	void BotPick()

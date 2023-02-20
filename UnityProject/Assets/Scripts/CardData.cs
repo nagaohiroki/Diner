@@ -41,7 +41,8 @@ public class CardData : ScriptableObject
 		Spices,
 		Grain,
 		Rare,
-		Coin
+		Coin,
+		Bonus
 	}
 	public enum BonusType
 	{
