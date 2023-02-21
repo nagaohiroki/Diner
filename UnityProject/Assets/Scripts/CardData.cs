@@ -78,6 +78,16 @@ public class CardData : ScriptableObject
 	public bool IsBonus => bonus.Count > 0;
 	public bool notUseCoin { get; set; }
 	static readonly string[] suffixList = new[] { "CardFood", "CardCook", "CardBonus" };
+	public static readonly List<CardData.CardType> resourceMoneyType = new List<CardData.CardType>
+	{
+		CardData.CardType.Meat,
+		CardData.CardType.SeaFood,
+		CardData.CardType.Vegetable,
+		CardData.CardType.Milk,
+		CardData.CardType.Spices,
+		CardData.CardType.Grain,
+		CardData.CardType.Rare,
+	};
 	public override string ToString()
 	{
 		var text = $"{id}";

@@ -3,16 +3,6 @@ using UnityEngine;
 using UnityUtility;
 public class GameInfo
 {
-	static readonly List<CardData.CardType> resourceMoneyType = new List<CardData.CardType>
-	{
-		CardData.CardType.Meat,
-		CardData.CardType.SeaFood,
-		CardData.CardType.Vegetable,
-		CardData.CardType.Milk,
-		CardData.CardType.Spices,
-		CardData.CardType.Grain,
-		CardData.CardType.Rare,
-	};
 	List<string> mTurnPlayers;
 	List<Deck> mDeck;
 	PickInfoList mPickInfo;
@@ -216,7 +206,7 @@ public class GameInfo
 			}
 		}
 		int paid = 0;
-		foreach(var res in resourceMoneyType)
+		foreach(var res in CardData.resourceMoneyType)
 		{
 			paid += GetTypeMoneyCost(inPlayer, res);
 		}
