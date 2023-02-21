@@ -243,7 +243,8 @@ public class GameInfo
 		}
 		var deck = mDeck[inDeck];
 		int supply = 0;
-		for(int card = 0; card < deck.GetCardList.Count; ++card)
+		var count = deck.GetCardList.Count;
+		for(int card = 0; card < count; ++card)
 		{
 			if(GetPickTurn(inDeck, card) != -1)
 			{
@@ -403,11 +404,13 @@ public class GameInfo
 	string PickBonusPlayer(int inDeck, int inCard, int inTurn)
 	{
 		int supply = 0;
-		for(int deck = 0; deck < mDeck.Count; ++deck)
+		int count = mDeck.Count;
+		for(int deck = 0; deck < count; ++deck)
 		{
 			int supplyMax = mDeck[deck].deckData.GetSupply;
 			var cardList = GetCardList(deck);
-			for(int card = 0; card < cardList.Count; ++card)
+			int cardCount = cardList.Count;
+			for(int card = 0; card < cardCount; ++card)
 			{
 				var cardData = GetCard(deck, card);
 				if(!cardData.IsBonus)
