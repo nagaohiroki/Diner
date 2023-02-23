@@ -35,7 +35,7 @@ public class PlayerChairs : MonoBehaviour
 		{Dir.DownRight, new Vector3( 1.0f, 0.0f, -1.0f)},
 	};
 	public int maxNum => mEntryChair.Count;
-	public void Sitdown(List<string> inTurn, Dictionary<string, Player> inPlayers)
+	public void Sitdown(List<PlayerInfo> inTurn, Dictionary<string, Player> inPlayers)
 	{
 		int ownerIndex = OwnerPlayerIndex(inTurn, inPlayers);
 		var directions = GetDirections(inTurn.Count);
@@ -44,7 +44,7 @@ public class PlayerChairs : MonoBehaviour
 		{
 			var dir = directions[i];
 			int ownerBaseIndex = (ownerIndex + i) % inTurn.Count;
-			var player = inPlayers[inTurn[ownerBaseIndex]];
+			var player = inPlayers[inTurn[ownerBaseIndex].id];
 			player.transform.position = Vector3.Scale(mOffsets[dir], mOffset); ;
 			player.rot = baseAngle * (int)dir;
 		}
@@ -60,11 +60,11 @@ public class PlayerChairs : MonoBehaviour
 		}
 		return null;
 	}
-	int OwnerPlayerIndex(List<string> inTurn, Dictionary<string, Player> inPlayers)
+	int OwnerPlayerIndex(List<PlayerInfo> inTurn, Dictionary<string, Player> inPlayers)
 	{
 		for(int i = 0; i < inTurn.Count; ++i)
 		{
-			var player = inPlayers[inTurn[i]];
+			var player = inPlayers[inTurn[i].id];
 			if(player != null && player.IsOwner && !player.isBot)
 			{
 				return i;

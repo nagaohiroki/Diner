@@ -6,6 +6,7 @@ public class LayoutParameter
 	public float handScale = 0.5f;
 	public Vector3 handOffset = new Vector3(0.6f, 0.001f, -0.1f);
 	public Vector3 handBaseOffset = new Vector3(0.0f, 0.0f, -0.5f);
+	public Vector3 coinOffset = new Vector3(1.0f, 0.0f, 0.0f);
 }
 public class Table : MonoBehaviour
 {
@@ -27,14 +28,12 @@ public class Table : MonoBehaviour
 	public void Apply(GameController inGameController)
 	{
 		Init(inGameController);
+		Coin(inGameController);
 		mMenuRoot.Apply(inGameController);
-		LayoutDeck(inGameController);
-		LayoutHand(inGameController);
-		if(Winner(inGameController))
-		{
-			return;
-		}
-		//ApplyCoin(inGameController);
+		LayoutDeck(inGameController.gameInfo);
+		Hand(inGameController);
+		Discard(inGameController.gameInfo);
+		Winner(inGameController);
 	}
 	public void Clear()
 	{
@@ -55,7 +54,7 @@ public class Table : MonoBehaviour
 		var str = string.Empty;
 		foreach(var winner in winners)
 		{
-			var player = inGameController.GetPlayer(winner);
+			var player = inGameController.GetPlayer(winner.id);
 			str += $"{player.name}\n";
 		}
 		str += $" is Win !!";
@@ -63,13 +62,13 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
-	void LayoutDeck(GameController inGameController)
+	void LayoutDeck(GameInfo inGameinfo)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Apply(inGameController, mCardRoot.transform);
+				deck.Layout(inGameinfo, mCardRoot.transform);
 			}
 		}
 	}
@@ -83,48 +82,11 @@ public class Table : MonoBehaviour
 		mCardRoot = new GameObject("CardRoot");
 		mCoinRoot = new GameObject("CoinRoot");
 		mCoinRoot.transform.SetParent(mCardRoot.transform);
-		foreach(var player in inGameController.gameInfo.GetTurnPlayers)
+		foreach(var player in inGameController.gameInfo.GetPlayerInfos)
 		{
-			if(!mCoin.ContainsKey(player))
+			if(!mCoin.ContainsKey(player.id))
 			{
-				mCoin.Add(player, new List<GameObject>());
-			}
-		}
-	}
-	void ApplyCoin(GameController inGameController)
-	{
-		var gameInfo = inGameController.gameInfo;
-		int count = gameInfo.GetPickInfoList.Count;
-		var offset = new Vector3(-0.15f, 0.0f, 0.0f);
-		var rot = Quaternion.Euler(0.0f, 0.0f, -5.0f);
-		for(int turn = 0; turn < count; ++turn)
-		{
-			var player = gameInfo.GetTurnPlayer(turn);
-			int money = gameInfo.GetMoney(player);
-			var coins = mCoin[player];
-			int coinCount = coins.Count;
-			int diff = money - coinCount;
-			if(diff > 0)
-			{
-				for(int i = 0; i < diff; ++i)
-				{
-					var playerGo = inGameController.GetPlayer(player).gameObject;
-					var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
-					coins.Add(coin);
-					coin.transform.position = playerGo.transform.position + offset * coins.Count;
-					coin.transform.rotation = rot;
-				}
-				continue;
-			}
-			if(diff < 0)
-			{
-				for(int i = coinCount - 1; i >= money; --i)
-				{
-					Debug.Log($"i:{i}, count{coins.Count}, diff:{diff}, money:{money}");
-					Destroy(coins[i]);
-					coins.RemoveAt(i);
-				}
-				continue;
+				mCoin.Add(player.id, new List<GameObject>());
 			}
 		}
 	}
@@ -144,7 +106,7 @@ public class Table : MonoBehaviour
 		}
 		return false;
 	}
-	CardModel GetCard(GameInfo inInfo, int inDeck, int inCard)
+	CardModel GetCard(CardInfo inCard, GameInfo inInfo)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
 		{
@@ -154,39 +116,61 @@ public class Table : MonoBehaviour
 				continue;
 			}
 			int deck = inInfo.GetDeckIndex(deckModel.GetId);
-			if(deck == inDeck)
+			if(deck == inCard.deckIndex)
 			{
-				return deckModel.CreateCardModel(inInfo, inDeck, inCard);
+				return deckModel.CreateCardModel(inCard, mCardRoot.transform);
 			}
 		}
 		return null;
 	}
-	void LayoutHand(GameController inGameController)
+	void Discard(GameInfo inInfo)
 	{
-		if(mGameContorller == null)
+		var players = inInfo.GetPlayerInfos;
+		foreach(var player in players)
 		{
-			return;
+			foreach(var card in player.discard)
+			{
+				var dis = FindCard(card);
+				if(dis != null)
+				{
+					dis.gameObject.SetActive(false);
+				}
+			}
 		}
+	}
+	CardModel FindCard(CardInfo inCard)
+	{
+		var trans = mCardRoot.transform;
+		for(int i = 0; i < trans.childCount; ++i)
+		{
+			var child = trans.GetChild(i);
+			if(child.TryGetComponent<CardModel>(out var card))
+			{
+				if(card.IsSame(inCard))
+				{
+					return card;
+				}
+			}
+		}
+		return null;
+	}
+	void Hand(GameController inGameController)
+	{
 		var info = inGameController.gameInfo;
-		if(info == null)
+		var players = info.GetPlayerInfos;
+		foreach(var playerInfo in players)
 		{
-			return;
-		}
-		var hands = info.GetHand();
-		foreach(var hand in hands)
-		{
+			var pickPlayer = inGameController.GetPlayer(playerInfo.id);
+			var hands = playerInfo.hand;
 			float typeOffsetX = 0.0f;
-			var typeList = hand.Value;
-			var startX = (typeList.Count - 1) * mLayout.handOffset.x * -0.5f;
-			foreach(var typeCardList in typeList)
+			var startX = (hands.Count - 1) * mLayout.handOffset.x * -0.5f;
+			foreach(var typeCardList in hands)
 			{
 				var cardList = typeCardList.Value;
 				for(int card = 0; card < cardList.Count; ++card)
 				{
 					float posY = card * mLayout.handOffset.y;
-					var cardData = cardList[card];
-					var cardModel = GetCard(info, cardData.deck, cardData.card);
-					var pickPlayer = inGameController.GetPlayer(hand.Key);
+					var cardModel = GetCard(cardList[card], info);
 					var cardPos = mLayout.handBaseOffset + new Vector3(startX + typeOffsetX, posY, card * mLayout.handOffset.z);
 					LeanTween.move(cardModel.gameObject, pickPlayer.transform.position + Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f) * cardPos, 0.3f);
 					LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, 0.3f);
@@ -197,10 +181,42 @@ public class Table : MonoBehaviour
 			}
 		}
 	}
+	void Coin(GameController inGameController)
+	{
+		foreach(var playerInfo in inGameController.gameInfo.GetPlayerInfos)
+		{
+			var coins = mCoin[playerInfo.id];
+			int coinCount = coins.Count;
+			int diff = playerInfo.coin - coinCount;
+			if(diff > 0)
+			{
+				for(int i = 0; i < diff; ++i)
+				{
+					var player = inGameController.GetPlayer(playerInfo.id);
+					var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+					coins.Add(coin);
+					coin.transform.position = player.transform.position + mLayout.coinOffset * coins.Count;
+				}
+			}
+			if(diff < 0)
+			{
+				for(int i = 0; i < diff; ++i)
+				{
+					int last = coinCount - 1;
+					Destroy(coins[last]);
+					coins.RemoveAt(last);
+				}
+			}
+
+		}
+	}
 #if UNITY_EDITOR
 	void OnValidate()
 	{
-		LayoutHand(mGameContorller);
+		if(mGameContorller != null)
+		{
+			Apply(mGameContorller);
+		}
 	}
 #endif
 }

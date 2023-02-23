@@ -172,7 +172,7 @@ public class GameController : NetworkBehaviour
 			oldPlayer.NetworkObject.Despawn(true);
 		}
 		mEntryPlayers[inPlayer.id] = inPlayer;
-		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
+		mPlayerChairs.Sitdown(gameInfo.GetPlayerInfos, mEntryPlayers);
 	}
 	Vector3 RandomPos()
 	{
@@ -220,7 +220,7 @@ public class GameController : NetworkBehaviour
 		mEntryPlayers = EntryPlayers();
 		gameInfo = new GameInfo();
 		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, inPickData, ruleData);
-		mPlayerChairs.Sitdown(gameInfo.GetTurnPlayers, mEntryPlayers);
+		mPlayerChairs.Sitdown(gameInfo.GetPlayerInfos, mEntryPlayers);
 		mTable.Apply(this);
 		Debug.Log($"seed:{randomSeed.Value}");
 	}
@@ -232,7 +232,7 @@ public class GameController : NetworkBehaviour
 	[ClientRpc]
 	void PickClientRpc(int inDeck, int inCard)
 	{
-		if(gameInfo != null && gameInfo.IsStart)
+		if(gameInfo != null)
 		{
 			gameInfo.Pick(inDeck, inCard);
 			mTable.Apply(this);

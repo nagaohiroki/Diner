@@ -22,14 +22,13 @@ public class CardModel : MonoBehaviour
 	Vector3 mIconOffset = new Vector3(0.7f, 0.0f, 1.1f);
 	[SerializeField]
 	AudioSource mPickSE;
-	public int cardIndex { private set; get; }
-	public int deckIndex { private set; get; }
+	public CardInfo cardInfo{set;get;}
 	Material mCache;
-	public void Create(GameInfo inInfo, int inDeck, int inCard, Material inMaterial)
+	public bool IsSame(CardInfo inCard) => cardInfo.IsSame(inCard);
+	public void Create(CardInfo inCard, Material inMaterial)
 	{
-		cardIndex = inCard;
-		deckIndex = inDeck;
-		var card = inInfo.GetCard(inDeck, inCard);
+		cardInfo = inCard;
+		var card = inCard.cardData;
 		name = card.GetId;
 		mBackfaceMesh.material = inMaterial;
 		mCache = mBackfaceMesh.material;
@@ -46,6 +45,7 @@ public class CardModel : MonoBehaviour
 		{
 			return null;
 		}
+		PlaySE(1.0f);
 		return lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
 		.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
 		.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));

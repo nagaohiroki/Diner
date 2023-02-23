@@ -42,7 +42,7 @@ public class MenuQuit : MonoBehaviour
 		for(int i = 0; i < mUserRoot.childCount; ++i)
 		{
 			var child = mUserRoot.GetChild(i);
-			var players = inGameController.gameInfo.GetTurnPlayers;
+			var players = inGameController.gameInfo.GetPlayerInfos;
 			if(i >= players.Count)
 			{
 				child.gameObject.SetActive(false);
@@ -53,18 +53,15 @@ public class MenuQuit : MonoBehaviour
 				continue;
 			}
 			child.gameObject.SetActive(true);
-			text.color = inGameController.gameInfo.GetCurrentTurnPlayer == players[i] ? Color.black : Color.gray;
+			text.color = inGameController.gameInfo.GetCurrentTurnPlayer == players[i].id ? Color.black : Color.gray;
 			text.text = PlayerScore(inGameController, i);
 		}
 	}
 	string PlayerScore(GameController inGameController, int inIndex)
 	{
-		var players = inGameController.gameInfo.GetTurnPlayers;
-		var id = players[inIndex];
-		var player = inGameController.GetPlayer(id);
-		int current = inGameController.gameInfo.GetPoint(id);
-		int money = inGameController.gameInfo.GetMoney(id);
+		var player = inGameController.gameInfo.GetPlayerInfos[inIndex];
+		var playerName = inGameController.GetPlayer(player.id).name;
 		int max = inGameController.GetData.GetWinPoint;
-		return $"{player.name}  <align=right>{current}/{max} : {money}</align>";
+		return $"{playerName}  <align=right>{player.GetPoint}/{max} : coin:{player.coin}</align>";
 	}
 }

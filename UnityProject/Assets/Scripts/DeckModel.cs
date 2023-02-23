@@ -8,67 +8,34 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	Vector3 mSupplyOffset;
 	[SerializeField]
-	float mSEPitch = 1.0f;
-	[SerializeField]
 	CardModel mCardModelPrefab;
 	[SerializeField]
 	GameObject mDeck;
 	[SerializeField]
 	MeshRenderer mBackfaceMesh;
 	Material mCache;
-	Transform mCardRoot;
 	public string GetId => mId;
-	public void Apply(GameController inGameController, Transform inCardRoot)
+	public void Layout(GameInfo inGameInfo, Transform inCardRoot)
 	{
-		if(mCardRoot == null)
+		var deck = inGameInfo.GetDeck(mId);
+		var deckIndex = inGameInfo.GetDeckIndex(mId);
+		for(int supply = 0; supply < deck.supply.Count; ++supply)
 		{
-			var root = new GameObject(mId);
-			root.transform.SetParent(inCardRoot);
-			mCardRoot = root.transform;
-		}
-		ApplySupply(inGameController);
-		ApplyDiscard(inGameController.gameInfo);
-	}
-	void ApplySupply(GameController inGameController)
-	{
-		var info = inGameController.gameInfo;
-		int deckIndex = info.GetDeckIndex(mId);
-		var cardList = info.GetCardList(deckIndex);
-		for(int card = 0; card < cardList.Count; ++card)
-		{
-			int supply = info.SupplyIndex(deckIndex, card);
-			if(supply == -1)
-			{
-				continue;
-			}
+			var card = deck.supply[supply];
 			var pos = transform.position + mSupplyOffset * (supply + 1);
-			var cardModel = CreateCardModel(info, deckIndex, card);
-			cardModel.PlaySE(mSEPitch);
+			var cardModel = CreateCardModel(card, inCardRoot);
 			cardModel.Open(LeanTween.move(cardModel.gameObject, pos, 0.3f));
 		}
-		SetDeckSize(0.002f, info.RemainingCards(deckIndex));
+		SetDeckSize(0.002f, deck.GetCardList.Count);
 	}
-	void ApplyDiscard(GameInfo inInfo)
+	public CardModel CreateCardModel(CardInfo inCard, Transform inParent)
 	{
-		int deckIndex = inInfo.GetDeckIndex(mId);
-		var cardList = inInfo.GetCardList(deckIndex);
-		for(int card = 0; card < cardList.Count; ++card)
+		for(int i = 0; i < inParent.childCount; ++i)
 		{
-			if(inInfo.IsDiscard(deckIndex, card))
-			{
-				var cardModel = CreateCardModel(inInfo, deckIndex, card);
-				cardModel.gameObject.SetActive(false);
-			}
-		}
-	}
-	public CardModel CreateCardModel(GameInfo inInfo, int inDeck, int inCard)
-	{
-		for(int i = 0; i < mCardRoot.childCount; ++i)
-		{
-			var child = mCardRoot.GetChild(i);
+			var child = inParent.GetChild(i);
 			if(child.TryGetComponent<CardModel>(out var card))
 			{
-				if(card.cardIndex == inCard)
+				if(card.IsSame(inCard))
 				{
 					return card;
 				}
@@ -76,8 +43,8 @@ public class DeckModel : MonoBehaviour
 		}
 		var pos = transform.position;
 		var cardPos = new Vector3(pos.x, mBackfaceMesh.transform.position.y, pos.z);
-		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f), mCardRoot);
-		cardModel.Create(inInfo, inDeck, inCard, mBackface);
+		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f), inParent);
+		cardModel.Create(inCard, mBackface);
 		return cardModel;
 	}
 	void SetDeckSize(float inBaseScale, int inNum)
