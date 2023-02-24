@@ -7,6 +7,15 @@ public class PlayerInfo
 	public int coin { get; private set; }
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
+	public override string ToString()
+	{
+		var str = $"{id}, point:{GetPoint}, coin:{coin}\n";
+		foreach(var cards in hand)
+		{
+			str += $"{cards.Key} x{cards.Value.Count}\n";
+		}
+		return str;
+	}
 	public int GetPoint
 	{
 		get
@@ -131,19 +140,27 @@ public class PlayerInfo
 }
 public class PlayersInfo
 {
-	List<PlayerInfo> mPlayersInfo = new List<PlayerInfo>();
-	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo;
+	public List<PlayerInfo> playersInfo { get; private set; } = new List<PlayerInfo>();
 	public PlayersInfo(RandomObject inRand, Dictionary<string, Player> inPlayers)
 	{
 		foreach(var player in inPlayers)
 		{
-			mPlayersInfo.Add(new PlayerInfo(player.Key));
+			playersInfo.Add(new PlayerInfo(player.Key));
 		}
-		inRand.Shuffle(mPlayersInfo);
+		inRand.Shuffle(playersInfo);
+	}
+	public override string ToString()
+	{
+		var str = string.Empty;
+		foreach(var playerInfo in playersInfo)
+		{
+			str += $"{playerInfo.ToString()}\n";
+		}
+		return str;
 	}
 	public PlayerInfo GetPlayerInfo(string inId)
 	{
-		foreach(var player in mPlayersInfo)
+		foreach(var player in playersInfo)
 		{
 			if(player.id == inId)
 			{
@@ -154,7 +171,7 @@ public class PlayersInfo
 	}
 	public PlayerInfo GetWinner(int inPoint)
 	{
-		foreach(var playerInfo in mPlayersInfo)
+		foreach(var playerInfo in playersInfo)
 		{
 			if(inPoint <= playerInfo.GetPoint)
 			{
@@ -166,7 +183,7 @@ public class PlayersInfo
 	public List<PlayerInfo> GetWinners()
 	{
 		int max = int.MinValue;
-		foreach(var playerInfo in mPlayersInfo)
+		foreach(var playerInfo in playersInfo)
 		{
 			int point = playerInfo.GetPoint;
 			if(point > max)
@@ -175,7 +192,7 @@ public class PlayersInfo
 			}
 		}
 		var playerList = new List<PlayerInfo>();
-		foreach(var playerInfo in mPlayersInfo)
+		foreach(var playerInfo in playersInfo)
 		{
 			if(max == playerInfo.GetPoint)
 			{
@@ -186,6 +203,87 @@ public class PlayersInfo
 	}
 	public PlayerInfo TurnPlayer(int inTurn)
 	{
-		return mPlayersInfo[inTurn % mPlayersInfo.Count];
+		return playersInfo[inTurn % playersInfo.Count];
+	}
+}
+public class CardInfo
+{
+	public int deckIndex { get; set; }
+	public int cardIndex { get; set; }
+	public CardData cardData { get; set; }
+	public CardInfo(int inDeck, int inCard, CardData inCardData)
+	{
+		deckIndex = inDeck;
+		cardIndex = inCard;
+		cardData = inCardData;
+	}
+	public bool IsSame(CardInfo inCardInfo)
+	{
+		return inCardInfo.deckIndex == deckIndex && inCardInfo.cardIndex == cardIndex;
+	}
+	public override string ToString()
+	{
+		return $"{cardData}, deck:{deckIndex}, card:{cardIndex}";
+	}
+}
+public class DeckInfo
+{
+	List<CardInfo> mCardList = new List<CardInfo>();
+	public DeckData deckData { get; private set; }
+	public List<CardInfo> GetCardList => mCardList;
+	public List<CardInfo> supply { get; set; } = new List<CardInfo>();
+	public DeckInfo(int inDeck, RandomObject inRand, BattleData inData, DeckData inDeckData, RuleData inRule)
+	{
+		deckData = inDeckData;
+		var cards = inDeckData.GenerateCardList();
+		inRand.Shuffle(cards);
+		for(int card = 0; card < cards.Count; ++card)
+		{
+			mCardList.Add(new CardInfo(inDeck, card, cards[card]));
+		}
+		if(!inRule.isBonus)
+		{
+			mCardList.RemoveAll(card => card.cardData.IsBonus);
+		}
+		if(!inRule.isCoin)
+		{
+			foreach(var card in mCardList)
+			{
+				card.cardData.notUseCoin = true;
+			}
+		}
+		UpdateSupply();
+	}
+	public CardInfo GetCard(int inIndex)
+	{
+		foreach(var card in supply)
+		{
+			if(card.cardIndex == inIndex)
+			{
+				return card;
+			}
+		}
+		return null;
+	}
+	public CardInfo Pick(int inIndex)
+	{
+		var cardData = GetCard(inIndex);
+		supply.Remove(cardData);
+		UpdateSupply();
+		return cardData;
+	}
+	void UpdateSupply()
+	{
+		int diff = deckData.GetSupply - supply.Count;
+		if(diff == 0)
+		{
+			return;
+		}
+		diff = Mathf.Min(diff, mCardList.Count);
+		for(int i = 0; i < diff; ++i)
+		{
+			supply.Add(mCardList[i]);
+		}
+		mCardList.RemoveRange(0, diff);
 	}
 }

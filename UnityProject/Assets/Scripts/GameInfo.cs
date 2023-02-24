@@ -7,7 +7,7 @@ public class GameInfo
 	PlayersInfo mPlayersInfo;
 	public string GetCurrentTurnPlayer => mPlayersInfo.TurnPlayer(mPickInfo.Count).id;
 	public PickInfoList GetPickInfoList => mPickInfo;
-	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo.GetPlayerInfos;
+	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo.playersInfo;
 	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData, RuleData inRule)
 	{
 		if(inPlayers == null)
