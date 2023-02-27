@@ -60,7 +60,6 @@ public class Player : NetworkBehaviour
 		var render = mModel.GetComponent<Renderer>();
 		render.material.color = user.imageColor;
 		mCache = render.material;
-		mName.color = user.imageColor;
 		name = user.name;
 		mName.text = user.name;
 		mGameController.Restart(this, inServerEntryPlayerNum);

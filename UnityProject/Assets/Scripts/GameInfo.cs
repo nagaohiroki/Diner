@@ -3,10 +3,9 @@ using UnityUtility;
 public class GameInfo
 {
 	List<DeckInfo> mDeck;
-	PickInfoList mPickInfo;
 	PlayersInfo mPlayersInfo;
-	public string GetCurrentTurnPlayer => mPlayersInfo.TurnPlayer(mPickInfo.Count).id;
-	public PickInfoList GetPickInfoList => mPickInfo;
+	public PickInfoList pickInfo { get; private set; }
+	public string GetCurrentTurnPlayer => mPlayersInfo.TurnPlayer(pickInfo.Count).id;
 	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo.playersInfo;
 	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData, RuleData inRule)
 	{
@@ -21,9 +20,9 @@ public class GameInfo
 			mDeck.Add(new DeckInfo(mDeck.Count, rand, inData, deckData, inRule));
 		}
 		mPlayersInfo = new PlayersInfo(rand, inPlayers);
-		mPickInfo = PickInfoList.Load(inPickData);
+		pickInfo = PickInfoList.Load(inPickData);
 		int count = 0;
-		foreach(var pick in mPickInfo.picks)
+		foreach(var pick in pickInfo.picks)
 		{
 			mPlayersInfo.TurnPlayer(count).Pick(mDeck[pick.deck].Pick(pick.card));
 			++count;
@@ -32,13 +31,13 @@ public class GameInfo
 	}
 	public void Pick(int inDeck, int inCard)
 	{
-		mPlayersInfo.TurnPlayer(mPickInfo.Count).Pick(mDeck[inDeck].Pick(inCard));
-		mPickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
-		mPlayersInfo.TurnPlayer(mPickInfo.Count).AddCoin();
+		mPlayersInfo.TurnPlayer(pickInfo.Count).Pick(mDeck[inDeck].Pick(inCard));
+		pickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
+		mPlayersInfo.TurnPlayer(pickInfo.Count).AddCoin();
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{
-		return mPlayersInfo.TurnPlayer(mPickInfo.Count).CanPick(mDeck[inDeck].GetCard(inCard));
+		return mPlayersInfo.TurnPlayer(pickInfo.Count).CanPick(mDeck[inDeck].GetCard(inCard));
 	}
 	public int GetDeckIndex(string inId)
 	{
@@ -63,7 +62,7 @@ public class GameInfo
 		{
 			return new List<PlayerInfo> { win };
 		}
-		var player = mPlayersInfo.TurnPlayer(mPickInfo.Count);
+		var player = mPlayersInfo.TurnPlayer(pickInfo.Count);
 		foreach(var deck in mDeck)
 		{
 			foreach(var supply in deck.supply)

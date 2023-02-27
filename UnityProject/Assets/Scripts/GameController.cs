@@ -24,7 +24,6 @@ public class GameController : NetworkBehaviour
 	public BattleData GetData => mData;
 	public GameInfo gameInfo { get; set; }
 	public bool isStart => gameInfo != null;
-	public Player GetCurrentTurnPlayer => isStart ? GetPlayer(gameInfo.GetCurrentTurnPlayer) : null;
 	public PlayerInput GetInput => mInput;
 	public int entryPlayerNum => mEntryPlayers != null ? mEntryPlayers.Count : 0;
 	public RuleData ruleData { get; set; }
@@ -241,12 +240,10 @@ public class GameController : NetworkBehaviour
 	[ServerRpc(RequireOwnership = false)]
 	void GameRestartServerRpc()
 	{
-		if(!isStart)
+		if(isStart)
 		{
-			return;
+			GameStartClientRpc(MemoryPackSerializer.Serialize(gameInfo.pickInfo));
 		}
-		var data = MemoryPackSerializer.Serialize(gameInfo.GetPickInfoList);
-		GameStartClientRpc(data);
 	}
 	[ClientRpc]
 	void GameStartClientRpc(byte[] inPickData)

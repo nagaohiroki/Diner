@@ -6,6 +6,18 @@ public class PlayerInfo
 	public string id { get; private set; }
 	public int coin { get; private set; }
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
+	public int totalCard
+	{
+		get
+		{
+			int total = 0;
+			foreach(var cards in hand)
+			{
+				total += cards.Value.Count;
+			}
+			return total;
+		}
+	}
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
 	public override string ToString()
 	{

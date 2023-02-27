@@ -60,7 +60,7 @@ public partial class UserData
 	}
 	public static Color IntToColor(int inCode)
 	{
-		if(ColorUtility.TryParseHtmlString($"#{inCode.ToString("X")}", out var color))
+		if(ColorUtility.TryParseHtmlString($"#{inCode.ToString("X6")}", out var color))
 		{
 			return color;
 		}

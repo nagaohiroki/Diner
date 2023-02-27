@@ -58,9 +58,8 @@ public class CardModel : MonoBehaviour
 		}
 		if(inCardData.GetCardType != CardData.CardType.Cooking && inCardData.GetCardType != CardData.CardType.Bonus)
 		{
-			var icon = Instantiate(mIconPrefab);
-			icon.SetIcon(inCardData.GetCardType, CardData.BonusType.None);
-			icon.transform.SetParent(mFoodAnchor, false);
+			CreateIcon(mFoodAnchor, Vector3.zero, inCardData.GetCardType, CardData.BonusType.None);
+			CreateIcon(mBonusAnchor, Vector3.zero, inCardData.GetCardType, CardData.BonusType.None);
 			mCardName.gameObject.SetActive(false);
 			return;
 		}
@@ -102,7 +101,7 @@ public class CardModel : MonoBehaviour
 	void CreateIcon(Transform inParent, Vector3 inPos, CardData.CardType inCardType, CardData.BonusType inBonusType)
 	{
 		var icon = Instantiate(mIconPrefab);
-		icon.SetIcon(inCardType, inBonusType);
+		icon.SetIcon(inCardType, inBonusType, -1);
 		icon.transform.SetParent(inParent, false);
 		icon.transform.localPosition = inPos;
 	}

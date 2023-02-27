@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TMPro;
 [System.Serializable]
 public class IconType
 {
@@ -17,12 +18,25 @@ public class Icon : MonoBehaviour
 	[SerializeField]
 	MeshRenderer mMesh;
 	[SerializeField]
+	TextMeshPro mText;
+	[SerializeField]
 	IconType[] mIcons;
 	Material mCache;
-	public void SetIcon(CardData.CardType inType, CardData.BonusType inBonus = CardData.BonusType.None)
+	public void SetIcon(CardData.CardType inType, CardData.BonusType inBonus, int inNum)
 	{
 		mMesh.material.mainTexture = GetTexture(inType, inBonus);
 		mCache = mMesh.material;
+		SetNum(inNum);
+	}
+	void SetNum(int inNum)
+	{
+		if(inNum < 0)
+		{
+			mText.gameObject.SetActive(false);
+			return;
+		}
+		mText.gameObject.SetActive(true);
+		mText.text = inNum.ToString();
 	}
 	Texture GetTexture(CardData.CardType inType, CardData.BonusType inBonus)
 	{

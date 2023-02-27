@@ -18,7 +18,6 @@ public class DeckModel : MonoBehaviour
 	public void Layout(GameInfo inGameInfo, Transform inCardRoot)
 	{
 		var deck = inGameInfo.GetDeck(mId);
-		var deckIndex = inGameInfo.GetDeckIndex(mId);
 		for(int supply = 0; supply < deck.supply.Count; ++supply)
 		{
 			var card = deck.supply[supply];
