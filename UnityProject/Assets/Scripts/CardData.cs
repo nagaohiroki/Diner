@@ -63,31 +63,33 @@ public class CardData : ScriptableObject
 	[SerializeField]
 	int point;
 	[SerializeField]
-	int money;
+	int coin;
 	[SerializeField]
 	List<Cost> cost;
 	[SerializeField]
 	List<BonusCost> bonus;
 	public string GetId => id;
 	public int GetPoint => point;
-	public int GetMoney => notUseCoin ? 0 : money;
+	public int GetCoin => notUseCoin ? 0 : coin;
 	public List<Cost> GetCost => cost;
 	public List<BonusCost> GetBonusCosts => bonus;
 	public CardType GetCardType => cardType;
 	public BonusType GetBonusType => bonusType;
 	public bool IsBonus => bonus.Count > 0;
 	public bool notUseCoin { get; set; }
-	public static readonly List<CardData.CardType> resourceMoneyType = new List<CardData.CardType>
-	{
-		CardData.CardType.Meat,
-		CardData.CardType.SeaFood,
-		CardData.CardType.Vegetable,
-		CardData.CardType.Milk,
-		CardData.CardType.Spices,
-		CardData.CardType.Grain,
-		CardData.CardType.Rare,
-	};
 	static readonly string[] suffixList = new[] { "CardFood", "CardCook", "CardBonus" };
+	int totalCost
+	{
+		get
+		{
+			int total = 0;
+			foreach(var c in cost)
+			{
+				total += c.GetNum;
+			}
+			return total;
+		}
+	}
 	public override string ToString()
 	{
 		var text = $"{id}";
@@ -98,9 +100,13 @@ public class CardData : ScriptableObject
 			{
 				costLog += $"{c}, ";
 			}
-			text += $" (point:{point} money:{money} cost:{costLog})";
+			text += $" (point:{point} coin:{coin} cost:{costLog})";
 		}
 		return text;
+	}
+	public float GetCostRatio(CardType inCostType)
+	{
+		return (float)point * ((float)GetCostNum(inCostType) / (float)totalCost);
 	}
 	public int GetCostNum(CardType inCostType)
 	{

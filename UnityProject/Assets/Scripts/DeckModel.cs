@@ -15,17 +15,16 @@ public class DeckModel : MonoBehaviour
 	MeshRenderer mBackfaceMesh;
 	Material mCache;
 	public string GetId => mId;
-	public void Layout(GameInfo inGameInfo, Transform inCardRoot)
+	public void Layout(DeckInfo inDeck, Transform inCardRoot)
 	{
-		var deck = inGameInfo.GetDeck(mId);
-		for(int supply = 0; supply < deck.supply.Count; ++supply)
+		for(int supply = 0; supply < inDeck.supply.Count; ++supply)
 		{
-			var card = deck.supply[supply];
+			var card = inDeck.supply[supply];
 			var pos = transform.position + mSupplyOffset * (supply + 1);
 			var cardModel = CreateCardModel(card, inCardRoot);
 			cardModel.Open(LeanTween.move(cardModel.gameObject, pos, 0.3f));
 		}
-		SetDeckSize(0.002f, deck.GetCardList.Count);
+		SetDeckSize(0.002f, inDeck.GetCardList.Count);
 	}
 	public CardModel CreateCardModel(CardInfo inCard, Transform inParent)
 	{

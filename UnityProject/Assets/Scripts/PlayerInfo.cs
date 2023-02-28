@@ -1,23 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityUtility;
 using UnityEngine;
+public class CardScore
+{
+	public int num { get; set; }
+	public float point { get; set; }
+}
 public class PlayerInfo
 {
 	public string id { get; private set; }
 	public int coin { get; private set; }
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
-	public int totalCard
-	{
-		get
-		{
-			int total = 0;
-			foreach(var cards in hand)
-			{
-				total += cards.Value.Count;
-			}
-			return total;
-		}
-	}
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
 	public override string ToString()
 	{
@@ -49,7 +42,7 @@ public class PlayerInfo
 	}
 	public bool CanPick(CardInfo inCard)
 	{
-		if(inCard == null)
+		if(inCard == null || inCard.cardData.GetCardType == CardData.CardType.Bonus)
 		{
 			return false;
 		}
@@ -66,9 +59,29 @@ public class PlayerInfo
 		{
 			foreach(var card in cards.Value)
 			{
-				coin += card.cardData.GetMoney;
+				coin += card.cardData.GetCoin;
 			}
 		}
+	}
+	public float CalcScore(CardInfo inCard, Dictionary<CardData.CardType, CardScore> inTypeScore)
+	{
+		if(!CanPick(inCard))
+		{
+			return float.MinValue;
+		}
+		var data = inCard.cardData;
+		float point = data.GetPoint + data.GetCoin * 0.5f;
+		if(point > 0)
+		{
+			return point;
+		}
+		var type = data.GetCardType;
+		if(!inTypeScore.TryGetValue(type, out var val))
+		{
+			return 0.0f;
+		}
+		int num = val.num - GetCardType(type);
+		return num <= 0 ? 0.0f : (val.point / (float)num);
 	}
 	void AddHand(CardInfo inCard)
 	{
@@ -216,6 +229,54 @@ public class PlayersInfo
 	public PlayerInfo TurnPlayer(int inTurn)
 	{
 		return playersInfo[inTurn % playersInfo.Count];
+	}
+	public CardInfo AIPick(List<DeckInfo> inDeck, int inTurn)
+	{
+		var calcScore = CalcTypeScore(inDeck);
+		var player = TurnPlayer(inTurn);
+		CardInfo pick = null;
+		float max = float.MinValue;
+		foreach(var deck in inDeck)
+		{
+			foreach(var supply in deck.supply)
+			{
+				float score = player.CalcScore(supply, calcScore);
+				if(score > max)
+				{
+					max = score;
+					pick = supply;
+				}
+			}
+		}
+		return pick;
+	}
+	Dictionary<CardData.CardType, CardScore> CalcTypeScore(List<DeckInfo> inDeck)
+	{
+		var score = new Dictionary<CardData.CardType, CardScore>();
+		foreach(var deck in inDeck)
+		{
+			foreach(var card in deck.supply)
+			{
+				var data = card.cardData;
+				if(data.GetPoint <= 0)
+				{
+					continue;
+				}
+				CardScore cardScore = null;
+				foreach(var cost in data.GetCost)
+				{
+					var type = cost.GetCostType;
+					if(!score.TryGetValue(type, out cardScore))
+					{
+						cardScore = new CardScore();
+						score.Add(type, cardScore);
+					}
+					cardScore.num += cost.GetNum;
+					cardScore.point += data.GetCostRatio(type);
+				}
+			}
+		}
+		return score;
 	}
 }
 public class CardInfo

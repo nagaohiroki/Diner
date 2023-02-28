@@ -77,16 +77,6 @@ public class GameInfo
 	}
 	public CardInfo AIPick()
 	{
-		foreach(var deck in mDeck)
-		{
-			foreach(var supply in deck.supply)
-			{
-				if(CanPick(supply.deckIndex, supply.cardIndex))
-				{
-					return supply;
-				}
-			}
-		}
-		return null;
+		return mPlayersInfo.AIPick(mDeck, pickInfo.Count);
 	}
 }

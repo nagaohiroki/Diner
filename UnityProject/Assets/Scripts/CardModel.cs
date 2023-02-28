@@ -22,7 +22,7 @@ public class CardModel : MonoBehaviour
 	Vector3 mIconOffset = new Vector3(0.7f, 0.0f, 1.1f);
 	[SerializeField]
 	AudioSource mPickSE;
-	public CardInfo cardInfo{set;get;}
+	public CardInfo cardInfo { set; get; }
 	Material mCache;
 	public bool IsSame(CardInfo inCard) => cardInfo.IsSame(inCard);
 	public void Create(CardInfo inCard, Material inMaterial)
@@ -74,7 +74,7 @@ public class CardModel : MonoBehaviour
 			var pos = new Vector3((i) * mIconOffset.x, 0.0f, 0.0f);
 			CreateIcon(mPointAnchor, pos, CardData.CardType.Cooking, CardData.BonusType.None);
 		}
-		for(int i = 0; i < inCardData.GetMoney; ++i)
+		for(int i = 0; i < inCardData.GetCoin; ++i)
 		{
 			var pos = new Vector3(i * mIconOffset.x, 0.0f, 0.0f);
 			CreateIcon(mCoinAnchor, pos, CardData.CardType.Coin, CardData.BonusType.None);

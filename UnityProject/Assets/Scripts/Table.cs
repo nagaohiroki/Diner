@@ -69,7 +69,7 @@ public class Table : MonoBehaviour
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Layout(inGameinfo, mCardRoot.transform);
+				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform);
 			}
 		}
 	}
@@ -162,53 +162,59 @@ public class Table : MonoBehaviour
 		var players = info.GetPlayerInfos;
 		foreach(var playerInfo in players)
 		{
-			int total = playerInfo.totalCard;
-			var hands = playerInfo.hand;
-			var pickPlayer = inGameController.GetPlayer(playerInfo.id);
-			var rot = Quaternion.Euler(0.0f, pickPlayer.rot, 0.0f);
-			float startX = (total - 1) * mLayout.handOffset.x * -0.5f;
-			int counter = 0;
-			foreach(var cards in hands)
+			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), tweenTime);
+		}
+	}
+	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween)
+	{
+		var hands = inPlayerInfo.hand;
+		float startX = 0.0f;
+		foreach (var cards in hands)
+		{
+			startX -= cards.Value.Count * (IsPoint(cards.Key) ? mLayout.pointOffset.x : mLayout.handOffset.x) * 0.5f;
+		}
+		int counter = 0;
+		foreach(var cards in hands)
+		{
+			if(IsPoint(cards.Key))
 			{
-				if(IsPoint(cards.Key))
-				{
-					continue;
-				}
-				foreach(var card in cards.Value)
-				{
-					var offset = mLayout.handOffset * counter;
-					var cardPos = new Vector3(startX + offset.x, offset.y, 0.0f);
-					var pos = pickPlayer.transform.position + rot * (mLayout.handBaseOffset + Vector3.Scale(cardPos, mLayout.handScale));
-					var cardModel = GetCard(card, info);
-					LeanTween.move(cardModel.gameObject, pos, tweenTime);
-					LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, tweenTime);
-					var lt = LeanTween.scale(cardModel.gameObject, mLayout.handScale, tweenTime);
-					cardModel.Open(lt);
-					++counter;
-				}
+				continue;
 			}
-			foreach(var cards in hands)
+			foreach(var card in cards.Value)
 			{
-				if(!IsPoint(cards.Key))
-				{
-					continue;
-				}
-				int pointCounter = 0;
-				foreach(var card in cards.Value)
-				{
-					var offset = mLayout.handOffset * counter;
-					var pointOffset = mLayout.pointOffset * (pointCounter + 1);
-					var cardPos = new Vector3(startX + offset.x + pointOffset.x, offset.y, 0.0f);
-					var pos = pickPlayer.transform.position + rot * (mLayout.handBaseOffset + Vector3.Scale(cardPos, mLayout.handScale));
-					var cardModel = GetCard(card, info);
-					LeanTween.move(cardModel.gameObject, pos, tweenTime);
-					LeanTween.rotateY(cardModel.gameObject, pickPlayer.rot, tweenTime);
-					var lt = LeanTween.scale(cardModel.gameObject, mLayout.handScale, tweenTime);
-					cardModel.Open(lt);
-					++pointCounter;
-				}
+				var offset = mLayout.handOffset * counter;
+				var cardPos = new Vector3(startX + offset.x, offset.y, 0.0f);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
+				++counter;
 			}
 		}
+		foreach(var cards in hands)
+		{
+			if(!IsPoint(cards.Key))
+			{
+				continue;
+			}
+			int pointCounter = 0;
+			foreach(var card in cards.Value)
+			{
+				var offset = mLayout.handOffset * counter;
+				var pointOffset = mLayout.pointOffset * pointCounter;
+				var cardPos = new Vector3(startX + offset.x + pointOffset.x, offset.y, 0.0f);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
+				++pointCounter;
+			}
+		}
+	}
+	void CardOpen(GameInfo inInfo, Player inPlayer, CardInfo inCard, Vector3 inPos, float inTween)
+	{
+		float rotY = inPlayer.rot;
+		var rot = Quaternion.Euler(0.0f, rotY, 0.0f);
+		var pos = inPlayer.transform.position + rot * (mLayout.handBaseOffset + Vector3.Scale(inPos, mLayout.handScale));
+		var cardModel = GetCard(inCard, inInfo);
+		LeanTween.move(cardModel.gameObject, pos, inTween);
+		LeanTween.rotateY(cardModel.gameObject, rotY, inTween);
+		var lt = LeanTween.scale(cardModel.gameObject, mLayout.handScale, inTween);
+		cardModel.Open(lt);
 	}
 	bool IsPoint(CardData.CardType inType)
 	{
