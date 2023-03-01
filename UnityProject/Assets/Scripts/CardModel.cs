@@ -15,7 +15,7 @@ public class CardModel : MonoBehaviour
 	[SerializeField]
 	Transform mBonusAnchor;
 	[SerializeField]
-	MeshRenderer mBackfaceMesh;
+	CardFbx mCard;
 	[SerializeField]
 	TextMeshPro mCardName;
 	[SerializeField]
@@ -23,16 +23,26 @@ public class CardModel : MonoBehaviour
 	[SerializeField]
 	AudioSource mPickSE;
 	public CardInfo cardInfo { set; get; }
-	Material mCache;
 	public bool IsSame(CardInfo inCard) => cardInfo.IsSame(inCard);
-	public void Create(CardInfo inCard, Material inMaterial)
+	public void Create(CardInfo inCard)
 	{
 		cardInfo = inCard;
 		var card = inCard.cardData;
 		name = card.GetId;
-		mBackfaceMesh.material = inMaterial;
-		mCache = mBackfaceMesh.material;
 		LayoutIcon(card);
+		var data = inCard.cardData;
+		switch(data.GetCardType)
+		{
+			case CardData.CardType.Cooking:
+				mCard.SetMatrial(CardFbx.BackType.Cook);
+				break;
+			case CardData.CardType.Bonus:
+				mCard.SetMatrial(CardFbx.BackType.Bonus);
+				break;
+			default:
+				mCard.SetMatrial(CardFbx.BackType.Food);
+				break;
+		}
 	}
 	public void PlaySE(float inPitch)
 	{
@@ -104,12 +114,5 @@ public class CardModel : MonoBehaviour
 		icon.SetIcon(inCardType, inBonusType, -1);
 		icon.transform.SetParent(inParent, false);
 		icon.transform.localPosition = inPos;
-	}
-	void OnDestroy()
-	{
-		if(mCache != null)
-		{
-			Destroy(mCache);
-		}
 	}
 }

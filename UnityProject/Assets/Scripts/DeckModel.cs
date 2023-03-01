@@ -2,29 +2,27 @@
 public class DeckModel : MonoBehaviour
 {
 	[SerializeField]
-	Material mBackface;
-	[SerializeField]
 	string mId;
+	[SerializeField]
+	CardFbx.BackType mBackType;
 	[SerializeField]
 	Vector3 mSupplyOffset;
 	[SerializeField]
 	CardModel mCardModelPrefab;
 	[SerializeField]
-	GameObject mDeck;
-	[SerializeField]
-	MeshRenderer mBackfaceMesh;
-	Material mCache;
+	CardFbx mCardFbx;
 	public string GetId => mId;
-	public void Layout(DeckInfo inDeck, Transform inCardRoot)
+	public void Layout(DeckInfo inDeck, Transform inCardRoot, float inTweenTime)
 	{
-		for(int supply = 0; supply < inDeck.supply.Count; ++supply)
+		mCardFbx.SetNum(inDeck.GetCardList.Count);
+		int supply = 0;
+		foreach(var card in inDeck.supply)
 		{
-			var card = inDeck.supply[supply];
-			var pos = transform.position + mSupplyOffset * (supply + 1);
+			++supply;
+			var pos = transform.position + mSupplyOffset * supply;
 			var cardModel = CreateCardModel(card, inCardRoot);
-			cardModel.Open(LeanTween.move(cardModel.gameObject, pos, 0.3f));
+			cardModel.Open(LeanTween.move(cardModel.gameObject, pos, inTweenTime));
 		}
-		SetDeckSize(0.002f, inDeck.GetCardList.Count);
 	}
 	public CardModel CreateCardModel(CardInfo inCard, Transform inParent)
 	{
@@ -40,40 +38,13 @@ public class DeckModel : MonoBehaviour
 			}
 		}
 		var pos = transform.position;
-		var cardPos = new Vector3(pos.x, mBackfaceMesh.transform.position.y, pos.z);
+		var cardPos = new Vector3(pos.x, mCardFbx.transform.position.y + 0.1f, pos.z);
 		var cardModel = Instantiate(mCardModelPrefab, cardPos, Quaternion.Euler(0.0f, 0.0f, 180.0f), inParent);
-		cardModel.Create(inCard, mBackface);
+		cardModel.Create(inCard);
 		return cardModel;
-	}
-	void SetDeckSize(float inBaseScale, int inNum)
-	{
-		if(inNum == 0)
-		{
-			gameObject.SetActive(false);
-			return;
-		}
-		gameObject.SetActive(true);
-		float deckScale = inBaseScale * inNum;
-		var scale = mDeck.transform.localScale;
-		scale.z = deckScale;
-		mDeck.transform.localScale = scale;
-		var pos = mDeck.transform.position;
-		pos.y = deckScale * 0.5f;
-		mDeck.transform.position = pos;
-		var backPos = mBackfaceMesh.transform.position;
-		backPos.y = deckScale;
-		mBackfaceMesh.transform.position = backPos;
 	}
 	void Start()
 	{
-		mBackfaceMesh.material = mBackface;
-		mCache = mBackfaceMesh.material;
-	}
-	void OnDestroy()
-	{
-		if(mCache != null)
-		{
-			Destroy(mCache);
-		}
+		mCardFbx.SetMatrial(mBackType, CardFbx.MaterialType.Face);
 	}
 }

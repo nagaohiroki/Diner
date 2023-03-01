@@ -18,7 +18,9 @@ public class GameController : NetworkBehaviour
 	PlayerInput mInput;
 	[SerializeField]
 	Vector3 mMoveRange;
-	NetworkVariable<int> randomSeed = new NetworkVariable<int>();
+	[SerializeField]
+	float mTweenSpeed = 0.3f;
+	int mSeed;
 	Dictionary<string, Player> mEntryPlayers;
 	public Vector3 GetMoveRange => mMoveRange;
 	public BattleData GetData => mData;
@@ -40,14 +42,6 @@ public class GameController : NetworkBehaviour
 			return connectionsData[inClientId];
 		}
 		return null;
-	}
-	public override void OnNetworkSpawn()
-	{
-		if(IsServer)
-		{
-			randomSeed.Value = -2101373777;
-		}
-		base.OnNetworkSpawn();
 	}
 	public override void OnNetworkDespawn()
 	{
@@ -90,7 +84,7 @@ public class GameController : NetworkBehaviour
 			if(players.Length <= mPlayerChairs.maxNum)
 			{
 				mMenuRoot.GetComponentInChildren<MenuQuit>().SetActiveHostButton(false);
-				GameStartClientRpc(null);
+				GameStartClientRpc(null, RandomObject.GenerateSeed());
 			}
 		}
 	}
@@ -210,18 +204,19 @@ public class GameController : NetworkBehaviour
 		}
 		return entryPlayers;
 	}
-	void GameStartInternal(byte[] inPickData)
+	void GameStartInternal(byte[] inPickData, int inSeed)
 	{
 		if(isStart)
 		{
 			return;
 		}
+		mSeed = inSeed;
 		mEntryPlayers = EntryPlayers();
 		gameInfo = new GameInfo();
-		gameInfo.GameStart(mData, randomSeed.Value, mEntryPlayers, inPickData, ruleData);
+		gameInfo.GameStart(mData, inSeed, mEntryPlayers, inPickData, ruleData);
 		mPlayerChairs.Sitdown(gameInfo.GetPlayerInfos, mEntryPlayers);
-		mTable.Apply(this);
-		Debug.Log($"seed:{randomSeed.Value}");
+		mTable.Apply(this, mTweenSpeed);
+		Debug.Log($"seed:{inSeed}");
 	}
 	[ServerRpc(RequireOwnership = false)]
 	void PickServerRpc(int inDeck, int inCard)
@@ -234,7 +229,7 @@ public class GameController : NetworkBehaviour
 		if(gameInfo != null)
 		{
 			gameInfo.Pick(inDeck, inCard);
-			mTable.Apply(this);
+			mTable.Apply(this, mTweenSpeed);
 		}
 	}
 	[ServerRpc(RequireOwnership = false)]
@@ -242,12 +237,12 @@ public class GameController : NetworkBehaviour
 	{
 		if(isStart)
 		{
-			GameStartClientRpc(MemoryPackSerializer.Serialize(gameInfo.pickInfo));
+			GameStartClientRpc(MemoryPackSerializer.Serialize(gameInfo.pickInfo), mSeed);
 		}
 	}
 	[ClientRpc]
-	void GameStartClientRpc(byte[] inPickData)
+	void GameStartClientRpc(byte[] inPickData, int inSeed)
 	{
-		GameStartInternal(inPickData);
+		GameStartInternal(inPickData, inSeed);
 	}
 }

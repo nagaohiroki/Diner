@@ -26,13 +26,13 @@ public class Table : MonoBehaviour
 	public bool IsTween => IsTweenCard(mCardRoot);
 	Dictionary<string, List<GameObject>> mCoin = new Dictionary<string, List<GameObject>>();
 	GameController mGameContorller;
-	public void Apply(GameController inGameController)
+	public void Apply(GameController inGameController, float inTweenTime)
 	{
 		Init(inGameController);
 		Coin(inGameController);
 		mMenuRoot.Apply(inGameController);
-		LayoutDeck(inGameController.gameInfo);
-		Hand(inGameController);
+		LayoutDeck(inGameController.gameInfo, inTweenTime);
+		Hand(inGameController, inTweenTime);
 		Discard(inGameController.gameInfo);
 		Winner(inGameController);
 	}
@@ -63,13 +63,13 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
-	void LayoutDeck(GameInfo inGameinfo)
+	void LayoutDeck(GameInfo inGameinfo, float inTweenTime)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform);
+				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime);
 			}
 		}
 	}
@@ -155,14 +155,13 @@ public class Table : MonoBehaviour
 		}
 		return null;
 	}
-	void Hand(GameController inGameController)
+	void Hand(GameController inGameController, float inTweenTime)
 	{
-		float tweenTime = 0.3f;
 		var info = inGameController.gameInfo;
 		var players = info.GetPlayerInfos;
 		foreach(var playerInfo in players)
 		{
-			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), tweenTime);
+			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime);
 		}
 	}
 	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween)
@@ -254,7 +253,7 @@ public class Table : MonoBehaviour
 	{
 		if(mGameContorller != null)
 		{
-			Apply(mGameContorller);
+			Apply(mGameContorller, 0.0f);
 		}
 	}
 #endif

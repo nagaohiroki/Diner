@@ -5340,6 +5340,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mBackType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mBackface
       value: 
       objectReference: {fileID: 2100000, guid: 1e9009c01298fcd41a014acde1670aad, type: 2}
@@ -5685,6 +5689,10 @@ PrefabInstance:
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mSEPitch
       value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mBackType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mBackface
