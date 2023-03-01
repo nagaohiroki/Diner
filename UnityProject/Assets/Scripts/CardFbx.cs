@@ -36,10 +36,10 @@ public class CardFbx : MonoBehaviour
 	}
 	public void SetNum(int inNum)
 	{
-		if (inNum <= 0)
+		if(inNum <= 0)
 		{
 			gameObject.SetActive(false);
-		    return;
+			return;
 		}
 		gameObject.SetActive(true);
 		var scale = mMesh.gameObject.transform.localScale;
@@ -63,7 +63,7 @@ public class CardFbx : MonoBehaviour
 		{
 			foreach(var mat in mMaterials)
 			{
-				if (mat != null)
+				if(mat != null)
 				{
 					Destroy(mat);
 				}

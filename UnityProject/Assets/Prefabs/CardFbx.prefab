@@ -53,6 +53,7 @@ MonoBehaviour:
   - type: 2
     material: {fileID: 2100000, guid: 1e9009c01298fcd41a014acde1670aad, type: 2}
   mMesh: {fileID: 1589308456647411492}
+  mBaseScale: 0.1
 --- !u!1001 &130549685241568160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87,7 +88,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 62787529ba116f8498cc7efb0211e08a, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 497b6d2da69cbdf4faaa318224e9525b, type: 2}
+      objectReference: {fileID: 2100000, guid: 815665a23dcc6484a91d4b8b40062036, type: 2}
     - target: {fileID: -7511558181221131132, guid: 62787529ba116f8498cc7efb0211e08a, type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
