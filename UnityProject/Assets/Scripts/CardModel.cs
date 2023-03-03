@@ -23,6 +23,7 @@ public class CardModel : MonoBehaviour
 	[SerializeField]
 	AudioSource mPickSE;
 	public CardInfo cardInfo { set; get; }
+	public int supply { get; set; } = -1;
 	public bool IsSame(CardInfo inCard) => cardInfo.IsSame(inCard);
 	public void Create(CardInfo inCard)
 	{
@@ -49,16 +50,30 @@ public class CardModel : MonoBehaviour
 		mPickSE.pitch = inPitch;
 		mPickSE.Play();
 	}
-	public LTDescr Open(LTDescr lt)
+	public void Open(LTSeq inSeq)
 	{
 		if(!Mathf.Approximately(transform.eulerAngles.z, 180.0f))
 		{
-			return null;
+			return;
 		}
-		PlaySE(1.0f);
-		return lt.setOnComplete(() => LeanTween.moveY(gameObject, 0.5f, 0.1f)
-		.setOnComplete(() => LeanTween.rotateZ(gameObject, 0.0f, 0.1f)
-		.setOnComplete(() => LeanTween.moveY(gameObject, 0.0f, 0.1f))));
+		inSeq.append(LeanTween.moveY(gameObject, 1.0f, 0.1f).setEaseOutCubic());
+		inSeq.append(LeanTween.rotateZ(gameObject, 0.0f, 0.4f).setEaseInOutBack());
+		inSeq.append(LeanTween.moveY(gameObject, 0.0f, 0.1f).setEaseOutExpo());
+		inSeq.append(() => PlaySE(1.0f));
+	}
+	public void Discard(LTSeq inSeq)
+	{
+		if(!gameObject.activeSelf)
+		{
+			return;
+		}
+		var pos = transform.position + transform.rotation * new Vector3(0.0f, 0.5f, 1.0f);
+		inSeq.insert(LeanTween.move(gameObject, pos, 0.8f).setEaseOutCubic());
+		inSeq.insert(LeanTween.scale(gameObject, Vector3.zero, 0.5f).setEaseInOutExpo());
+		inSeq.append(() => gameObject.SetActive(false));
+	}
+	public void CanNotPick(LTSeq inSeq)
+	{
 	}
 	void LayoutIcon(CardData inCardData)
 	{

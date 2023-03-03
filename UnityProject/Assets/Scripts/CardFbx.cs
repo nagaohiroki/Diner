@@ -26,6 +26,7 @@ public class CardFbx : MonoBehaviour
 	MeshRenderer mMesh;
 	[SerializeField]
 	float mBaseScale = 0.1f;
+	public Vector3 GetTopPosition => transform.position + Vector3.up * 0.02f * mMesh.transform.localScale.z;
 	Material[] mMaterials;
 	public void SetMatrial(BackType inBack, MaterialType inMaterialType = MaterialType.Back)
 	{

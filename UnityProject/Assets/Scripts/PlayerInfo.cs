@@ -12,6 +12,7 @@ public class PlayerInfo
 	public int coin { get; private set; }
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
+	public CardInfo lastAddCard { get; set; }
 	public override string ToString()
 	{
 		var str = $"{id}, point:{GetPoint}, coin:{coin}\n";
@@ -53,15 +54,10 @@ public class PlayerInfo
 		Pay(inCardData);
 		AddHand(inCardData);
 	}
-	public void AddCoin()
+	public void CleanUp()
 	{
-		foreach(var cards in hand)
-		{
-			foreach(var card in cards.Value)
-			{
-				coin += card.cardData.GetCoin;
-			}
-		}
+		AddCoin();
+		//discard.Clear();
 	}
 	public float CalcScore(CardInfo inCard, Dictionary<CardData.CardType, CardScore> inTypeScore)
 	{
@@ -93,6 +89,17 @@ public class PlayerInfo
 			hand.Add(type, cards);
 		}
 		cards.Add(inCard);
+		lastAddCard = inCard;
+	}
+	void AddCoin()
+	{
+		foreach(var cards in hand)
+		{
+			foreach(var card in cards.Value)
+			{
+				coin += card.cardData.GetCoin;
+			}
+		}
 	}
 	void RemoveHand(Cost inCost)
 	{

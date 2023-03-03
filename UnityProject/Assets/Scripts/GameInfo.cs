@@ -26,14 +26,15 @@ public class GameInfo
 		{
 			mPlayersInfo.TurnPlayer(count).Pick(mDeck[pick.deck].Pick(pick.card));
 			++count;
-			mPlayersInfo.TurnPlayer(count).AddCoin();
+			mPlayersInfo.TurnPlayer(count).CleanUp();
 		}
 	}
 	public void Pick(int inDeck, int inCard)
 	{
 		mPlayersInfo.TurnPlayer(pickInfo.Count).Pick(mDeck[inDeck].Pick(inCard));
 		pickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
-		mPlayersInfo.TurnPlayer(pickInfo.Count).AddCoin();
+		var next = mPlayersInfo.TurnPlayer(pickInfo.Count);
+		next.CleanUp();
 	}
 	public bool CanPick(int inDeck, int inCard)
 	{

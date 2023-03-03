@@ -31,9 +31,10 @@ public class Table : MonoBehaviour
 		Init(inGameController);
 		Coin(inGameController);
 		mMenuRoot.Apply(inGameController);
-		LayoutDeck(inGameController.gameInfo, inTweenTime);
-		Hand(inGameController, inTweenTime);
-		Discard(inGameController.gameInfo);
+		var seq = LeanTween.sequence();
+		Discard(inGameController.gameInfo, inTweenTime, seq);
+		seq.append(() => Hand(inGameController, inTweenTime, seq));
+		LayoutDeck(inGameController.gameInfo, inTweenTime, seq);
 		Winner(inGameController);
 	}
 	public void Clear()
@@ -63,13 +64,13 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
-	void LayoutDeck(GameInfo inGameinfo, float inTweenTime)
+	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, LTSeq inSeq)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime);
+				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime, inSeq);
 			}
 		}
 	}
@@ -124,7 +125,7 @@ public class Table : MonoBehaviour
 		}
 		return null;
 	}
-	void Discard(GameInfo inInfo)
+	void Discard(GameInfo inInfo, float inTweenTime, LTSeq inSeq)
 	{
 		var players = inInfo.GetPlayerInfos;
 		foreach(var player in players)
@@ -134,13 +135,17 @@ public class Table : MonoBehaviour
 				var dis = FindCard(card);
 				if(dis != null)
 				{
-					dis.gameObject.SetActive(false);
+					dis.Discard(inSeq);
 				}
 			}
 		}
 	}
 	CardModel FindCard(CardInfo inCard)
 	{
+		if(inCard == null)
+		{
+			return null;
+		}
 		var trans = mCardRoot.transform;
 		for(int i = 0; i < trans.childCount; ++i)
 		{
@@ -155,20 +160,20 @@ public class Table : MonoBehaviour
 		}
 		return null;
 	}
-	void Hand(GameController inGameController, float inTweenTime)
+	void Hand(GameController inGameController, float inTweenTime, LTSeq inSeq)
 	{
 		var info = inGameController.gameInfo;
 		var players = info.GetPlayerInfos;
 		foreach(var playerInfo in players)
 		{
-			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime);
+			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime, inSeq);
 		}
 	}
-	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween)
+	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween, LTSeq inSeq)
 	{
 		var hands = inPlayerInfo.hand;
 		float startX = 0.0f;
-		foreach (var cards in hands)
+		foreach(var cards in hands)
 		{
 			startX -= cards.Value.Count * (IsPoint(cards.Key) ? mLayout.pointOffset.x : mLayout.handOffset.x) * 0.5f;
 		}
@@ -183,7 +188,7 @@ public class Table : MonoBehaviour
 			{
 				var offset = mLayout.handOffset * counter;
 				var cardPos = new Vector3(startX + offset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween, inSeq);
 				++counter;
 			}
 		}
@@ -199,21 +204,23 @@ public class Table : MonoBehaviour
 				var offset = mLayout.handOffset * counter;
 				var pointOffset = mLayout.pointOffset * pointCounter;
 				var cardPos = new Vector3(startX + offset.x + pointOffset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween, inSeq);
 				++pointCounter;
 			}
 		}
 	}
-	void CardOpen(GameInfo inInfo, Player inPlayer, CardInfo inCard, Vector3 inPos, float inTween)
+	void CardOpen(GameInfo inInfo, Player inPlayer, CardInfo inCard, Vector3 inPos, float inTweenTime, LTSeq inSeq)
 	{
 		float rotY = inPlayer.rot;
 		var rot = Quaternion.Euler(0.0f, rotY, 0.0f);
 		var pos = inPlayer.transform.position + rot * (mLayout.handBaseOffset + Vector3.Scale(inPos, mLayout.handScale));
 		var cardModel = GetCard(inCard, inInfo);
-		LeanTween.move(cardModel.gameObject, pos, inTween);
-		LeanTween.rotateY(cardModel.gameObject, rotY, inTween);
-		var lt = LeanTween.scale(cardModel.gameObject, mLayout.handScale, inTween);
-		cardModel.Open(lt);
+		cardModel.supply = -1;
+		var seq = LeanTween.sequence();
+		seq.insert(LeanTween.move(cardModel.gameObject, pos, inTweenTime).setEaseInOutExpo());
+		seq.insert(LeanTween.rotateY(cardModel.gameObject, rotY, inTweenTime));
+		seq.insert(LeanTween.scale(cardModel.gameObject, mLayout.handScale, inTweenTime));
+		cardModel.Open(seq);
 	}
 	bool IsPoint(CardData.CardType inType)
 	{
@@ -245,7 +252,6 @@ public class Table : MonoBehaviour
 					coins.RemoveAt(last);
 				}
 			}
-
 		}
 	}
 #if UNITY_EDITOR
