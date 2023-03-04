@@ -17,7 +17,7 @@ MonoBehaviour:
   bonusType: 4
   cardType: 0
   point: 2
-  money: 1
+  coin: 1
   cost:
   - mCostType: 2
     mNum: 1
