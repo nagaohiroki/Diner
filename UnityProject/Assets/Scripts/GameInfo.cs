@@ -7,6 +7,10 @@ public class GameInfo
 	public PickInfoList pickInfo { get; private set; }
 	public string GetCurrentTurnPlayer => mPlayersInfo.TurnPlayer(pickInfo.Count).id;
 	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo.playersInfo;
+	public override string ToString()
+	{
+		return $"turn {pickInfo}\n{mPlayersInfo}";
+	}
 	public void GameStart(BattleData inData, int inSeed, Dictionary<string, Player> inPlayers, byte[] inPickData, RuleData inRule)
 	{
 		if(inPlayers == null)

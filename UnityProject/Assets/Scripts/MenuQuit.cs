@@ -62,6 +62,6 @@ public class MenuQuit : MonoBehaviour
 		var player = inGameController.gameInfo.GetPlayerInfos[inIndex];
 		var playerName = inGameController.GetPlayer(player.id).name;
 		int max = inGameController.GetData.GetWinPoint;
-		return $"{playerName}  <align=right>{player.GetPoint}/{max}</align>";
+		return $"{playerName}  <align=right>{player.GetPoint}/{max}:{player.coin}</align>";
 	}
 }
