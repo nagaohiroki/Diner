@@ -34,7 +34,8 @@ public class Table : MonoBehaviour
 		var seq = LeanTween.sequence();
 		Discard(inGameController.gameInfo, inTweenTime, seq);
 		seq.append(() => Hand(inGameController, inTweenTime, seq));
-		LayoutDeck(inGameController.gameInfo, inTweenTime, seq);
+		seq.append(() => LayoutDeck(inGameController.gameInfo, inTweenTime));
+
 		Winner(inGameController);
 	}
 	public void Clear()
@@ -64,13 +65,13 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
-	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, LTSeq inSeq)
+	void LayoutDeck(GameInfo inGameinfo, float inTweenTime)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime, inSeq);
+				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime);
 			}
 		}
 	}

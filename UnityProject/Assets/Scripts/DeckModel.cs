@@ -12,7 +12,7 @@ public class DeckModel : MonoBehaviour
 	[SerializeField]
 	CardFbx mCardFbx;
 	public string GetId => mId;
-	public void Layout(DeckInfo inDeck, Transform inCardRoot, float inTweenTime, LTSeq inSeq)
+	public void Layout(DeckInfo inDeck, Transform inCardRoot, float inTweenTime)
 	{
 		mCardFbx.SetNum(inDeck.GetCardList.Count);
 		int supply = 0;
@@ -26,10 +26,9 @@ public class DeckModel : MonoBehaviour
 			}
 			cardModel.supply = supply;
 			var pos = transform.position + mSupplyOffset * supply;
-			var lt = LeanTween.move(cardModel.gameObject, pos, inTweenTime);
-			lt.setEaseInOutExpo();
-			inSeq.append(lt);
-			cardModel.Open(inSeq);
+			var seq = LeanTween.sequence();
+			seq.append(LeanTween.move(cardModel.gameObject, pos, inTweenTime).setEaseInOutExpo());
+			cardModel.Open(seq);
 		}
 	}
 	public CardModel CreateCardModel(CardInfo inCard, Transform inParent)
