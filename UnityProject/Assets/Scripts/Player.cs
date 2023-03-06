@@ -119,7 +119,12 @@ public class Player : NetworkBehaviour
 			return;
 		}
 		var info = card.cardInfo;
-		mGameController.Pick(info.deckIndex, info.cardIndex);
+		if(!mGameController.gameInfo.CanPick(info))
+		{
+			card.CanNotPick();
+			return;
+		}
+		mGameController.Pick(info);
 	}
 	void Move()
 	{
@@ -183,7 +188,7 @@ public class Player : NetworkBehaviour
 		{
 			return;
 		}
-		mGameController.Pick(pick.deckIndex, pick.cardIndex);
+		mGameController.Pick(pick);
 	}
 	byte[] CreateBotData()
 	{

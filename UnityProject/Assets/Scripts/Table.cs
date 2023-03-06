@@ -134,9 +134,9 @@ public class Table : MonoBehaviour
 			foreach(var card in player.discard)
 			{
 				var dis = FindCard(card);
-				if(dis != null)
+				if(dis != null && dis.gameObject.activeSelf)
 				{
-					dis.Discard(inSeq);
+					dis.Discard(inSeq, FindCard(player.lastPickCard));
 				}
 			}
 		}

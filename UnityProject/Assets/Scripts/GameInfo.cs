@@ -36,9 +36,9 @@ public class GameInfo
 		var next = mPlayersInfo.TurnPlayer(pickInfo.Count);
 		next.CleanUp();
 	}
-	public bool CanPick(int inDeck, int inCard)
+	public bool CanPick(CardInfo inInfo)
 	{
-		return mPlayersInfo.TurnPlayer(pickInfo.Count).CanPick(mDeck[inDeck].GetCard(inCard));
+		return mPlayersInfo.TurnPlayer(pickInfo.Count).CanPick(mDeck[inInfo.deckIndex].GetCard(inInfo.cardIndex));
 	}
 	public int GetDeckIndex(string inId)
 	{

@@ -48,13 +48,13 @@ public class GameController : NetworkBehaviour
 		Clear();
 		base.OnNetworkDespawn();
 	}
-	public void Pick(int inDeck, int inCard)
+	public void Pick(CardInfo inInfo)
 	{
 		if(gameInfo.GetWinners(mData.GetWinPoint) != null)
 		{
 			return;
 		}
-		if(!gameInfo.CanPick(inDeck, inCard))
+		if(!gameInfo.CanPick(inInfo))
 		{
 			return;
 		}
@@ -62,7 +62,7 @@ public class GameController : NetworkBehaviour
 		{
 			return;
 		}
-		PickServerRpc(inDeck, inCard);
+		PickServerRpc(inInfo.deckIndex, inInfo.cardIndex);
 	}
 	public void DisconnectClient(ulong inId)
 	{

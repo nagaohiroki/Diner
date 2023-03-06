@@ -61,19 +61,17 @@ public class CardModel : MonoBehaviour
 		inSeq.append(LeanTween.moveY(gameObject, 0.0f, 0.1f).setEaseOutExpo());
 		inSeq.append(() => PlaySE(1.0f));
 	}
-	public void Discard(LTSeq inSeq)
+	public void Discard(LTSeq inSeq, CardModel inPick)
 	{
-		if(!gameObject.activeSelf)
-		{
-			return;
-		}
-		var pos = transform.position + transform.rotation * new Vector3(0.0f, 0.5f, 1.0f);
-		inSeq.insert(LeanTween.move(gameObject, pos, 0.8f).setEaseOutCubic());
-		inSeq.insert(LeanTween.scale(gameObject, Vector3.zero, 0.5f).setEaseInOutExpo());
+		inSeq.append(LeanTween.move(gameObject, inPick.transform.position + new Vector3(0.0f, 1.0f, 0.0f), 0.5f).setEaseOutCubic());
+		inSeq.append(LeanTween.scale(gameObject, Vector3.zero, 0.5f).setEaseInOutExpo());
 		inSeq.append(() => gameObject.SetActive(false));
 	}
-	public void CanNotPick(LTSeq inSeq)
+	public void CanNotPick()
 	{
+		var seq = LeanTween.sequence();
+		seq.append(LeanTween.rotateY(gameObject, 5.0f, 0.1f).setEaseShake());
+		seq.append(LeanTween.rotateY(gameObject, 0.0f, 0.1f).setEaseShake());
 	}
 	void LayoutIcon(CardData inCardData)
 	{

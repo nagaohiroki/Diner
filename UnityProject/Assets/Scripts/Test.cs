@@ -7,10 +7,8 @@ public class Test : MonoBehaviour
 		if(Input.GetKeyDown(KeyCode.A))
 		{
 			var seq = LeanTween.sequence();
-			seq.append(LeanTween.move(gameObject, new Vector3(-3.0f, 3.0f, 0.0f), 1.0f));
-			seq.append(LeanTween.move(gameObject, new Vector3(3.0f, 3.0f, 0.0f), 1.0f));
-			seq.append(LeanTween.move(gameObject, new Vector3(3.0f, -3.0f, 0.0f), 1.0f));
-			seq.append(LeanTween.move(gameObject, new Vector3(-3.0f, -3.0f, 0.0f), 1.0f));
+			seq.append(LeanTween.rotateY(gameObject, 10.0f, 0.2f).setEaseShake());
+			seq.append(LeanTween.rotateY(gameObject, 0.0f, 0.1f).setEaseShake());
 		}
 		if(Input.GetKeyDown(KeyCode.W))
 		{

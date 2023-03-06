@@ -12,6 +12,7 @@ public class PlayerInfo
 	public int coin { get; private set; }
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
+	public CardInfo lastPickCard { get; set; }
 	public override string ToString()
 	{
 		var str = $"{id}, point:{GetPoint}, coin:{coin}\n";
@@ -87,6 +88,7 @@ public class PlayerInfo
 			hand.Add(type, cards);
 		}
 		cards.Add(inCard);
+		lastPickCard = inCard;
 	}
 	void AddCoin()
 	{
