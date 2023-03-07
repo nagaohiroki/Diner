@@ -23,19 +23,22 @@ public class Table : MonoBehaviour
 	LayoutParameter mLayout;
 	GameObject mCardRoot;
 	GameObject mCoinRoot;
-	public bool IsTween => IsTweenCard(mCardRoot);
+	public bool IsTween => IsTweenCard(mCardRoot) || isSeq;
+	bool isSeq;
 	Dictionary<string, List<GameObject>> mCoin = new Dictionary<string, List<GameObject>>();
 	GameController mGameContorller;
 	public void Apply(GameController inGameController, float inTweenTime)
 	{
+		isSeq = true;
 		Init(inGameController);
-		Coin(inGameController);
 		mMenuRoot.Apply(inGameController);
-		var seq = LeanTween.sequence();
-		Discard(inGameController.gameInfo, inTweenTime, seq);
-		seq.append(() => Hand(inGameController, inTweenTime, seq));
-		seq.append(() => LayoutDeck(inGameController.gameInfo, inTweenTime));
-
+		var rootSeq = LeanTween.sequence();
+		Discard(inGameController.gameInfo, inTweenTime, rootSeq);
+		rootSeq.append(() => Hand(inGameController, inTweenTime));
+		rootSeq.append(() => LayoutDeck(inGameController.gameInfo, inTweenTime));
+		rootSeq.append(EndSeq);
+		//PayCoin(inGameController, inTweenTime, rootSeq);
+		//AddCoin(inGameController, inTweenTime, rootSeq);
 		Winner(inGameController);
 	}
 	public void Clear()
@@ -65,6 +68,10 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
+	void EndSeq()
+	{
+		isSeq = false;
+	}
 	void LayoutDeck(GameInfo inGameinfo, float inTweenTime)
 	{
 		for(int i = 0; i < mDecks.childCount; ++i)
@@ -83,6 +90,7 @@ public class Table : MonoBehaviour
 		}
 		mGameContorller = inGameController;
 		mCardRoot = new GameObject("CardRoot");
+		mCardRoot.transform.SetParent(transform);
 		mCoinRoot = new GameObject("CoinRoot");
 		mCoinRoot.transform.SetParent(mCardRoot.transform);
 		foreach(var player in inGameController.gameInfo.GetPlayerInfos)
@@ -126,7 +134,7 @@ public class Table : MonoBehaviour
 		}
 		return null;
 	}
-	void Discard(GameInfo inInfo, float inTweenTime, LTSeq inSeq)
+	LTSeq Discard(GameInfo inInfo, float inTweenTime, LTSeq inSeq)
 	{
 		var players = inInfo.GetPlayerInfos;
 		foreach(var player in players)
@@ -140,6 +148,7 @@ public class Table : MonoBehaviour
 				}
 			}
 		}
+		return inSeq;
 	}
 	CardModel FindCard(CardInfo inCard)
 	{
@@ -161,16 +170,16 @@ public class Table : MonoBehaviour
 		}
 		return null;
 	}
-	void Hand(GameController inGameController, float inTweenTime, LTSeq inSeq)
+	void Hand(GameController inGameController, float inTweenTime)
 	{
 		var info = inGameController.gameInfo;
 		var players = info.GetPlayerInfos;
 		foreach(var playerInfo in players)
 		{
-			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime, inSeq);
+			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime);
 		}
 	}
-	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween, LTSeq inSeq)
+	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween)
 	{
 		var hands = inPlayerInfo.hand;
 		float startX = 0.0f;
@@ -189,7 +198,7 @@ public class Table : MonoBehaviour
 			{
 				var offset = mLayout.handOffset * counter;
 				var cardPos = new Vector3(startX + offset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween, inSeq);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
 				++counter;
 			}
 		}
@@ -205,12 +214,12 @@ public class Table : MonoBehaviour
 				var offset = mLayout.handOffset * counter;
 				var pointOffset = mLayout.pointOffset * pointCounter;
 				var cardPos = new Vector3(startX + offset.x + pointOffset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween, inSeq);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween);
 				++pointCounter;
 			}
 		}
 	}
-	void CardOpen(GameInfo inInfo, Player inPlayer, CardInfo inCard, Vector3 inPos, float inTweenTime, LTSeq inSeq)
+	void CardOpen(GameInfo inInfo, Player inPlayer, CardInfo inCard, Vector3 inPos, float inTweenTime)
 	{
 		float rotY = inPlayer.rot;
 		var rot = Quaternion.Euler(0.0f, rotY, 0.0f);
@@ -218,14 +227,44 @@ public class Table : MonoBehaviour
 		var cardModel = GetCard(inCard, inInfo);
 		cardModel.supply = -1;
 		var seq = LeanTween.sequence();
-		seq.insert(LeanTween.move(cardModel.gameObject, pos, inTweenTime).setEaseInOutExpo());
-		seq.insert(LeanTween.rotateY(cardModel.gameObject, rotY, inTweenTime));
-		seq.insert(LeanTween.scale(cardModel.gameObject, mLayout.handScale, inTweenTime));
+		seq.append(LeanTween.move(cardModel.gameObject, pos, inTweenTime).setEaseInOutExpo());
+		seq.append(LeanTween.rotateY(cardModel.gameObject, rotY, inTweenTime));
+		seq.append(LeanTween.scale(cardModel.gameObject, mLayout.handScale, inTweenTime));
 		cardModel.Open(seq);
 	}
 	bool IsPoint(CardData.CardType inType)
 	{
 		return inType == CardData.CardType.Bonus || inType == CardData.CardType.Cooking;
+	}
+	void AddCoin(GameController inGameController, float inTweenTime, LTSeq inSeq)
+	{
+		var players = inGameController.gameInfo.GetPlayerInfos;
+		foreach(var playerInfo in players)
+		{
+			var hand = playerInfo.hand;
+			mCoin.TryGetValue(playerInfo.id, out var coins);
+			foreach(var cards in hand)
+			{
+				foreach(var card in cards.Value)
+				{
+					int cardCoin = card.cardData.GetCoin;
+					if(cardCoin <= 0)
+					{
+						continue;
+					}
+					var player = inGameController.GetPlayer(playerInfo.id);
+					var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+					coins.Add(coin);
+					var start = FindCard(card).transform.position;
+					var end = player.transform.position + mLayout.coinOffset * coins.Count;
+					var bezer = new[] { start, start, end, end };
+					var lt = LeanTween.move(coin.gameObject, bezer, inTweenTime);
+				}
+			}
+		}
+	}
+	void PayCoin(GameController inGameController, float inTweenTime, LTSeq inSeq)
+	{
 	}
 	void Coin(GameController inGameController)
 	{
