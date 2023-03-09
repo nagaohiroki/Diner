@@ -5,8 +5,9 @@ public class GameInfo
 	List<DeckInfo> mDeck;
 	PlayersInfo mPlayersInfo;
 	public PickInfoList pickInfo { get; private set; }
-	public string GetCurrentTurnPlayer => mPlayersInfo.TurnPlayer(pickInfo.Count).id;
 	public List<PlayerInfo> GetPlayerInfos => mPlayersInfo.playersInfo;
+	public int turnOffset { get; set; }
+	public PlayerInfo CurrentTurnPlayerInfo => mPlayersInfo.TurnPlayer(pickInfo.picks.Count - turnOffset);
 	public override string ToString()
 	{
 		return $"turn {pickInfo}\n{mPlayersInfo}";
@@ -35,14 +36,14 @@ public class GameInfo
 	}
 	public void Pick(int inDeck, int inCard)
 	{
-		mPlayersInfo.TurnPlayer(pickInfo.Count).Pick(mDeck[inDeck].Pick(inCard));
+		CurrentTurnPlayerInfo.Pick(mDeck[inDeck].Pick(inCard));
 		pickInfo.Add(new PickInfo { deck = inDeck, card = inCard });
-		var next = mPlayersInfo.TurnPlayer(pickInfo.Count);
+		var next = CurrentTurnPlayerInfo;
 		next.CleanUp();
 	}
 	public bool CanPick(CardInfo inInfo)
 	{
-		return mPlayersInfo.TurnPlayer(pickInfo.Count).CanPick(mDeck[inInfo.deckIndex].GetCard(inInfo.cardIndex));
+		return CurrentTurnPlayerInfo.CanPick(mDeck[inInfo.deckIndex].GetCard(inInfo.cardIndex));
 	}
 	public int GetDeckIndex(string inId)
 	{
@@ -67,7 +68,7 @@ public class GameInfo
 		{
 			return new List<PlayerInfo> { win };
 		}
-		var player = mPlayersInfo.TurnPlayer(pickInfo.Count);
+		var player = CurrentTurnPlayerInfo;
 		foreach(var deck in mDeck)
 		{
 			foreach(var supply in deck.supply)
@@ -82,6 +83,6 @@ public class GameInfo
 	}
 	public CardInfo AIPick()
 	{
-		return mPlayersInfo.AIPick(mDeck, pickInfo.Count);
+		return mPlayersInfo.AIPick(mDeck, CurrentTurnPlayerInfo);
 	}
 }

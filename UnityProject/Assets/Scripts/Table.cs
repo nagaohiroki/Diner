@@ -29,6 +29,11 @@ public class Table : MonoBehaviour
 	GameController mGameContorller;
 	public void Apply(GameController inGameController, float inTweenTime)
 	{
+		if(IsTween)
+		{
+			++inGameController.gameInfo.turnOffset;
+			return;
+		}
 		mSeqCounter = 3;
 		Init(inGameController);
 		mMenuRoot.Apply(inGameController);
@@ -37,16 +42,16 @@ public class Table : MonoBehaviour
 		PayCoin(inGameController.gameInfo, inTweenTime, rootSeq);
 		rootSeq.append(() =>
 		{
-			Hand(inGameController, inTweenTime, EndSeq);
+			Hand(inGameController, inTweenTime, () => EndSeq(inGameController, inTweenTime));
 			LayoutDeck(inGameController.gameInfo, inTweenTime, () =>
 			{
 				var seq = LeanTween.sequence();
 				AddCoin(inGameController, inTweenTime, seq);
-				seq.append(EndSeq);
+				seq.append(() => EndSeq(inGameController, inTweenTime));
 			});
 		});
 		rootSeq.append(() => Winner(inGameController));
-		rootSeq.append(EndSeq);
+		rootSeq.append(() => EndSeq(inGameController, inTweenTime));
 	}
 	public void Clear()
 	{
@@ -75,9 +80,14 @@ public class Table : MonoBehaviour
 		mWinnerSE.Play();
 		return true;
 	}
-	void EndSeq()
+	void EndSeq(GameController inGameController, float inTweenTime)
 	{
 		--mSeqCounter;
+		if(mSeqCounter == 0 && inGameController.gameInfo.turnOffset > 0)
+		{
+			--inGameController.gameInfo.turnOffset;
+			Apply(inGameController, inTweenTime);
+		}
 	}
 	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, System.Action inEnd)
 	{

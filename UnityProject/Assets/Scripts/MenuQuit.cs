@@ -53,7 +53,7 @@ public class MenuQuit : MonoBehaviour
 				continue;
 			}
 			child.gameObject.SetActive(true);
-			text.color = inGameController.gameInfo.GetCurrentTurnPlayer == players[i].id ? Color.black : Color.gray;
+			text.color = inGameController.gameInfo.CurrentTurnPlayerInfo.id == players[i].id ? Color.black : Color.gray;
 			text.text = PlayerScore(inGameController, i);
 		}
 	}

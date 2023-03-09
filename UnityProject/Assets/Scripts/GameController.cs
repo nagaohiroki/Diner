@@ -41,7 +41,7 @@ public class GameController : NetworkBehaviour
 		{
 			return false;
 		}
-		return gameInfo.GetCurrentTurnPlayer == inPlayer.id;
+		return gameInfo.CurrentTurnPlayerInfo.id == inPlayer.id;
 	}
 	public byte[] FindUserData(ulong inClientId, ulong inNetworkObjectId)
 	{

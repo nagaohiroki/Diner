@@ -248,17 +248,16 @@ public class PlayersInfo
 	{
 		return playersInfo[inTurn % playersInfo.Count];
 	}
-	public CardInfo AIPick(List<DeckInfo> inDeck, int inTurn)
+	public CardInfo AIPick(List<DeckInfo> inDeck, PlayerInfo inPlayerInfo)
 	{
 		var calcScore = CalcTypeScore(inDeck);
-		var player = TurnPlayer(inTurn);
 		CardInfo pick = null;
 		float max = float.MinValue;
 		foreach(var deck in inDeck)
 		{
 			foreach(var supply in deck.supply)
 			{
-				float score = player.CalcScore(supply, calcScore);
+				float score = inPlayerInfo.CalcScore(supply, calcScore);
 				if(score > max)
 				{
 					max = score;

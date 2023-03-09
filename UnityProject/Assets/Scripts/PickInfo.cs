@@ -14,7 +14,7 @@ public partial class PickInfo
 public partial class PickInfoList
 {
 	public List<PickInfo> picks { get; set; }
-	public int Count => picks.Count;
+	//public int Count => picks.Count;
 	public override string ToString()
 	{
 		return $"{picks.Count}";
