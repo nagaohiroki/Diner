@@ -81,16 +81,16 @@ public class Table : MonoBehaviour
 	}
 	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, System.Action inEnd)
 	{
-		int seqCounter = 0;
 		int max = mDecks.childCount;
+		int seqCounter = max;
 		for(int i = 0; i < max; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
 				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime, () =>
 				{
-					++seqCounter;
-					if(seqCounter == max)
+					--seqCounter;
+					if(seqCounter == 0)
 					{
 						inEnd();
 					}
@@ -124,7 +124,7 @@ public class Table : MonoBehaviour
 			{
 				var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
 				coins.Add(coin);
-				coin.transform.position = player.transform.position + mLayout.coinOffset * coins.Count; ;
+				coin.transform.position = CoinPos(player, coins.Count);
 			}
 		}
 	}
@@ -334,7 +334,7 @@ public class Table : MonoBehaviour
 					coin.gameObject.SetActive(false);
 					coins.Add(coin);
 					var start = FindCard(card).transform.position;
-					var end = inPlayer.transform.position + mLayout.coinOffset * coins.Count;
+					var end = CoinPos(inPlayer, coins.Count);
 					coin.transform.position = start;
 					var lt = LeanTween.move(coin.gameObject, end, inTweenTime);
 					inSeq.append(() => coin.gameObject.SetActive(true));
@@ -342,6 +342,11 @@ public class Table : MonoBehaviour
 				}
 			}
 		}
+	}
+	Vector3 CoinPos(Player inPlayer, int inCount)
+	{
+		var rot = Quaternion.Euler(0.0f, inPlayer.rot, 0.0f);
+		return inPlayer.transform.position + rot * mLayout.coinOffset * inCount;
 	}
 #if UNITY_EDITOR
 	void OnValidate()

@@ -16,12 +16,12 @@ public class DeckModel : MonoBehaviour
 	{
 		mCardFbx.SetNum(inDeck.GetCardList.Count);
 		int supply = 0;
-		int seqCounter = 0;
 		int seqMax = inDeck.supply.Count;
+		int seqCounter = seqMax;
 		void end()
 		{
-			++seqCounter;
-			if(seqMax == seqCounter)
+			--seqCounter;
+			if(seqCounter == 0)
 			{
 				inEnd();
 			}

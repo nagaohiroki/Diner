@@ -33,7 +33,15 @@ public class GameController : NetworkBehaviour
 	Dictionary<ulong, byte[]> connectionsData { get; set; } = new Dictionary<ulong, byte[]>();
 	public bool IsTurnPlayer(Player inPlayer)
 	{
-		return gameInfo != null && gameInfo.GetCurrentTurnPlayer == inPlayer.id;
+		if(gameInfo == null)
+		{
+			return false;
+		}
+		if(mTable.IsTween)
+		{
+			return false;
+		}
+		return gameInfo.GetCurrentTurnPlayer == inPlayer.id;
 	}
 	public byte[] FindUserData(ulong inClientId, ulong inNetworkObjectId)
 	{
@@ -55,10 +63,6 @@ public class GameController : NetworkBehaviour
 			return;
 		}
 		if(!gameInfo.CanPick(inInfo))
-		{
-			return;
-		}
-		if(mTable.IsTween)
 		{
 			return;
 		}
