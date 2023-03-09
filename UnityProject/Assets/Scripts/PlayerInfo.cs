@@ -24,7 +24,7 @@ public class PlayerInfo
 	}
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
-	public CardInfo lastPickCard { get; set; }
+	public CardInfo lastPickCard { get;  private set; }
 	public override string ToString()
 	{
 		var str = $"{id}, point:{GetPoint}, coin:{coin}\n";

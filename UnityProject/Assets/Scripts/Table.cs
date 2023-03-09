@@ -25,7 +25,7 @@ public class Table : MonoBehaviour
 	GameObject mCoinRoot;
 	public bool IsTween => mSeqCounter != 0;
 	int mSeqCounter = 0;
-	Dictionary<string, List<GameObject>> mCoin = new Dictionary<string, List<GameObject>>();
+	Dictionary<string, List<GameObject>> mCoin;
 	GameController mGameContorller;
 	public void Apply(GameController inGameController, float inTweenTime)
 	{
@@ -109,11 +109,22 @@ public class Table : MonoBehaviour
 		mCardRoot.transform.SetParent(transform);
 		mCoinRoot = new GameObject("CoinRoot");
 		mCoinRoot.transform.SetParent(mCardRoot.transform);
-		foreach(var player in inGameController.gameInfo.GetPlayerInfos)
+		mCoin = new Dictionary<string, List<GameObject>>();
+		var playerInfos = inGameController.gameInfo.GetPlayerInfos;
+		foreach(var playerInfo in playerInfos)
 		{
-			if(!mCoin.ContainsKey(player.id))
+			if(mCoin.ContainsKey(playerInfo.id))
 			{
-				mCoin.Add(player.id, new List<GameObject>());
+				continue;
+			}
+			var coins = new List<GameObject>();
+			mCoin.Add(playerInfo.id, coins);
+			var player = mGameContorller.GetPlayer(playerInfo.id);
+			for(int i = 0; i < playerInfo.coin; ++i)
+			{
+				var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+				coins.Add(coin);
+				coin.transform.position = player.transform.position + mLayout.coinOffset * coins.Count; ;
 			}
 		}
 	}
@@ -300,7 +311,8 @@ public class Table : MonoBehaviour
 		var players = inGameController.gameInfo.GetPlayerInfos;
 		foreach(var playerInfo in players)
 		{
-			AddCoinPlayer(playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime, inSeq);
+			var player = inGameController.GetPlayer(playerInfo.id);
+			AddCoinPlayer(playerInfo, player, inTweenTime, inSeq);
 		}
 	}
 	void AddCoinPlayer(PlayerInfo inPlayerInfo, Player inPlayer, float inTweenTime, LTSeq inSeq)
@@ -316,19 +328,18 @@ public class Table : MonoBehaviour
 			foreach(var card in cards.Value)
 			{
 				int cardCoin = card.cardData.GetCoin;
-				if(cardCoin <= 0)
+				for(int i = 0; i < cardCoin; ++i)
 				{
-					continue;
+					var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
+					coin.gameObject.SetActive(false);
+					coins.Add(coin);
+					var start = FindCard(card).transform.position;
+					var end = inPlayer.transform.position + mLayout.coinOffset * coins.Count;
+					coin.transform.position = start;
+					var lt = LeanTween.move(coin.gameObject, end, inTweenTime);
+					inSeq.append(() => coin.gameObject.SetActive(true));
+					inSeq.append(lt);
 				}
-				var coin = Instantiate(mCoinPrefab, mCoinRoot.transform);
-				coin.gameObject.SetActive(false);
-				coins.Add(coin);
-				var start = FindCard(card).transform.position;
-				var end = inPlayer.transform.position + mLayout.coinOffset * coins.Count;
-				coin.transform.position = start;
-				var lt = LeanTween.move(coin.gameObject, end, inTweenTime);
-				inSeq.append(() => coin.gameObject.SetActive(true));
-				inSeq.append(lt);
 			}
 		}
 	}
