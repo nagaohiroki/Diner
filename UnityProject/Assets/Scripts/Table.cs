@@ -293,7 +293,7 @@ public class Table : MonoBehaviour
 	void PayCoinPlayer(PlayerInfo inPlayerInfo, float inTweenTime, LTSeq inSeq)
 	{
 		mCoin.TryGetValue(inPlayerInfo.id, out var coins);
-		int paid = coins.Count - inPlayerInfo.coin;
+		int paid = inPlayerInfo.paidCoin;
 		if(paid <= 0)
 		{
 			return;
@@ -303,8 +303,8 @@ public class Table : MonoBehaviour
 		{
 			int index = coins.Count - (i + 1);
 			var coin = coins[index];
-			inSeq.append(LeanTween.move(coin, lastPickCard.transform.position, inTweenTime));
-			inSeq.append(LeanTween.scale(coin, Vector3.zero, inTweenTime));
+			inSeq.append(LeanTween.move(coin, lastPickCard.transform.position, inTweenTime).setEaseOutCubic());
+			inSeq.append(LeanTween.scale(coin, Vector3.zero, inTweenTime).setEaseInOutExpo());
 			inSeq.append(() => Destroy(coin));
 		}
 		coins.RemoveRange(coins.Count - paid, paid);
@@ -339,7 +339,7 @@ public class Table : MonoBehaviour
 					var start = FindCard(card).transform.position;
 					var end = CoinPos(inPlayer, coins.Count);
 					coin.transform.position = start;
-					var lt = LeanTween.move(coin.gameObject, end, inTweenTime);
+					var lt = LeanTween.move(coin.gameObject, end, inTweenTime).setEaseOutBounce();
 					inSeq.append(() => coin.gameObject.SetActive(true));
 					inSeq.append(lt);
 				}

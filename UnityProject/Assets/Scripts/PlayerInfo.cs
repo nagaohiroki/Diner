@@ -24,7 +24,8 @@ public class PlayerInfo
 	}
 	public Dictionary<CardData.CardType, List<CardInfo>> hand { get; private set; } = new Dictionary<CardData.CardType, List<CardInfo>>();
 	public List<CardInfo> discard { get; private set; } = new List<CardInfo>();
-	public CardInfo lastPickCard { get;  private set; }
+	public CardInfo lastPickCard { get; private set; }
+	public int paidCoin { get; private set; }
 	public override string ToString()
 	{
 		var str = $"{id}, point:{GetPoint}, coin:{coin}\n";
@@ -131,7 +132,8 @@ public class PlayerInfo
 	}
 	void Pay(CardInfo inCard)
 	{
-		coin -= GetPayCoin(inCard);
+		paidCoin = GetPayCoin(inCard);
+		coin -= paidCoin;
 		foreach(var cost in inCard.cardData.GetCost)
 		{
 			RemoveHand(cost);
