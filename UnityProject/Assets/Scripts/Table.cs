@@ -22,6 +22,7 @@ public class SeqCounter
 			inEnd();
 		}
 	}
+	public bool IsSeq => mCounter > 0;
 	public void End()
 	{
 		--mCounter;
@@ -45,10 +46,10 @@ public class Table : MonoBehaviour
 	LayoutParameter mLayout;
 	GameObject mCardRoot;
 	GameObject mCoinRoot;
-	public bool IsTween => mSeqCounter != 0;
-	int mSeqCounter = 0;
+	SeqCounter mMainSeq;
 	Dictionary<string, List<GameObject>> mCoin;
 	GameController mGameContorller;
+	public bool IsTween => mMainSeq != null ? mMainSeq.IsSeq : false;
 	public void Apply(GameController inGameController, float inTweenTime)
 	{
 		if(IsTween)
@@ -56,7 +57,14 @@ public class Table : MonoBehaviour
 			++inGameController.gameInfo.turnOffset;
 			return;
 		}
-		mSeqCounter = 3;
+		mMainSeq = new SeqCounter(1, () =>
+		{
+			if(inGameController.gameInfo.turnOffset > 0)
+			{
+				--inGameController.gameInfo.turnOffset;
+				Apply(inGameController, inTweenTime);
+			}
+		});
 		Init(inGameController);
 		mMenuRoot.Apply(inGameController);
 		var rootSeq = LeanTween.sequence();
@@ -64,16 +72,17 @@ public class Table : MonoBehaviour
 		PayCoin(inGameController.gameInfo, inTweenTime, rootSeq);
 		rootSeq.append(() =>
 		{
-			Hand(inGameController, inTweenTime, () => EndSeq(inGameController, inTweenTime));
-			LayoutDeck(inGameController.gameInfo, inTweenTime, () =>
+			Hand(inGameController, inTweenTime, () =>
 			{
-				var seq = LeanTween.sequence();
-				AddCoin(inGameController, inTweenTime, seq);
-				seq.append(() => EndSeq(inGameController, inTweenTime));
+				LayoutDeck(inGameController.gameInfo, inTweenTime, () =>
+				{
+					var seq = LeanTween.sequence();
+					AddCoin(inGameController, inTweenTime, seq);
+					Winner(inGameController, inTweenTime, seq);
+					seq.append(mMainSeq.End);
+				});
 			});
 		});
-		rootSeq.append(() => Winner(inGameController));
-		rootSeq.append(() => EndSeq(inGameController, inTweenTime));
 	}
 	public void Clear()
 	{
@@ -83,12 +92,12 @@ public class Table : MonoBehaviour
 			mCardRoot = null;
 		}
 	}
-	bool Winner(GameController inGameController)
+	void Winner(GameController inGameController, float inTweenTime, LTSeq seq)
 	{
 		var winners = inGameController.gameInfo.GetWinners(inGameController.GetData.GetWinPoint);
 		if(winners == null)
 		{
-			return false;
+			return;
 		}
 		var result = mMenuRoot.SwitchMenu<MenuResult>();
 		var str = string.Empty;
@@ -100,16 +109,7 @@ public class Table : MonoBehaviour
 		str += $" is Win !!";
 		result.SetText(str);
 		mWinnerSE.Play();
-		return true;
-	}
-	void EndSeq(GameController inGameController, float inTweenTime)
-	{
-		--mSeqCounter;
-		if(mSeqCounter == 0 && inGameController.gameInfo.turnOffset > 0)
-		{
-			--inGameController.gameInfo.turnOffset;
-			Apply(inGameController, inTweenTime);
-		}
+		return;
 	}
 	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, System.Action inEnd)
 	{

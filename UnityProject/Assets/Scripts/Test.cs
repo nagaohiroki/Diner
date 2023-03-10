@@ -18,13 +18,8 @@ public class Test : MonoBehaviour
 	{
 		if(Input.GetKeyDown(KeyCode.A))
 		{
-			var seq = LeanTween.sequence();
-			seq.append(LeanTween.move(gameObject, new Vector3(1.0f, 0.0f, 0.0f), 1.0f).direction);
-			seq.append(LeanTween.move(gameObject, new Vector3(1.0f, 1.0f, 0.0f), 1.0f));
-
-			var seq1 = LeanTween.sequence();
-			seq1.append(LeanTween.move(mObj, new Vector3(-1.0f, 0.0f, 0.0f), 1.0f));
-			seq1.append(LeanTween.move(mObj, new Vector3(-1.0f, 1.0f, 0.0f), 1.0f));
+			LeanTween.addListener(0, ev => Debug.Log($"{ev.id}"));
+			LeanTween.dispatchEvent(0);
 		}
 	}
 }
