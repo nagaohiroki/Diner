@@ -9,6 +9,28 @@ public class LayoutParameter
 	public Vector3 pointOffset = new Vector3(0.12f, 0.0000f, -0.16f);
 	public Vector3 coinOffset = new Vector3(0.2f, 0.0f, 0.0f);
 }
+public class SeqCounter
+{
+	int mCounter;
+	System.Action mEnd;
+	public SeqCounter(int inCounter, System.Action inEnd)
+	{
+		mCounter = inCounter;
+		mEnd = inEnd;
+		if(inCounter == 0)
+		{
+			inEnd();
+		}
+	}
+	public void End()
+	{
+		--mCounter;
+		if(mCounter == 0)
+		{
+			mEnd();
+		}
+	}
+}
 public class Table : MonoBehaviour
 {
 	[SerializeField]
@@ -91,20 +113,12 @@ public class Table : MonoBehaviour
 	}
 	void LayoutDeck(GameInfo inGameinfo, float inTweenTime, System.Action inEnd)
 	{
-		int max = mDecks.childCount;
-		int seqCounter = max;
-		for(int i = 0; i < max; ++i)
+		var counter = new SeqCounter(mDecks.childCount, inEnd);
+		for(int i = 0; i < mDecks.childCount; ++i)
 		{
 			if(mDecks.GetChild(i).TryGetComponent<DeckModel>(out var deck))
 			{
-				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime, () =>
-				{
-					--seqCounter;
-					if(seqCounter == 0)
-					{
-						inEnd();
-					}
-				});
+				deck.Layout(inGameinfo.GetDeck(deck.GetId), mCardRoot.transform, inTweenTime, counter.End);
 			}
 		}
 	}
@@ -194,18 +208,10 @@ public class Table : MonoBehaviour
 	{
 		var info = inGameController.gameInfo;
 		var players = info.GetPlayerInfos;
-		int counter = 0;
-		int max = players.Count;
+		var seqCounter = new SeqCounter(players.Count, inEnd);
 		foreach(var playerInfo in players)
 		{
-			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime, () =>
-			{
-				++counter;
-				if(max == counter)
-				{
-					inEnd();
-				}
-			});
+			HandPlayer(info, playerInfo, inGameController.GetPlayer(playerInfo.id), inTweenTime, seqCounter.End);
 		}
 	}
 	void HandPlayer(GameInfo inInfo, PlayerInfo inPlayerInfo, Player inPlayer, float inTween, System.Action inEnd)
@@ -218,20 +224,7 @@ public class Table : MonoBehaviour
 		}
 		int counter = 0;
 		int pointCounter = 0;
-		int seqCounter = 0;
-		int total = inPlayerInfo.handTotal;
-		if(total == 0)
-		{
-			inEnd();
-		}
-		void end()
-		{
-			++seqCounter;
-			if(seqCounter == total)
-			{
-				inEnd();
-			}
-		};
+		var seqCounter = new SeqCounter(inPlayerInfo.handTotal, inEnd);
 		foreach(var cards in hands)
 		{
 			if(IsPoint(cards.Key))
@@ -242,7 +235,7 @@ public class Table : MonoBehaviour
 			{
 				var offset = mLayout.handOffset * counter;
 				var cardPos = new Vector3(startX + offset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween).append(end);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween).append(seqCounter.End);
 				++counter;
 			}
 		}
@@ -257,7 +250,7 @@ public class Table : MonoBehaviour
 				var offset = mLayout.handOffset * counter;
 				var pointOffset = mLayout.pointOffset * pointCounter;
 				var cardPos = new Vector3(startX + offset.x + pointOffset.x, offset.y, 0.0f);
-				CardOpen(inInfo, inPlayer, card, cardPos, inTween).append(end);
+				CardOpen(inInfo, inPlayer, card, cardPos, inTween).append(seqCounter.End);
 				++pointCounter;
 			}
 		}

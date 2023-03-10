@@ -16,23 +16,14 @@ public class DeckModel : MonoBehaviour
 	{
 		mCardFbx.SetNum(inDeck.GetCardList.Count);
 		int supply = 0;
-		int seqMax = inDeck.supply.Count;
-		int seqCounter = seqMax;
-		void end()
-		{
-			--seqCounter;
-			if(seqCounter == 0)
-			{
-				inEnd();
-			}
-		}
+		var seqCounter = new SeqCounter(inDeck.supply.Count, inEnd);
 		foreach(var card in inDeck.supply)
 		{
 			++supply;
 			var cardModel = CreateCardModel(card, inCardRoot);
 			if(cardModel.supply == supply)
 			{
-				end();
+				seqCounter.End();
 				continue;
 			}
 			cardModel.supply = supply;
@@ -40,7 +31,7 @@ public class DeckModel : MonoBehaviour
 			var seq = LeanTween.sequence();
 			seq.append(LeanTween.move(cardModel.gameObject, pos, inTweenTime).setEaseInOutExpo());
 			cardModel.Open(seq);
-			seq.append(end);
+			seq.append(seqCounter.End);
 		}
 	}
 	public CardModel CreateCardModel(CardInfo inCard, Transform inParent)
