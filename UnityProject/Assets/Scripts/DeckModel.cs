@@ -11,8 +11,25 @@ public class DeckModel : MonoBehaviour
 	CardModel mCardModelPrefab;
 	[SerializeField]
 	CardFbx mCardFbx;
+	[SerializeField]
+	float mStartTime;
 	public string GetId => mId;
 	public void Layout(DeckInfo inDeck, Transform inCardRoot, float inTweenTime, System.Action inEnd)
+	{
+		if(gameObject.activeSelf)
+		{
+			LayoutSupply(inDeck, inCardRoot, inTweenTime, inEnd);
+			return;
+		}
+		var seq = LeanTween.sequence();
+		gameObject.SetActive(true);
+		var pos = transform.position;
+		pos.y = 10.0f;
+		transform.position = pos;
+		seq.append(LeanTween.moveY(gameObject, 0.0f, mStartTime).setEaseOutCubic());
+		seq.append(() => LayoutSupply(inDeck, inCardRoot, inTweenTime, inEnd));
+	}
+	void LayoutSupply(DeckInfo inDeck, Transform inCardRoot, float inTweenTime, System.Action inEnd)
 	{
 		mCardFbx.SetNum(inDeck.GetCardList.Count);
 		int supply = 0;
@@ -50,6 +67,10 @@ public class DeckModel : MonoBehaviour
 		var cardModel = Instantiate(mCardModelPrefab, mCardFbx.GetTopPosition, Quaternion.Euler(0.0f, 0.0f, 180.0f), inParent);
 		cardModel.Create(inCard);
 		return cardModel;
+	}
+	public void Clear()
+	{
+		gameObject.SetActive(false);
 	}
 	void Start()
 	{

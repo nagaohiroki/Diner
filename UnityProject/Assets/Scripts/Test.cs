@@ -1,15 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-public class LTSeqContainer
-{
-	List<LTSeq> seqList = new List<LTSeq>();
-	public LTSeq New()
-	{
-		var seq = LeanTween.sequence();
-		seqList.Add(seq);
-		return seq;
-	}
-}
 public class Test : MonoBehaviour
 {
 	[SerializeField]

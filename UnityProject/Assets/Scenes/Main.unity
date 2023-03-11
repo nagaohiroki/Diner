@@ -436,6 +436,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FoodDeck
       objectReference: {fileID: 0}
+    - target: {fileID: 2969533036625924183, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mId
       value: CardFood
@@ -452,6 +456,14 @@ PrefabInstance:
       propertyPath: mBackface
       value: 
       objectReference: {fileID: 2100000, guid: 15ec3e45cb918c04193781b065829950, type: 2}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: startYPos
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mStartTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mSupplyOffset.x
       value: 1.2
@@ -4988,14 +5000,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1130589019}
-  m_LocalRotation: {x: 0.79124016, y: -0.14845249, z: 0.21201211, w: 0.5540323}
+  m_LocalRotation: {x: 0.5735764, y: 0, z: 0, w: 0.8191521}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 110, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
 --- !u!114 &1130589022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5322,7 +5334,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2969533036625924183, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3562267840727856063, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: m_Enabled
@@ -5348,6 +5360,14 @@ PrefabInstance:
       propertyPath: mBackface
       value: 
       objectReference: {fileID: 2100000, guid: 1e9009c01298fcd41a014acde1670aad, type: 2}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: startYPos
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mStartTime
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mSupplyOffset.x
       value: 1.2
@@ -5679,6 +5699,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CookDeck
       objectReference: {fileID: 0}
+    - target: {fileID: 2969533036625924183, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mId
       value: CardCook
@@ -5699,6 +5723,14 @@ PrefabInstance:
       propertyPath: mBackface
       value: 
       objectReference: {fileID: 2100000, guid: fac2af74e8e9b1b468fae374a02ed02b, type: 2}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: startYPos
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
+      propertyPath: mStartTime
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7245187568091573277, guid: efbf8659bf298e9429ee892ddc8d87ce, type: 3}
       propertyPath: mSupplyOffset.x
       value: -1.2
@@ -6516,7 +6548,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571998576}
-  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
+  m_LocalRotation: {x: 0.67559016, y: 0, z: 0, w: 0.7372774}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6524,7 +6556,7 @@ Transform:
   - {fileID: 989061252}
   m_Father: {fileID: 0}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 89, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 85, y: 0, z: 0}
 --- !u!1 &1577881280
 GameObject:
   m_ObjectHideFlags: 0

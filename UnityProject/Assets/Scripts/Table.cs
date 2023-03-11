@@ -91,6 +91,15 @@ public class Table : MonoBehaviour
 			Destroy(mCardRoot);
 			mCardRoot = null;
 		}
+		int count = mDecks.transform.childCount;
+		for(int i = 0; i < count; ++i)
+		{
+			var child = mDecks.transform.GetChild(i);
+			if(child.TryGetComponent<DeckModel>(out var deck))
+			{
+				deck.Clear();
+			}
+		}
 	}
 	void Winner(GameController inGameController, float inTweenTime, LTSeq seq)
 	{
@@ -128,6 +137,7 @@ public class Table : MonoBehaviour
 		{
 			return;
 		}
+		mDecks.gameObject.SetActive(true);
 		mGameContorller = inGameController;
 		mCardRoot = new GameObject("CardRoot");
 		mCardRoot.transform.SetParent(transform);
