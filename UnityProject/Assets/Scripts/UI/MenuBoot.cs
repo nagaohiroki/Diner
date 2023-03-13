@@ -15,17 +15,26 @@ public class MenuBoot : MonoBehaviour
 		imageColorCode = UserData.GenerateRandomColor();
 		mImage.color = UserData.IntToColor(imageColorCode);
 	}
-	public void Save(UserData inUserData, OptionData inOptionData)
+	public void Save()
 	{
-		inUserData.name = mUserName.text;
-		inUserData.imageColorCode = imageColorCode;
-		inOptionData.isLocal = mLocalMode.isOn;
+		var user = SaveData.instance.userData;
+		var option = SaveData.instance.optionData;
+		user.name = mUserName.text;
+		user.imageColorCode = imageColorCode;
+		option.isLocal = mLocalMode.isOn;
+		SaveData.instance.Save();
 	}
-	public void Load(UserData inUserData, OptionData inOptionData)
+	public void Load()
 	{
-		mUserName.text = inUserData.name;
-		imageColorCode = inUserData.imageColorCode;
+		var user = SaveData.instance.userData;
+		var option = SaveData.instance.optionData;
+		mUserName.text = user.name;
+		mLocalMode.isOn = option.isLocal;
+		imageColorCode = user.imageColorCode;
 		mImage.color = UserData.IntToColor(imageColorCode);
-		mLocalMode.isOn = inOptionData.isLocal;
+	}
+	void Start()
+	{
+		Load();
 	}
 }

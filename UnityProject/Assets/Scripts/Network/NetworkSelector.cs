@@ -7,12 +7,10 @@ public class NetworkSelector : MonoBehaviour
 	GameController mGameContorller;
 	[SerializeField]
 	MenuRoot mMenuRoot;
-	OptionData optionData { get; set; }
-	UserData userData { get; set; }
 	public void StartHost()
 	{
 		SetupUser(true);
-		if(optionData.isLocal)
+		if(SaveData.instance.optionData.isLocal)
 		{
 			NetworkManager.Singleton.StartHost();
 			mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(true);
@@ -34,7 +32,7 @@ public class NetworkSelector : MonoBehaviour
 	public void StartClient(MenuJoin inJoin)
 	{
 		SetupUser(false);
-		if(optionData.isLocal)
+		if(SaveData.instance.optionData.isLocal)
 		{
 			NetworkManager.Singleton.StartClient();
 			mMenuRoot.SwitchMenu<MenuQuit>().SetActiveHostButton(false);
@@ -65,10 +63,8 @@ public class NetworkSelector : MonoBehaviour
 			var menuCreate = mMenuRoot.GetComponentInChildren<MenuCreate>(true);
 			data.rule = menuCreate.GetRule;
 		}
-		menuBoot.Save(userData, optionData);
-		SaveUtility.Save(UserData.fileName, userData);
-		SaveUtility.Save(OptionData.fileName, optionData);
-		data.user = userData;
+		menuBoot.Save();
+		data.user = SaveData.instance.userData;
 		NetworkManager.Singleton.NetworkConfig.ConnectionData = MemoryPackSerializer.Serialize<ConnectionData>(data);
 		Debug.Log($"SetupUser:{data}");
 	}
@@ -79,17 +75,7 @@ public class NetworkSelector : MonoBehaviour
 #if UNITY_SERVER
 		StartServer();
 #else
-		userData = SaveUtility.Load<UserData>(UserData.fileName);
-		if(userData == null)
-		{
-			userData = UserData.NewSaveData;
-		}
-		optionData = SaveUtility.Load<OptionData>(OptionData.fileName);
-		if(optionData == null)
-		{
-			optionData = new OptionData();
-		}
-		mMenuRoot.SwitchMenu<MenuBoot>().Load(userData, optionData);
+		mMenuRoot.SwitchMenu<MenuBoot>();
 #endif
 	}
 }
